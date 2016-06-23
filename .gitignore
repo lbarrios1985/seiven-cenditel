@@ -1,0 +1,12 @@
+*.pyc
+.idea
+static/tmp
+*.db
+*.dot
+*.xml
+tmp/*.png
+database_config.py
+migrations
+fixtures
+*.sql
+*.log
