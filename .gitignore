@@ -10,3 +10,4 @@ migrations
 fixtures
 *.sql
 *.log
+*~
