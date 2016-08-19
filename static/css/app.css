@@ -1,0 +1,55 @@
+.content-wrapper,
+.right-side {
+  background-color: #ffffff !important;
+}
+
+.main-header a, .navbar-default .navbar-nav > li > a {
+    color: #ffffff;
+}
+
+.main-header a:hover, .navbar-default .navbar-nav > li > a {
+    font-weight: bold;
+}
+
+.navbar-default .navbar-nav > li > a {
+    font-size: 1.1em;
+}
+
+.navbar-default, .main-header a {
+    background-color: #41B9B7 !important;
+}
+
+.footer-info {
+    background-color: #41B9B7;
+    color: #ffffff;
+}
+
+.info-develop {
+    background-color: #42535C;
+    color:#ffffff;
+    padding: 10px 0;
+}
+
+.content-login {
+    margin: 10% auto;
+}
+
+.box-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.btn-primary {
+    background-color: #41B9B7;
+    border-color: #41B9B7;
+}
+
+.btn-primary:hover {
+    background-color: #00A1B6;
+    border-color: #00A1B6;
+}
+
+.item-requerido {
+    color: darkred;
+    font-size: 10px;
+}
