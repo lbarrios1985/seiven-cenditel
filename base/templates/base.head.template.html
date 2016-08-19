@@ -1,0 +1,43 @@
+{% load static from staticfiles %}
+{% load i18n %}
+<head>
+	<meta charset="UTF-8">
+	<title>{% trans 'Sistema Estadístico Integral de Venezuela - (SEIVEN)' %}</title>
+	<meta name="robots" content="NOINDEX, NOFOLLOW">
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1" name="viewport">
+	<meta content="text/html;charset=utf-8" http-equiv="content-type">
+	<meta name="description" content="{% trans 'Sistema Estadístico Integral de Venezuela - (SEIVEN)' %}">
+	<meta name="author" content="Ing. Roldan Vargas (roldandvg at cenditel.gob.ve)">
+	<meta name="author" content="{% trans 'Centro Nacional de Desarrollo e Investigación en Tecnologías Libres (CENDITEL)' %}">
+	<link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.png' %}" />
+	<!-- Bootstrap (requerido) -->
+	<link href="{% static 'tools/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+	<!-- font Awesome (requerido) -->
+    <link href="{% static 'tools/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css" />
+    <!-- Ionicons (requerido) -->
+    <link href="{% static 'tools/ionicons/css/ionicons.min.css' %}" rel="stylesheet" type="text/css" />
+    <!-- Include template AdminLTE (requerido) -->
+    <link rel="stylesheet" type="text/css" href="{% static 'tools/AdminLTE/css/AdminLTE.min.css' %}">
+    <link rel="stylesheet" href="{% static 'tools/AdminLTE/css/skins/skin-blue.css' %}">
+    <!-- fileinput plugin (requerido) -->
+    <link rel="stylesheet" href="{% static 'tools/bootstrap-fileinput/css/fileinput.min.css' %}">
+    <!-- select2 plugin (requerido) -->
+    <link rel="stylesheet" type="text/css" href="{% static 'tools/select2/css/select2.min.css' %}" media="all">
+    <!-- Bootstrap-switch (requerido) -->
+    <link rel="stylesheet" href="{% static 'tools/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css' %}"/>
+    <!-- DataTables (requerido) -->
+    <link rel="stylesheet" href="{% static 'tools/datatables/extensions/TableTools/css/dataTables.tableTools.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'tools/datatables/css/dataTables.bootstrap.css' %}"/>
+    <link rel="stylesheet" href="{% static 'tools/datatables/extensions/Responsive/css/dataTables.responsive.css' %}"/>
+    <!-- Datepicker (requerido) -->
+    <link rel="stylesheet" href="{% static 'tools/datepicker/css/datepicker.css' %}"/>
+    <!-- Estilos personalizados (requerido) -->
+    <link rel="stylesheet" href="{% static 'css/app.css' %}"/>
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+    {% block extra_head %}{% endblock %}
+</head>

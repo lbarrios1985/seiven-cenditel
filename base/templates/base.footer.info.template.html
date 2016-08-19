@@ -1,0 +1,66 @@
+{% load static from staticfiles %}
+{% load i18n %}
+<footer class="section section-primary footer-info">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4><i class="glyphicon glyphicon-screenshot"></i> {% trans 'DIRECCION' %}</h4>
+                        <ul class="footer-descripcion">
+                            <li>Av. Ministerio. Edificio x</li>
+                            <li>Piso x. Caracas Distrito Capital</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-12">
+                        <h4><i class="fa fa-phone-square"></i> {% trans 'TELEFONO' %}</h4>
+                        <ul class="footer-descripcion">
+                            <li>+(58)-212-000000</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4><i class="ionicon ion-email"></i> {% trans 'CORREO ELECTRONICO' %}</h4>
+                        <ul class="footer-descripcion">
+                            <li>soportesigesic@sigesic.gob.ve</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-12">
+                        <h4><i class="ionicon ion-clock"></i> {% trans 'HORARIO DE ATENCION' %}</h4>
+                        <ul class="footer-descripcion">
+                            <li>8:00am a 12:00m</li>
+                            <li>2:00pm a 4:00pm</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="row">
+                <h4>
+                    <div class="col-md-4">
+                        <img src="{% static 'img/logo.png' %}" class="center-block img-responsive" style="max-height: 40px;">
+                    </div>
+                    <div class="col-md-8">
+                        {% trans 'Ministerio del poder popular para' %}
+                    </div>
+                   </h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<footer class="section section-primary info-develop">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 hidden-xs text-center">
+                <p>
+                    Centro Nacional de Desarrollo e Investigacion en Tecnologias Libres - CENDITEL - GPLv2.&#160;
+                    &copy; Copyleft <span id="year-info-develop">2016</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>

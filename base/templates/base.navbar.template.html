@@ -1,0 +1,60 @@
+{% load static from staticfiles %}
+{% load i18n %}
+{% load l10n %}
+<header class="main-header">
+    <!-- Logo -->
+    <a href="#" class="logo">
+    	<!-- mini logo for sidebar mini 50x50 pixels -->
+    	<span class="logo-mini">
+    		<img src="#" class="img-responsive" style="max-height: 40px;" alt="">
+    	</span>
+    	<!-- logo for regular state and mobile devices -->
+    	<span class="logo-lg">
+    		<img src="" class="img-responsive" style="max-height: 40px;" alt="SEIVEN">
+    	</span>
+    </a>
+
+    <!-- Header Navbar -->
+    <nav class="navbar navbar-default navbar-static-top" role="navigation">
+        {% if request.user.is_authenticated %}
+        	<!-- Sidebar toggle button-->
+        	<a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+        		<span class="sr-only">Toggle navigation</span>
+        	</a>
+        {% endif %}
+    	<div class="navbar-custom-menu">
+    		<ul class="nav navbar-nav">
+                <!-- Opciones generales para usuarios no autenticados -->
+                {% if not request.user.is_authenticated %}
+                    <li class="menu-anonimo">
+                        <a href="#">
+                            <span>
+                                <i class="fa fa-sign-in"></i>&#160;
+                                {% trans 'Ingresar' %}
+                            </span>
+                        </a>
+                    </li>
+                    <li class="menu-anonimo">
+                        <a href="#">
+                            <span class="">
+                                <i class="fa fa-pencil-square-o"></i>&#160;
+                                {% trans 'Registrarse' %}
+                            </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <span class="">{% trans 'Acerca de' %}</span>
+                        </a>
+                    </li>
+                {% endif %}
+
+
+                {% if request.user.is_authenticated %}
+                    <!-- Opciones para usuarios autenticados -->
+
+                {% endif %}
+    		</ul>
+    	</div>
+    </nav>
+</header>

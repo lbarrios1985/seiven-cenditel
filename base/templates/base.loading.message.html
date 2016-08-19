@@ -1,0 +1,50 @@
+{% load static from staticfiles %}
+{% load i18n %}
+{# Dialogo modal para mostrar un mensaje de espera al usuario #}
+<div class="modal fade" id="mensaje_espera" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">{% trans 'Cargando datos' %}...</h4>
+            </div>
+            <div class="modal-body">
+                <img src="{% static 'img/loading_spin.svg' %}" alt="{% trans 'imagen cargando' %}"
+                     class="img-responsive" style="margin: 0 auto; max-height: 50px; max-width: 50px;">
+                <p>{% trans 'Los datos solicitados se están cargando. Por favor espere' %}...</p>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    /** Variable que construye la función que permite mostrar u ocultar el mensaje de espera */
+    var cargando;
+    cargando = cargando || (function () {
+        var pleaseWaitDiv = $('#mensaje_espera');
+        return {
+            showPleaseWait: function() {
+                pleaseWaitDiv.modal();
+            },
+            hidePleaseWait: function () {
+                pleaseWaitDiv.modal('hide');
+            }
+        };
+    })();
+
+    /** Evento que se ejecuta cuando se envía la petición AJAX y muestra el mensaje de espera */
+    $(document).ajaxSend(function(event, request, settings) {
+        cargando.showPleaseWait();
+    });
+
+    /** Evento que se ejecuta cuando una perición AJAX se a completado y oculta el mensaje de espera  */
+    $(document).ajaxComplete(function(event, request, settings) {
+        cargando.hidePleaseWait();
+    });
+
+    /** Evento que se ejecuta al cargar una página del sistema para mostrar el mensaje de espera */
+    cargando.showPleaseWait();
+
+    /** Evento que se ejecuta cuando una página ha sido cargada totalmente para ocultar el mensaje de espera */
+    $(document).ready(function() {
+        cargando.hidePleaseWait();
+    });
+</script>
