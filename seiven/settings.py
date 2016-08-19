@@ -58,10 +58,14 @@ if DEBUG:
     JQUERY_URL = ''
 
 ## Listado de aplicaciones del projecto
-PROJECT_APPS = []
+PROJECT_APPS = [
+    'base',
+    'usuario'
+]
 
 ## Listado de aplicaciones cargadas por el sistema
-INSTALLED_APPS = [PREREQ_APPS+PROJECT_APPS]
+INSTALLED_APPS = PREREQ_APPS + PROJECT_APPS
+
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
