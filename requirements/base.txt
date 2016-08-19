@@ -1,0 +1,20 @@
+#
+###### Archivo de requerimientos basicos de bibliotecas de python ######
+#
+Django>=1.9.5,<1.10
+psycopg2
+django-simple-captcha
+#
+###### Requerimientos para el tratamiento de archivos de carga masiva ######
+#
+pyexcel>=0.2.2
+pyexcel-io>=0.2.0
+pyexcel-ods3>=0.2.0
+pyexcel-text>=0.2.2
+pyexcel-webio>=0.0.7
+pyexcel-xls>=0.2.0
+pyexcel-xlsx>=0.2.0
+xlrd>=1.0.0
+xlutils>=2.0.0
+xlwt>=1.1.2
+xlwt-future>=0.8.0

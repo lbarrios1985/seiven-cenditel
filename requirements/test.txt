@@ -1,0 +1,4 @@
+#
+###### Archivo de requerimientos para entornos de pruebas ######
+#
+-r base.txt

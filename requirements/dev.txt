@@ -1,0 +1,10 @@
+#
+###### Archivo de requerimientos para entornos de desarrollo ######
+#
+-r base.txt
+ipython
+django-extensions
+isort
+Sphinx
+django-debug-toolbar
+pygraphviz
