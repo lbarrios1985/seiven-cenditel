@@ -27,7 +27,7 @@
                 <!-- Opciones generales para usuarios no autenticados -->
                 {% if not request.user.is_authenticated %}
                     <li class="menu-anonimo">
-                        <a href="#">
+                        <a href="{% url 'acceso' %}">
                             <span>
                                 <i class="fa fa-sign-in"></i>&#160;
                                 {% trans 'Ingresar' %}
@@ -35,7 +35,7 @@
                         </a>
                     </li>
                     <li class="menu-anonimo">
-                        <a href="#">
+                        <a href="{% url 'registro' %}">
                             <span class="">
                                 <i class="fa fa-pencil-square-o"></i>&#160;
                                 {% trans 'Registrarse' %}

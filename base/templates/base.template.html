@@ -25,13 +25,13 @@
 						</ol>
 					</section>
 				{% else %}
-					{% include 'base.acceso.template.html' %}
+					{% block contenido %}{% include 'base.acceso.template.html' %}{% endblock %}
 				{% endif %}
 
 				<!-- seccion para el contenido del sistema -->
 				<section class="content" style="padding:auto 0;">
 					<div class="row">
-                        {% block contenido %}{% endblock %}
+
 	      			</div>
 				</section>
 

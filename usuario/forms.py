@@ -53,6 +53,7 @@ class AutenticarForm(TipoDocumentoForm, ClaveForm, CaptchaForm):
     class Meta:
         fields = ['tipo_documento', 'clave', 'captcha']
 
+
 @python_2_unicode_compatible
 class OlvidoClaveForm(TipoDocumentoForm, CorreoForm, CaptchaForm):
     """!
