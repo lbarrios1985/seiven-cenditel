@@ -16,45 +16,85 @@
 
     <!-- Header Navbar -->
     <nav class="navbar navbar-default navbar-static-top" role="navigation">
-        {% if request.user.is_authenticated %}
-        	<!-- Sidebar toggle button-->
-        	<a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
-        		<span class="sr-only">Toggle navigation</span>
-        	</a>
-        {% endif %}
-    	<div class="navbar-custom-menu">
-    		<ul class="nav navbar-nav">
-                <!-- Opciones generales para usuarios no autenticados -->
-                {% if not request.user.is_authenticated %}
-                    <li class="menu-anonimo">
-                        <a href="{% url 'acceso' %}">
-                            <span>
-                                <i class="fa fa-sign-in"></i>&#160;
-                                {% trans 'Ingresar' %}
-                            </span>
-                        </a>
-                    </li>
-                    <li class="menu-anonimo">
-                        <a href="{% url 'registro' %}">
-                            <span class="">
-                                <i class="fa fa-pencil-square-o"></i>&#160;
-                                {% trans 'Registrarse' %}
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <span class="">{% trans 'Acerca de' %}</span>
-                        </a>
-                    </li>
-                {% endif %}
-
-
-                {% if request.user.is_authenticated %}
-                    <!-- Opciones para usuarios autenticados -->
-
-                {% endif %}
-    		</ul>
-    	</div>
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#seiven-navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="collapse navbar-collapse" id="seiven-navbar">
+            <div class="navbar-custom-menu">
+                <ul class="nav navbar-nav">
+                    {% if not request.user.is_authenticated %}
+                        {# Opciones generales para usuarios no autenticados #}
+                        <li class="menu-anonimo">
+                            <a href="{% url 'acceso' %}">
+                                <span>
+                                    <i class="fa fa-sign-in"></i>&#160;
+                                    {% trans 'Ingresar' %}
+                                </span>
+                            </a>
+                        </li>
+                        <li class="menu-anonimo">
+                            <a href="{% url 'registro' %}">
+                                <span class="">
+                                    <i class="fa fa-pencil-square-o"></i>&#160;
+                                    {% trans 'Registrarse' %}
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <span class="">{% trans 'Acerca de' %}</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        {# Opciones para usuarios autenticados #}
+                        <li>
+                            <a href="#">
+                                <span class="">
+                                    <i class="fa fa-home"></i>&#160;
+                                    {% trans 'Inicio' %}
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <span class="">
+                                    <i class="fa fa-user"></i>&#160;
+                                    {% trans 'Mi Cuenta' %}
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <span class="">
+                                    <i class="fa fa-folder-open"></i>&#160;
+                                    {% trans 'Gestión de Datos' %}
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <span class="">
+                                    <i class="fa fa-dashboard"></i>&#160;
+                                    {% trans 'Alertas' %}
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <span class="">
+                                    <i class="fa fa-sign-in"></i>&#160;
+                                    {% trans 'Salir' %}
+                                </span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
     </nav>
 </header>
