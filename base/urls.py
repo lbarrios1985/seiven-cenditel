@@ -15,7 +15,7 @@ from django.conf.urls import url, patterns
 
 
 urlpatterns = [
-    url(r'^inicio/$', 'base.views.inicio', name='inicio'),
+
 ]
 
 

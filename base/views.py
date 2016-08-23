@@ -22,7 +22,7 @@ __licence__ = "GNU Public License v2"
 __revision__ = ""
 __docstring__ = "DoxyGen"
 
-
+@login_required
 def inicio(request):
     """!
     Función que permite cargar la pantalla de inicio del sistema
