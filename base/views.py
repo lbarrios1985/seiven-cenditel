@@ -38,6 +38,4 @@ def inicio(request):
     if request.user.is_authenticated:
         form = AutenticarForm()
 
-    print(form)
-
     return render_to_response('base.template.html', {'form': form}, context_instance=RequestContext(request))
