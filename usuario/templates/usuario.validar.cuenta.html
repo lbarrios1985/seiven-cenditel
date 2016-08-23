@@ -1,0 +1,66 @@
+{% extends 'base.template.html' %}
+{% load  i18n %}
+{% block extra_footer %}
+    <script type="text/javascript">
+        function countdown(sec) {
+            sec--;
+
+            if (sec > -1) {
+                $('#countdown').text(sec);
+                setTimeout("countdown(" + sec + ")", 1000);
+            }
+            else {
+                {% if login_url %}
+                    window.location.href = '{{ login_url }}';
+                {% endif %}
+            }
+        }
+
+        $(document).ready(function(evt) {
+            var sec = parseInt($("#countdown").text());
+
+            setTimeout("countdown(" + sec + ")", 1000);
+        });
+    </script>
+{% endblock %}
+{% block contenido %}
+    <div class="box box-primary box-registro" style="padding:20px">
+        <div class="box-header with-border">
+            <h3 class="box-title">{% trans 'Verificación de Registro' %}</h3>
+        </div>
+        <div class="box-body">
+            <p>{% trans 'Enlace' %} {% if not verificado %}{% trans 'no' %} {% endif %}{% trans 'verificado' %}</p>
+            <p>{{ mensaje }}</p>
+            {% if verificado %}
+                <p>
+                    {% trans 'Usted será redireccionado a la página de autenticación del sistema' %}
+                    {% trans 'en' %}
+                    <span id="countdown">10</span>
+                    {% trans 'segundo(s)' %}.
+                    {% trans 'Por favor espere...' %}
+                </p>
+            {% else %}
+                <p>{% trans 'El enlace no pudo ser verificado. Por favor pruebe lo siguiente:' %}</p>
+                <ul>
+                    <li>{% trans 'Verifique errores ortográficos o tipográficos en el enlace' %}.</li>
+                    <li>{% trans 'La dirección del enlace no ha sido utilizada anteriormente' %}.</li>
+                    <li>{% trans 'Actualmente se encuentre registrado en el sistema' %}.</li>
+                </ul>
+                <p>
+                    {% blocktrans %}
+                        Si ha intentado abrir el enlace, probablemente su cuenta ya se encuentre activa en el sistema.
+                        Intente acceder con su número de R.I.F. y contraseña.
+                    {% endblocktrans %}
+                </p>
+                <p>
+                    {% trans 'Si usted no esta seguro de la causa de validación, por favor envíe un correo a' %}
+                    <a href="mailto:{{ emailapp|safe }}">{{ emailapp|safe }}</a>
+                    {% trans 'para solicitar ayuda' %}.
+                </p>
+                <p class="text-right">
+                    <a href="{% url 'acceso' %}" class="btn btn-sm btn-primary">{% trans 'ir a acceso' %}</a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

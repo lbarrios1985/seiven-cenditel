@@ -20,4 +20,8 @@ urlpatterns = [
     url(r'^login/?$', 'usuario.views.acceso', name='acceso'),
     url(r'^logout/?$', 'usuario.views.salir', name='salir'),
     url(r'^registro/$', RegistroCreate.as_view(), name='registro'),
+    url(r'^olvido-clave/$', 'usuario.views.olvido_clave', name='olvido_clave'),
+    url(r'^confirm/?$', 'usuario.views.confirmar_registro', name='confirmar_registro'),
+    url(r'^confirm-modificar-clave/?$', 'usuario.views.confirmar_modificar_clave', name='confirmar_modificar_clave'),
+    url(r'^modificar-clave/?$', 'usuario.views.modificar_clave', name='modificar_clave'),
 ]

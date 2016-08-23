@@ -29,8 +29,8 @@ from django.template import RequestContext
 from django.views.generic import CreateView, UpdateView, ListView
 from django.utils.translation import ugettext_lazy as _
 
-from base.constant import REGISTRO_MESSAGE, EMAIL_SUBJECT_REGISTRO
-from base.functions import enviar_correo
+from base.constant import REGISTRO_MESSAGE, EMAIL_SUBJECT_REGISTRO, CADUCIDAD_LINK_REGISTRO
+from base.functions import enviar_correo, calcular_diferencia_fechas
 from .forms import AutenticarForm, RegistroForm, OlvidoClaveForm, ModificarClaveForm, PerfilForm
 
 import logging
@@ -118,6 +118,168 @@ def salir(request):
         logger.info("El usuario [%s] salio del sistema" % user)
 
     return HttpResponseRedirect(urlresolvers.reverse("inicio"))
+
+
+def olvido_clave(request):
+    """!
+    Funcion que gestiona el envío de enlace para la modificación de la contraseña
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 06-05-2016
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Redirecciona al usuario a la pagina de acceso al sistema
+    """
+
+    form = OlvidoClaveForm()
+
+    if request.method == "POST":
+        form = OlvidoClaveForm(data=request.POST)
+
+        if form.is_valid():
+            username = "%s%s%s" % (
+                request.POST['rif_0'], request.POST['rif_1'], request.POST['rif_2']
+            )
+
+            correo = request.POST['correo']
+
+            usr = User.objects.get(username=username)
+
+            ## Asigna un enlace de verificación para el olvido de clave
+            link = request.build_absolute_uri("%s?userid=%s&key=%s" % (
+                urlresolvers.reverse('usuario.views.confirmar_modificar_clave'),
+                username, hash_user(usr, is_reset=True).decode()
+            ))
+
+            administrador, admin_email = '', ''
+            if settings.ADMINS:
+                administrador = settings.ADMINS[0][0]
+                admin_email = settings.ADMINS[0][1]
+
+            ## Indica si el correo electrónico fue enviado
+            enviado = enviar_correo(usr.email, 'usuario.olvido.clave.mail', EMAIL_SUBJECT_REGISTRO, {
+                'link': link, 'emailapp': settings.EMAIL_FROM, 'administrador': administrador,
+                'admin_email': admin_email
+            })
+
+            if not enviado:
+                logger.warning(
+                    str(_("Ocurrió un inconveniente al enviar el correo de recuperación de clave al usuario [%s]")
+                        % username)
+                )
+            else:
+                form = OlvidoClaveForm()
+                messages.info(request, _("Se le ha enviado, al correo electrónico indicado, la información necesaria "
+                                         "para la modificación de la contraseña"))
+
+    return render_to_response('usuario.recuperar.clave.html', {'form': form}, context_instance=RequestContext(request))
+
+
+def confirmar_modificar_clave(request):
+    """!
+    Función que permite confirmar el enlace enviado al usuario para la modificación de contraseña
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 06-05-2016
+    @param request <b>{object}</b> Objeto que contiene la petición
+    @return Devuelve un mensje al usuario indicando el estatus de la validación del enlace
+    """
+    userid = request.GET.get('userid', None)
+    key = request.GET.get('key', None)
+    verificado = False
+    mensaje = str(_("El usuario ha sido verificado"))
+    modificar_clave_url = None
+
+    if userid and key and User.objects.filter(username=userid):
+        user = User.objects.get(username=userid)
+        if calcular_diferencia_fechas(user.date_joined) <= CADUCIDAD_LINK_REGISTRO:
+            if key.strip() == hash_user(user, is_reset=True).decode():
+                modificar_clave_url = "%s?userid=%s&key=%s" % (
+                    urlresolvers.reverse('modificar_clave'), user.username, hash_user(user, is_reset=True)
+                )
+                verificado = True
+            else:
+                mensaje = str(_("El usuario no puede ser verificado"))
+        else:
+            mensaje = str(_("El enlace utilizado expiró. Contacte al administrador del sistema."))
+
+    return render_to_response('usuario.validar.olvido.clave.html', {
+        'verificado': verificado, 'emailapp': settings.EMAIL_FROM, 'mensaje': mensaje,
+        'modificar_clave_url': modificar_clave_url
+    }, context_instance=RequestContext(request))
+
+
+def modificar_clave(request):
+    """!
+    Funcion que gestiona la modificación de contraseña
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 06-05-2016
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Redirecciona al usuario a la pagina de autenticación del sistema
+    """
+    form = ModificarClaveForm()
+    username = request.GET.get('userid', None)
+
+    if request.method == "POST":
+        form = ModificarClaveForm(data=request.POST)
+
+        if form.is_valid():
+            user = User.objects.get(username=username)
+            user.set_password(request.POST['clave'])
+            user.save()
+            if UserProfile.objects.filter(user=user):
+                perfil = UserProfile.objects.get(user=user)
+                perfil.fecha_modpass = datetime.now()
+                perfil.save()
+            messages.info(request, _("Su contraseña ha sido modificada correctamente"))
+
+            logger.info(str(_("El usuario [%s] modificó su contraseña por olvido") % username))
+            return HttpResponseRedirect(urlresolvers.reverse("acceso"))
+
+    return render_to_response('usuario.modificar.clave.html', {'form': form, 'fortaleza_clave': True},
+                              context_instance=RequestContext(request))
+
+
+def confirmar_registro(request):
+    """!
+    Función que permite confirmar el enlace enviado al usuario durante el registro
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 02-05-2016
+    @param request <b>{object}</b> Objeto que contiene la petición
+    @return Devuelve un mensje al usuario indicando el estatus de la validación del enlace
+    """
+    userid = request.GET.get('userid', None)
+    key = request.GET.get('key', None)
+    verificado = False
+    mensaje = str(_("El usuario ha sido verificado"))
+    login_url = None
+
+    if userid and key and User.objects.filter(username=userid):
+        user = User.objects.get(username=userid)
+        if calcular_diferencia_fechas(user.date_joined) <= CADUCIDAD_LINK_REGISTRO:
+            if key.strip() == hash_user(user, is_new_user=True).decode():
+                user.is_active = True
+                user.save()
+                login_url = "%s?userid=%s&key=%s" % (
+                    urlresolvers.reverse('acceso'), user.username, hash_user(user, is_new_user=True)
+                )
+                verificado = True
+            else:
+                mensaje = str(_("El usuario no puede ser verificado"))
+        else:
+            mensaje = str(_("El enlace utilizado expiró. Contacte al administrador del sistema."))
+
+    return render_to_response(
+        'usuario.validar.cuenta.html', {
+            'verificado': verificado, 'emailapp': settings.EMAIL_FROM, 'mensaje': mensaje, 'login_url': login_url
+        },
+        context_instance=RequestContext(request)
+    )
 
 
 class RegistroCreate(SuccessMessageMixin, CreateView):
