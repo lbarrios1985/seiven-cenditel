@@ -50,3 +50,6 @@ REGISTRO_MESSAGE = '%s %s %s (spam) %s %s' % \
                           "la aplicación en la libreta de direcciones de su cuenta de correo para que en futuras "
                           "ocasiones no sea filtrado. En caso contrario contacte al administrador del sistema")),
                     str(admin_email))
+
+## Días de caducidad para el enlace de registro de usuarios
+CADUCIDAD_LINK_REGISTRO = 1
