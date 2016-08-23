@@ -16,9 +16,9 @@
 				{% if request.user.is_authenticated %}
 					<!-- header del contenido -->
 					<section class="content-header">
-						<h1>{% block content_header_title %}{% trans 'Entrada' %}{% endblock %}</h1>
+						<h1>{% block content_header_title %}{% trans 'INICIO' %}{% endblock %}</h1>
 						<ol class="breadcrumb">
-                                <li><a href="#">{% trans 'Inicio' %}</a></li>
+                                <li><a href="{% url 'inicio' %}">{% trans 'Inicio' %}</a></li>
                             {% block content_header_roadmap %}
                                 <li class="active">{% block active_link %}{% trans 'Pag. actual' %}{% endblock %}</li>
                             {% endblock %}
@@ -31,7 +31,7 @@
 				<!-- seccion para el contenido del sistema -->
 				<section class="content" style="padding:auto 0;">
 					<div class="row">
-
+                        {% if request.user.is_authenticated %}{% block content %}{% endblock %}{% endif %}
 	      			</div>
 				</section>
 
