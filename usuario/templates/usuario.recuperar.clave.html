@@ -1,0 +1,23 @@
+{% extends 'base.template.html' %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% comment %}{% block box_acceso_titulo %}{% trans 'Recuperar Contraseña' %}{% endblock %}{% endcomment %}
+{% block contenido %}
+    <div class="col-sm-6 col-sm-offset-3">
+        {% include 'base.tipo.documento.input.html' %}
+    </div>
+    <div class="col-sm-6 col-sm-offset-3">
+        {% include 'base.correo.input.html' %}
+    </div>
+    <div class="col-sm-6 col-sm-offset-3">
+        {% include 'base.captcha.input.html' %}
+    </div>
+{% endblock %}
+{% comment %}
+{% block box_acceso_botones %}
+    <button type="submit" class="btn btn-primary btn-sm" data-toggle="tooltip"
+            title="{% trans 'Presione el botón para enviarle un correo con el acceso a la modificación de su contraseña' %}">
+        {% trans 'Recuperar' %}
+    </button>
+{% endblock %}
+{% endcomment %}

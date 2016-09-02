@@ -72,7 +72,7 @@ class ClaveForm(forms.Form):
     clave = CharField(
         label=_("Contraseña:"), max_length=30, widget=PasswordInput(attrs={
             'class': 'form-control input-sm', 'placeholder': _("contraseña de acceso"), 'data-toggle': 'tooltip',
-            'title': _("Indique la contraseña de acceso al sistema"), 'size': '28',
+            'title': _("Indique la contraseña de acceso al sistema"),
             'onkeyup': 'passwordStrength(this.value)'
         })
     )
@@ -112,7 +112,7 @@ class CaptchaForm(forms.Form):
     captcha = CaptchaField(
         label=_("Captcha:"), widget=CaptchaTextInput(attrs={
             'class': 'form-control input-sm', 'placeholder': _("texto de la imagen"),
-            'style': 'min-width: 0; width: auto; display: inline;', 'data-toggle': 'tooltip',
+            'data-toggle': 'tooltip',
             'title': _("Indique el texto de la imagen")
         })
     )

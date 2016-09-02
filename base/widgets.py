@@ -45,14 +45,14 @@ class TipoDocumentoWidget(MultiWidget):
         widgets = (
             Select(
                 attrs={
-                    'class': 'select2 form-control', 'data-toggle': 'tooltip',
+                    'class': 'select2 form-control input-sm', 'data-toggle': 'tooltip',
                     'title': _("Seleccione el tipo de documento (cédula o pasaporte)")
                 }, choices=TIPO_DOCUMENTO_IDENTIFICACION
             ),
             TextInput(
                 attrs={
-                    'class': 'form-control text-center', 'placeholder': '00000000', 'data-mask': '00000000',
-                    'data-toggle': 'tooltip', 'maxlength': '8', 'size': '7', 'data-rule-required': 'true',
+                    'class': 'form-control text-center input-sm', 'placeholder': '00000000', 'data-mask': '00000000',
+                    'data-toggle': 'tooltip', 'maxlength': '8', 'data-rule-required': 'true', 'size': '7',
                     'title': _("Indique el número de R.I.F., si es menor a 8 dígitos complete con ceros a la izquierda")
                 }
             )

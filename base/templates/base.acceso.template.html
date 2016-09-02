@@ -7,71 +7,71 @@
     <div class="col-md-6">
         {% csrf_token %}
         <div class="box box-primary text-center">
-            <form action="{% url 'acceso' %}" method="post" role="form">
-                <div class="box-header with-border text-left">
-                    <h3 class="box-title">{% block box_acceso_titulo %}{% trans 'Acceso' %}{% endblock %}</h3>
-                </div>
+            <div class="box-header with-border text-left">
+                <h3 class="box-title">{% block box_acceso_titulo %}{% trans 'Acceso' %}{% endblock %}</h3>
+            </div>
+            <form action="{% url 'acceso' %}" method="post" class="form-horizontal" role="form">
                 <div class="box-body">
                     {% csrf_token %}
-
-                    <div class="form-group {% if form.tipo_documento.errors %}has-error{% endif %} {% if form.tipo_documento.required %}has-feedback{% endif %}">
-                        <label class="col-md-3 col-xs-3 col-sm-3 control-label text-left" for="{{ form.tipo_documento.auto_id }}">
-                            {{ form.tipo_documento.label }}
-                        </label>
-                        <div class="col-md-9 col-xs-9 col-sm-9 text-left">
-                            <div class="form-inline">
+                    {% block box_acceso_campos %}
+                        {% with tp_doc_error='' clave_error='' captcha_error='' %}
+                        {% with tp_doc_req='' clave_req='' captcha_req='' %}
+                        {% comment %}
+                        {% for key, value in form.errors.items %}
+                            {% if key == 'tipo_documento' %}
+                                {% with tp_doc_error=' has-error' %}
+                            {% endif %}
+                        {% endfor %}
+                        {% for key, value in form.required.items %}{{ key }}==>{{ value }}{% endfor %}
+                        {% endcomment %}
+                        <div class="form-group form-inline text-left{{ tp_doc_error }}
+                                    {% if form.tipo_documento.errors %}
+                                        has-error
+                                    {% endif %}
+                                    {% if form.tipo_documento.required %}
+                                        has-feedback
+                                    {% endif %}">
+                            <label for="{{ form.tipo_documento.auto_id }}" class="col-sm-4 control-label">
+                                {{ form.tipo_documento.label }}
+                            </label>
+                            <div class="col-sm-8">
                                 {{ form.tipo_documento }}
                                 <i class="ion ion-ios-medical item-requerido"></i>
+                                {% include 'base.form.errors.html' with form_errors=form.tipo_documento.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
                             </div>
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    {% include 'base.form.errors.html' with form_errors=form.tipo_documento.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
+                        </div>
+
+
+
+                        <div class="form-group {% if form.tipo_documento.errors %}has-error{% endif %} {% if form.tipo_documento.required %}has-feedback{% endif %}">
+                            <label class="col-md-3 col-xs-3 col-sm-3 control-label text-left" for="{{ form.tipo_documento.auto_id }}">
+                                {{ form.tipo_documento.label }}
+                            </label>
+                            <div class="col-md-9 col-xs-9 col-sm-9 text-left">
+                                <div class="form-inline">
+                                    {{ form.tipo_documento }}
+                                    <i class="ion ion-ios-medical item-requerido"></i>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        {% include 'base.form.errors.html' with form_errors=form.tipo_documento.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="form-group {% if form.clave.errors %}has-error{% endif %} {% if form.clave.required %}has-feedback{% endif %}">
-                        <label class="col-md-3 col-xs-3 col-sm-3 control-label text-left" for="{{ form.clave.auto_id }}">
-                            {{ form.clave.label }}
-                        </label>
-                        <div class="col-md-9 col-xs-9 col-sm-9 text-left">
-                            <div class="form-inline">
-                                {{ form.clave }}
-                                <i class="ion ion-ios-medical item-requerido"></i>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    {% include 'base.form.errors.html' with form_errors=form.clave.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
-                                </div>
+
+
+
+                        <div class="form-group">
+                            <div class="col-sm-12 col-md-12">
+                                <a href="{% url 'olvido_clave' %}" data-toggle="tooltip"
+                                   title="{% trans 'Presione para generar una nueva contraseña de acceso' %}">
+                                    {% trans '¿Olvidó su contraseña?' %}
+                                </a>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="form-group {% if form.captcha.errors %}has-error{% endif %} {% if form.captcha.required %}has-feedback{% endif %}">
-                        <label class="col-md-3 col-xs-3 col-sm-3 control-label text-left" for="{{ form.captcha.auto_id }}">
-                            {{ form.captcha.label }}
-                        </label>
-                        <div class="col-md-9 col-xs-9 col-sm-9 text-left">
-                            <div class="form-inline">
-                                {{ form.captcha }}
-                                <i class="ion ion-ios-medical item-requerido"></i>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    {% include 'base.form.errors.html' with form_errors=form.captcha.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <a href="{% url 'olvido_clave' %}" data-toggle="tooltip"
-                           title="{% trans 'Presione para generar una nueva contraseña de acceso' %}">
-                            {% trans '¿Olvidó su contraseña?' %}
-                        </a>
-                    </div>
-
+                    {% endblock %}
                 </div>
                 <div class="box-footer text-right">
                     <button type="submit" class="btn btn-primary btn-sm" data-toggle="tooltip"

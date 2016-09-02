@@ -1,3 +1,7 @@
+h1, h2, h3, h4, h5, h6 {
+    font-weight: bold !important;
+}
+
 .content-wrapper,
 .right-side {
   background-color: #ffffff !important;
@@ -52,4 +56,33 @@
 .item-requerido {
     color: darkred;
     font-size: 10px;
+}
+
+.modulo-economico, .modulo-productivo, .modulo-social {
+    color: #ffffff;
+}
+.modulo-economico img, .modulo-productivo img, .modulo-social img {
+    max-height: 100px;
+    max-width: 100px;
+}
+.modulo-economico {
+    background-color: #41B9B7 !important;
+}
+
+.modulo-productivo {
+    background-color: #C2031D !important;
+}
+
+.modulo-social {
+    background-color: #42535C !important;
+}
+
+.row-modulos {
+    margin-top: 5%;
+}
+
+@media (min-width: 1024px) {
+    .row-modulos > [class*="col-"] {
+        padding: 0 100px;
+    }
 }

@@ -1,0 +1,7 @@
+<div class="form-group {% if form.correo.errors %}has-error{% endif %}">
+    <div>{{ form.correo.label_tag }}</div>
+    <div class="form-inline">
+        {{ form.correo }}<i class="ion ion-ios-medical item-requerido"></i>
+    </div>
+    {% include 'base.form.errors.html' with form_errors=form.correo.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
+</div>

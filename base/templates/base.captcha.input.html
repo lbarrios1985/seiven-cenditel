@@ -1,0 +1,12 @@
+{% load i18n %}
+<div class="form-group {% if form.captcha.errors %}has-error{% endif %}">
+    <div>{{ form.captcha.label_tag }}</div>
+    <div class="form-inline">
+        {{ form.captcha }}
+        <i class="glyphicon glyphicon-refresh js-captcha-refresh inline" data-toggle="tooltip"
+           title="{% trans 'Presione para recargar la imagen del captcha' %}"></i>
+        <i class="ion ion-ios-medical item-requerido-nomargin inline" data-toggle="tooltip"
+           title="{% trans 'Este campo es obligatorio' %}"></i>
+    </div>
+    {% include 'base.form.errors.html' with form_errors=form.captcha.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
+</div>

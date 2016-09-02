@@ -1,0 +1,9 @@
+{% load i18n %}
+<div class="form-group {% if form.tipo_documento.errors %}has-error{% endif %}">
+    <div>{{ form.tipo_documento.label_tag }}</div>
+    <div class="form-inline">
+        {{ form.tipo_documento }}<i class="ion ion-ios-medical item-requerido" data-toggle="tooltip"
+                         title="{% trans 'Este campo es obligatorio' %}"></i>
+    </div>
+    {% include 'base.form.errors.html' with form_errors=form.tipo_documento.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
+</div>
