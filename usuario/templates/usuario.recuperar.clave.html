@@ -3,21 +3,47 @@
 {% load static from staticfiles %}
 {% comment %}{% block box_acceso_titulo %}{% trans 'Recuperar Contraseña' %}{% endblock %}{% endcomment %}
 {% block contenido %}
-    <div class="col-sm-6 col-sm-offset-3">
-        {% include 'base.tipo.documento.input.html' %}
-    </div>
-    <div class="col-sm-6 col-sm-offset-3">
-        {% include 'base.correo.input.html' %}
-    </div>
-    <div class="col-sm-6 col-sm-offset-3">
-        {% include 'base.captcha.input.html' %}
+    <div class="row content-login">
+        {% if alert %}
+            <div class="col-md-12 box-half-center">
+                <div class="alert alert-success">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <strong>{% trans 'Éxito' %}!</strong> {{ alert }}
+                </div>
+            </div>
+        {% endif %}
+        <div class="col-md-12 box-half-center">
+            <div class="box box-primary">
+                <div class="box-header with-border"><h3 class="box-title">{% trans 'Recuperar contraseña' %}</h3></div>
+                <form action="{% url 'olvido_clave' %}" method="post" class="form-horizontal" role="form">
+                    {% csrf_token %}
+                    <div class="panel-body separador-lateral">
+
+                       <div class="row">
+                           <div class="col-md-12">
+                               {% include 'base.tipo.documento.input.html' %}
+                           </div>
+                       </div>
+                       <div class="row">
+                           <div class="col-md-12">
+                               {% include 'base.correo.input.html' %}
+                           </div>
+                       </div>
+                       <div class="row">
+                           <div class="col-md-12">
+                               {% include 'base.captcha.input.html' %}
+                           </div>
+                       </div>
+
+
+                    </div>
+                    <div class="panel-footer text-right separador-lateral">
+                        <div class="form-group">
+                           <button type="submit" class="btn btn-primary">{% trans 'Recuperar' %}</button>
+                       </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 {% endblock %}
-{% comment %}
-{% block box_acceso_botones %}
-    <button type="submit" class="btn btn-primary btn-sm" data-toggle="tooltip"
-            title="{% trans 'Presione el botón para enviarle un correo con el acceso a la modificación de su contraseña' %}">
-        {% trans 'Recuperar' %}
-    </button>
-{% endblock %}
-{% endcomment %}

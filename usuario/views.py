@@ -132,13 +132,14 @@ def olvido_clave(request):
     """
 
     form = OlvidoClaveForm()
+    alert = None
 
     if request.method == "POST":
         form = OlvidoClaveForm(data=request.POST)
 
         if form.is_valid():
-            username = "%s%s%s" % (
-                request.POST['rif_0'], request.POST['rif_1'], request.POST['rif_2']
+            username = "%s%s" % (
+                request.POST['tipo_documento_0'], request.POST['tipo_documento_1']
             )
 
             correo = request.POST['correo']
@@ -169,10 +170,12 @@ def olvido_clave(request):
                 )
             else:
                 form = OlvidoClaveForm()
+                alert = _("Se le ha enviado, al correo electrónico indicado, la información necesaria para la "
+                          "modificación de la contraseña")
                 messages.info(request, _("Se le ha enviado, al correo electrónico indicado, la información necesaria "
                                          "para la modificación de la contraseña"))
 
-    return render_to_response('usuario.recuperar.clave.html', {'form': form}, context_instance=RequestContext(request))
+    return render_to_response('usuario.recuperar.clave.html', {'form': form, 'alert': alert}, context_instance=RequestContext(request))
 
 
 def confirmar_modificar_clave(request):

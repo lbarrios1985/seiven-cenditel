@@ -1,0 +1,17 @@
+Este correo fue enviado por el registro de usuarios del Sistema Estadístico Integral de Venezuela (SEIVEN).
+
+¿Usted ha olvidado su contraseña?
+
+A continuación se ha generado un enlace en el cual podrá modificar su contraseña, recuerde que tiene 24 horas para
+hacerlo, de lo contrario deberá solicitar una nueva recuperación de contraseña.
+
+{{ link|safe }}
+
+Si usted cree que este correo le llego por error, por favor notifiquelo al administrador del sistema lo antes posible
+y elimine el presente correo inmediatamente.
+
+Equipo SEIVEN
+
+Administrador del Sistema
+{{ administrador|safe }}
+{{ admin_email|safe }}
