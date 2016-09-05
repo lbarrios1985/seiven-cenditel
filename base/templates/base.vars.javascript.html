@@ -1,0 +1,30 @@
+{% load i18n %}
+{% load static from staticfiles %}
+<script type="text/javascript">
+    /**
+     * @brief Sección de variables comúnes
+     *
+     * @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+     * @copyright GNU/GPLv2
+     * @date 05-09-2016
+     */
+
+    // Mensajes de fortaleza de contraseña
+    /// Mensaje de contraseña muy débil
+    var MSG_PASSWD_MUY_DEBIL = "{% trans 'Muy débil' %}";
+
+    /// Mensaje de contraseña débil
+    var MSG_PASSWD_DEBIL = "{% trans 'Débil' %}";
+
+    /// Mensaje de contraseña regular
+    var MSG_PASSWD_REGULAR = "{% trans 'Regular' %}";
+
+    /// Mensaje de contraseña buena
+    var MSG_PASSWD_BUENA = "{% trans 'Buena' %}";
+
+    /// Mensaje de contraseña fuerte
+    var MSG_PASSWD_FUERTE = "{% trans 'Fuerte' %}";
+
+    /// Mensaje de contraseña muy fuerte
+    var MSG_PASSWD_MUY_FUERTE = "{% trans 'Muy fuerte' %}";
+</script>
