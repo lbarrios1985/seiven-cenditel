@@ -18,8 +18,8 @@ from django.utils import six
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
-from base.constant import TIPO_DOCUMENTO_IDENTIFICACION
-from base.models import Institucion, Ocupacion
+from base.constant import TIPO_DOCUMENTO_IDENTIFICACION, OCUPACION, NIVELES_ACCESO
+from base.models import Institucion
 
 
 @python_2_unicode_compatible
@@ -45,14 +45,18 @@ class UserProfile(models.Model):
         ]
     )
 
+    ## Contiene datos de la ocupación, oficio o profesión del usuario
+    ocupacion = models.CharField(max_length=2, choices=OCUPACION[1:])
+
     ## Establece la última fecha de modificación de la contraseña, lo cual permite establecer la caducidad de la misma
     fecha_modpass = models.DateTimeField(null=True, help_text=_("Fecha en la que se modificó la contraseña"))
 
     ## Contiene datos sobre la institucion a la cual pertenece el usuario
     institucion = models.ForeignKey(Institucion, help_text=_("Institucion de la cual proviene el usuario"))
 
-    ## Contiene datos de la ocupación, oficio o profesión del usuario
-    ocupacion = models.ForeignKey(Ocupacion, help_text=_("Ocupación del usuario"))
+    ## Indica el nivel de acceso que tiene el usuario
+    nivel_acceso = models.PositiveSmallIntegerField(choices=NIVELES_ACCESO, null=True)
+
 
     ## Establece la relación entre el usuario y el perfil
     user = models.OneToOneField(

@@ -76,6 +76,7 @@ def acceso(request):
     @return Redirecciona al usuario a la pagina correspondiente en caso de que se haya autenticado o no
     """
     form = AutenticarForm()
+    alert = None
 
     if request.method == "POST":
         form = AutenticarForm(data=request.POST)
@@ -84,21 +85,24 @@ def acceso(request):
             username = "%s%s" % (
                 request.POST['tipo_documento_0'], request.POST['tipo_documento_1']
             )
+            if User.objects.filter(username=username, is_active=True):
+                usuario = authenticate(username=username, password=str(request.POST['clave']))
 
-            usuario = authenticate(username=username, password=str(request.POST['clave']))
+                if usuario is not None:
+                    login(request, usuario)
+                    usr = User.objects.get(username=username)
+                    usr.last_login = datetime.now()
+                    usr.save()
+                else:
+                    logger.error(str(_("Error al autenticar el usuario [%s]") % username))
 
-            if usuario is not None:
-                login(request, usuario)
-                usr = User.objects.get(username=username)
-                usr.last_login = datetime.now()
-                usr.save()
+                logger.info(str(_("Acceso al sistema por el usuario [%s]") % username))
+                return HttpResponseRedirect(urlresolvers.reverse("inicio"))
             else:
-                logger.error(str(_("Error al autenticar el usuario [%s]") % username))
+                alert = str(_("Su usuario se encuentra inactivo. Intente más tarde..."))
 
-            logger.info(str(_("Acceso al sistema por el usuario [%s]") % username))
-            return HttpResponseRedirect(urlresolvers.reverse("inicio"))
 
-    return render_to_response('base.template.html', {'form': form}, context_instance=RequestContext(request))
+    return render_to_response('base.template.html', {'form': form, 'alert': alert}, context_instance=RequestContext(request))
 
 
 def salir(request):
@@ -266,8 +270,16 @@ def confirmar_registro(request):
         user = User.objects.get(username=userid)
         if calcular_diferencia_fechas(user.date_joined) <= CADUCIDAD_LINK_REGISTRO:
             if key.strip() == hash_user(user, is_new_user=True).decode():
-                user.is_active = True
-                user.save()
+                if UserProfile.objects.filter(user=user, ocupacion='ES'):
+                    # Si es estudiante el sistema activa automáticamente el usuario,
+                    # en caso contrario debe esperar por la confirmación del administrador
+                    user.is_active = True
+                    user.save()
+                    user_profile = UserProfile.objects.get(user=user)
+                    user_profile.nivel_acceso = 3
+                else:
+                    mensaje = str(_("El enlace fue verificado y el administrador esta evaluando sus credenciales para "
+                                    "otorgarle un nivel de acceso al sistema"))
                 login_url = "%s?userid=%s&key=%s" % (
                     urlresolvers.reverse('acceso'), user.username, hash_user(user, is_new_user=True)
                 )
@@ -320,8 +332,8 @@ class RegistroCreate(SuccessMessageMixin, CreateView):
         self.object.email = form.cleaned_data['correo']
         self.object.save()
 
-        ## Crea el perfil del usuario
 
+        ## Crea el perfil del usuario
         UserProfile.objects.create(
             tipo_documento=form.cleaned_data['tipo_documento'],
             institucion=form.cleaned_data['institucion'],

@@ -15,7 +15,7 @@ from __future__ import unicode_literals, absolute_import
 import logging
 
 from base.constant import (
-    TIPO_DOCUMENTO_IDENTIFICACION, TIPO_DOCUMENTO_IDENTIFICACION_LIST, FORTALEZA_CONTRASENHA
+    TIPO_DOCUMENTO_IDENTIFICACION, TIPO_DOCUMENTO_IDENTIFICACION_LIST, FORTALEZA_CONTRASENHA, OCUPACION
 )
 from base.fields import TipoDocumentoField
 from base.forms import TipoDocumentoForm, ClaveForm, CaptchaForm, CorreoForm
@@ -24,11 +24,12 @@ from django import forms
 from django.contrib.auth.models import User
 from django.forms import (
     ModelForm, TextInput, EmailInput, CharField, EmailField, PasswordInput,
-    Select, ModelChoiceField)
+    Select, ModelChoiceField, ChoiceField
+)
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
-from base.models import Institucion, Ocupacion
+from base.models import Institucion
 from base.widgets import TipoDocumentoWidgetReadOnly
 from .models import UserProfile
 
@@ -194,11 +195,11 @@ class RegistroForm(ModelForm):
     )
 
     ## Listado de instituciones registradas en el sistema
-    ocupacion = ModelChoiceField(
-        label=_(u"Ocupacion"), queryset=Ocupacion.objects.all(), empty_label=_(u"Seleccione..."),
+    ocupacion = ChoiceField(
+        label=_(u"Ocupacion"), choices=OCUPACION,
         widget=Select(attrs={
             'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
-            'title': _(u"Seleccione la ocupación o profesión del usuario a registrar")
+            'title': _(u"Seleccione la ocupación del usuario a registrar")
         })
     )
 
