@@ -6,17 +6,25 @@
         <ol class="carousel-indicators">
             <li data-target="#carousel-menu" data-slide-to="0" class="active"></li>
             <li data-target="#carousel-menu" data-slide-to="1"></li>
+            <li data-target="#carousel-menu" data-slide-to="2"></li>
         </ol>
-        <div class="carousel-inner">
+        <div class="carousel-inner carousel-menu-gral">
             <div class="item active">
-                <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" class='img-responsive'>
+                <img src="http://placehold.it/1580x200" class='img-responsive'>
                 <div class="carousel-caption">
                     <h2>Title</h2>
                     <p>Description</p>
                 </div>
             </div>
             <div class="item">
-                <img src="" class='img-responsive'>
+                <img src="http://placehold.it/1580x200" class='img-responsive'>
+                <div class="carousel-caption">
+                    <h2>Title</h2>
+                    <p>Description</p>
+                </div>
+            </div>
+            <div class="item">
+                <img src="http://placehold.it/1580x200" class='img-responsive'>
                 <div class="carousel-caption">
                     <h2>Title</h2>
                     <p>Description</p>
@@ -35,7 +43,7 @@
     <h2>{% trans 'Sección - Información' %}</h2>
     <div class="row row-modulos">
         <div class="col-md-4">
-            <div class="small-box modulo-economico">
+            <div class="small-box modulo-economico opt-mnu-gral">
                 <div class="inner">
                     <div class="row">
                         <div class="col-md-6">
@@ -57,11 +65,36 @@
                         </div>
                     </div>
                 </div>
-                <a href="#" class="small-box-footer"><i class="fa fa-sort-desc"></i></a>
-              </div>
+                <a href="#" class="small-box-footer" onclick="show_hide('opt-economico')"><i class="fa fa-sort-desc"></i></a>
+            </div>
+            <div class="smal-box modulo-economico" id="opt-economico" style="display:none">
+                <div class="inner">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <a href="#">{% trans 'Cargar Datos' %}</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <a href="#">{% trans 'Consultar Datos' %}</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <a href="#">{% trans 'Indicadores' %}</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <a href="#">{% trans 'Reportes' %}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+
         <div class="col-md-4">
-            <div class="small-box modulo-productivo">
+            <div class="small-box modulo-productivo opt-mnu-gral">
                 <div class="inner">
                     <div class="row">
                         <div class="col-md-6">
@@ -82,11 +115,30 @@
                         </div>
                     </div>
                 </div>
-                <a href="#" class="small-box-footer"><i class="fa fa-sort-desc"></i></a>
-              </div>
+                <a href="#" class="small-box-footer" onclick="show_hide('opt-productivo')"><i class="fa fa-sort-desc"></i></a>
+            </div>
+            <div class="smal-box modulo-productivo" id="opt-productivo" style="display:none">
+                <div class="inner">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <a href="#">{% trans 'Consultar Datos' %}</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <a href="#">{% trans 'Indicadores' %}</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <a href="#">{% trans 'Reportes' %}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="col-md-4">
-            <div class="small-box modulo-social">
+            <div class="small-box modulo-social opt-mnu-gral">
                 <div class="inner">
                     <div class="row">
                         <div class="col-md-6">
@@ -112,8 +164,32 @@
                         </div>
                     </div>
                 </div>
-                <a href="#" class="small-box-footer"><i class="fa fa-sort-desc"></i></a>
-              </div>
+                <a href="#" class="small-box-footer" onclick="show_hide('opt-social')"><i class="fa fa-sort-desc"></i></a>
+            </div>
+            <div class="smal-box modulo-social" id="opt-social" style="display:none">
+                <div class="inner">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <a href="#">{% trans 'Cargar Datos' %}</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <a href="#">{% trans 'Consultar Datos' %}</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <a href="#">{% trans 'Indicadores' %}</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <a href="#">{% trans 'Reportes' %}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
