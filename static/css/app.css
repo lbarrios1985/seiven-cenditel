@@ -58,6 +58,41 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 10px;
 }
 
+.separador-lateral {
+    padding: 10px 25px;
+}
+
+/* Alerts */
+.alert-success {
+    background-color: #34AF76 !important;
+}
+
+/* Panels */
+.box-half-center {
+    padding: 0 30%;
+}
+
+/* Captcha */
+.js-captcha-refresh {
+    cursor: pointer;
+}
+
+/* Opciones del menú general */
+.opt-mnu-gral {
+    min-height: 225px !important;
+}
+.opt-mnu-gral a.small-box-footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+.carousel-menu-gral {
+    min-height: 200px;
+    max-height: 200px;
+}
+.row-modulos {
+    margin-top: 15px;
+}
 .modulo-economico, .modulo-productivo, .modulo-social {
     color: #ffffff;
 }
@@ -77,13 +112,31 @@ h1, h2, h3, h4, h5, h6 {
     background-color: #42535C !important;
 }
 
-.row-modulos {
-    margin-top: 5%;
+.modulo-economico a, .modulo-productivo a, .modulo-social a {
+    text-decoration: none;
+    color: inherit;
+    padding-left: 25px;
 }
 
-/* Captcha */
-.js-captcha-refresh {
-    cursor: pointer;
+.flex, .flex > div[class*='col-'] {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    flex:1 0 auto;
+}
+
+.row-same-height {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  flex-wrap: wrap;
+}
+.row-same-height > [class*='col-'] {
+  display: flex;
+  flex-direction: column;
 }
 
 /* Estilos para fortaleza de contraseña */
