@@ -8,3 +8,5 @@ isort
 Sphinx
 django-debug-toolbar
 pygraphviz
+# Servidor de desarrollo para protocolo https
+django-sslserver
