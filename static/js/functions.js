@@ -32,3 +32,17 @@ function passwordStrength(password) {
     document.getElementById("passwordStrength").className = "strength" + score;
     document.getElementById("passwordMeterId").value = score;
 }
+
+/**
+ * @brief Funcion que permite mostrar u ocultar elementos con su id
+ * @param element_id Cadena de texto con el id del elemento a mostrar u ocultar
+ */
+function show_hide(element_id) {
+    var element = $("#" + element_id);
+    if (element.is(":visible")) {
+        element.hide();
+    }
+    else {
+        element.show();
+    }
+}
