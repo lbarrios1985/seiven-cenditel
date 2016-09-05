@@ -6,11 +6,11 @@
     <a href="#" class="logo">
     	<!-- mini logo for sidebar mini 50x50 pixels -->
     	<span class="logo-mini">
-    		<img src="#" class="img-responsive" style="max-height: 40px;" alt="">
+    		<img src="" class="img-responsive" style="max-height: 40px;" alt="">
     	</span>
     	<!-- logo for regular state and mobile devices -->
     	<span class="logo-lg">
-    		<img src="" class="img-responsive" style="max-height: 40px;" alt="SEIVEN">
+            <img src="" class="img-responsive" style="max-height: 40px;" alt="SEIVEN">
     	</span>
     </a>
 
@@ -53,7 +53,7 @@
                     {% else %}
                         {# Opciones para usuarios autenticados #}
                         <li>
-                            <a href="#">
+                            <a href="{% url 'inicio' %}">
                                 <span class="">
                                     <i class="fa fa-home"></i>&#160;
                                     {% trans 'Inicio' %}

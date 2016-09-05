@@ -53,3 +53,19 @@ REGISTRO_MESSAGE = '%s %s %s (spam) %s %s' % \
 
 ## Días de caducidad para el enlace de registro de usuarios
 CADUCIDAD_LINK_REGISTRO = 1
+
+## Listado de ocupaciones
+OCUPACION = (
+    ("", _("Seleccione...")),
+    ("EP", _("Empleado Público")),
+    ("PR", _("Profesor")),
+    ("ES", _("Estudiante")),
+    ("OT", _("Otros"))
+)
+
+## Niveles de acceso al sistema
+NIVELES_ACCESO = (
+    (1, _("Nivel I")),
+    (2, _("Nivel II")),
+    (3, _("Nivel III"))
+)

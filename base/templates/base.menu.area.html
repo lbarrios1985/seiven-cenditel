@@ -1,0 +1,95 @@
+{% extends 'base.template.html' %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% block content_header_title %}{% trans 'ECONOMIA' %}{% endblock %}
+{% block active_link %}{% trans 'Economía' %}{% endblock %}
+{% block content %}
+    <div class="panel panel-primary menu">
+    	  <div class="panel-heading">
+    			<h3 class="panel-title">{% trans 'Economía' %}</h3>
+    	  </div>
+    	  <div class="panel-body">
+    			<div class="row">
+                    <div class="col-md-3">
+                        <img src="{% static 'img/area-economica/real.png' %}" alt="{% trans 'Área económica real' %}"
+                             class="img-area img-responsive" data-list="list_real">
+                        <ul id="list_real" style="display: none">
+                            <li>
+                                <a href="#">{% trans 'Precios' %}</a>
+                            </li>
+                            <li>
+                                <a href="#">{% trans 'Producto Interno Bruto' %}</a>
+                            </li>
+                            <li>
+                                <a href="#">{% trans 'Demanda Global' %}</a>
+                            </li>
+                            <li>
+                                <a href="#">{% trans 'Oferta Global' %}</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3">
+                        <img src="{% static 'img/area-economica/monetario-financiero.png' %}" alt="{% trans 'Área económica real' %}"
+                             class="img-area img-responsive" data-list="list_monetario_financiero">
+                        <ul id="list_monetario_financiero" style="display: none">
+                            <li>
+                                <a href="#">{% trans 'Agregados Monetarios' %}</a>
+                            </li>
+                            <li>
+                                <a href="#">{% trans 'Operaciones Interbancarias' %}</a>
+                            </li>
+                            <li>
+                                <a href="#">{% trans 'Tasa de Intéreses' %}</a>
+                            </li>
+                            <li>
+                                <a href="#">{% trans 'Instrumentos de Políticas' %}</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3">
+                        <img src="{% static 'img/area-economica/externo.png' %}" alt="{% trans 'Área económica real' %}"
+                             class="img-area img-responsive" data-list="list_externo">
+                        <ul id="list_externo" style="display: none">
+                            <li>
+                                <a href="#">{% trans 'Balanza Comercial' %}</a>
+                            </li>
+                            <li>
+                                <a href="#">{% trans 'Cuenta Capital' %}</a>
+                            </li>
+                            <li>
+                                <a href="#">{% trans 'Reservas - Tipo de Cambio' %}</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3">
+                        <img src="{% static 'img/area-economica/fiscal.png' %}" alt="{% trans 'Área económica real' %}"
+                             class="img-area img-responsive" data-list="list_fiscal">
+                        <ul id="list_fiscal" style="display: none">
+                            <li>
+                                <a href="#">{% trans 'Tributos' %}</a>
+                            </li>
+                            <li>
+                                <a href="#">{% trans 'Ingresos' %}</a>
+                            </li>
+                            <li>
+                                <a href="#">{% trans 'Gasto' %}</a>
+                            </li>
+                            <li>
+                                <a href="#">{% trans 'Endeudamiento' %}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+    	  </div>
+    </div>
+{% endblock %}
+{% block extra_footer %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('img').on('click', function() {
+                $("ul").hide();
+                show_hide($(this).attr('data-list'));
+            });
+        });
+    </script>
+{% endblock %}
