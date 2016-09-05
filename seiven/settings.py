@@ -52,6 +52,7 @@ if DEBUG:
     PREREQ_APPS += [
         'django_extensions',
         'debug_toolbar',
+        'sslserver', # Aplicación para ejecutar un servidor de desarrollo bajo el protocolo https
     ]
 
     ## Configuracion de parametros de django-debug-toolbar
@@ -272,6 +273,9 @@ CAPTCHA_BACKGROUND_COLOR = '#337AB7'
 CAPTCHA_FOREGROUND_COLOR = '#FFF'
 
 if DEBUG:
+    ## Si se encuentra en modo de desarrollo, la imagen de captcha no es requerida
+    CAPTCHA_TEST_MODE = True
+
     ## Elimina la imagen de ruido en el fondo del captcha cuando la aplicacion se encuentra en modo desarrollo
     CAPTCHA_NOISE_FUNCTIONS = ('captcha.helpers.noise_null',)
 
