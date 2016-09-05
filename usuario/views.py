@@ -310,7 +310,7 @@ class RegistroCreate(SuccessMessageMixin, CreateView):
         """
 
         self.object = form.save(commit=False)
-        self.object.username = form.cleaned_data['rif']
+        self.object.username = form.cleaned_data['tipo_documento']
         self.object.first_name = form.cleaned_data['nombre']
         self.object.last_name = form.cleaned_data['apellido']
         self.object.set_password(form.cleaned_data['password'])
@@ -318,14 +318,13 @@ class RegistroCreate(SuccessMessageMixin, CreateView):
         self.object.save()
 
         ## Crea el perfil del usuario
+
         UserProfile.objects.create(
-            nacionalidad=form.cleaned_data['tipo_documento'][0],
-            cedula=form.cleaned_data['tipo_documento'][1:],
-            cargo=form.cleaned_data['institucion'],
-            telefono=form.cleaned_data['ocupacion'],
+            tipo_documento=form.cleaned_data['tipo_documento'],
+            institucion=form.cleaned_data['institucion'],
+            ocupacion=form.cleaned_data['ocupacion'],
             user=self.object
         )
-
         ## Asigna un enlace de verificación en el registro de usuarios
         link = self.request.build_absolute_uri("%s?userid=%s&key=%s" % (
             urlresolvers.reverse('usuario.views.confirmar_registro'),

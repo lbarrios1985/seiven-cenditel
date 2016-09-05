@@ -1,0 +1,22 @@
+Gracias por registrarse
+
+Este correo fue enviado por el registro de usuarios del Sistema Estadístico Integral de Venezuela.
+
+Antes de utilizar su cuenta deberá activarla haciendo click en el enlace a continuación.
+
+{{ link|safe }}
+
+En caso de que por alguna razón el enlace no funcione, copie y pegue la dirección url en su navegador y proceda con la
+activación de su cuenta.
+
+Si usted cree que este correo es spam o no fue utilizado en el registro de usuarios del SEIVEN bajo su consentimiento,
+haga caso omiso del mismo y eliminelo inmediatamente.
+
+Recomendamos agregar el correo {{emailapp|safe}} a su lista de contacto para futuros correos enviados por el sistema y
+para que su proveedor de correo no lo archive como spam.
+
+Bienvenido al SEIVEN
+
+Administrador del Sistema
+{{ administrador|safe }}
+{{ admin_email|safe }}
