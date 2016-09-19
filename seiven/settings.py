@@ -94,10 +94,16 @@ ROOT_TEMPLATES = os.path.join(BASE_DIR, "templates")
 ## Directorio en donde se encuentran las plantillas del módulo base
 BASE_TEMPLATES = os.path.join(BASE_DIR, "base/templates")
 
+## Directorio en donde se encuentran las plantillas del módulo económico
+ECONOMICO_TEMPLATES = os.path.join(BASE_DIR, "economico/templates")
+
+## Directorio en donde se encuentran las plantillas del módulo de usuarios
+USUARIO_TEMPLATES = os.path.join(BASE_DIR, "usuario/templates")
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ROOT_TEMPLATES, BASE_TEMPLATES],
+        'DIRS': [ROOT_TEMPLATES, BASE_TEMPLATES, ECONOMICO_TEMPLATES, USUARIO_TEMPLATES],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
