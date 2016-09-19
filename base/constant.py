@@ -69,3 +69,40 @@ NIVELES_ACCESO = (
     (2, _("Nivel II")),
     (3, _("Nivel III"))
 )
+
+## Selección de Dominio de Precios
+DOMINIO_PRECIOS = (
+    ("", _("Seleccione...")),
+    ('N', _("Nacional")),
+    ("C", _("Ciudad"))
+)
+
+## Selección de Dominio de PIB
+DOMINIO_PIB = (
+    ("", _("Seleccione...")),
+    ('ED', _('Enfoque Demanda')),
+    ('EO', _('Enfoque Oferta'))
+)
+
+## Selección de Tipo de PIB
+TIPO_PIB = (
+    ('', _('Seleccione...')),
+    ('N', _('Nominal')),
+    ('R', _('Real'))
+)
+
+## Selección de Tipo de Demanda Global
+TIPO_DEMANDA_GLOBAL = (
+    ('', _('Seleccione...')),
+    ('DG', _('Demanda Global')),
+    ('FB', _('Formación Bruta'))
+)
+
+## Selección de Trimestres
+TRIMESTRES = (
+    ('', _('Seleccione...')),
+    ('1', _('I')),
+    ('2', _('II')),
+    ('3', _('III')),
+    ('4', _('IV'))
+)
