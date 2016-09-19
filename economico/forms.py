@@ -29,10 +29,10 @@ from base.constant import (
 
 
 """!
-Contiene el objeto que registra la vitacora de eventos del módulo base.
+Contiene el objeto que registra la vitacora de eventos del módulo económico.
 (configuración en el settings de la aplicación)
 """
-logger = logging.getLogger("base")
+logger = logging.getLogger("economico")
 
 
 @python_2_unicode_compatible
@@ -305,3 +305,133 @@ class MonetarioAgregadosForm(forms.Form):
             'title': _(u"Seleccione el año final")
         })
     )
+
+
+@python_2_unicode_compatible
+class MonetarioOperacionesInterbancariasForm(forms.Form):
+    """!
+    Clase que contiene el formulario para la carga de datos de Operaciones Interbancarias
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 19-09-2016
+    @version 1.0.0
+    """
+    pass
+
+
+@python_2_unicode_compatible
+class MonetarioTasasInteresForm(forms.Form):
+    """!
+    Clase que contiene el formulario para la carga de datos de Tasas de Interés
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 19-09-2016
+    @version 1.0.0
+    """
+    pass
+
+
+@python_2_unicode_compatible
+class MonetarioInstrumentoPoliticaForm(forms.Form):
+    """!
+    Clase que contiene el formulario para la carga de datos de Instrumentos de Políticas
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 19-09-2016
+    @version 1.0.0
+    """
+    pass
+
+
+@python_2_unicode_compatible
+class ExternoBalanzaComercialForm(forms.Form):
+    """!
+    Clase que contiene el formulario para la carga de datos de Balanza Comercial
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 19-09-2016
+    @version 1.0.0
+    """
+    pass
+
+
+@python_2_unicode_compatible
+class ExternoCuentaCapitalForm(forms.Form):
+    """!
+    Clase que contiene el formulario para la carga de datos de Cuentas de Capital
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 19-09-2016
+    @version 1.0.0
+    """
+    pass
+
+
+@python_2_unicode_compatible
+class ExternoReservaCambioForm(forms.Form):
+    """!
+    Clase que contiene el formulario para la carga de datos de Reservas - Tipo de Cambio
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 19-09-2016
+    @version 1.0.0
+    """
+    pass
+
+
+@python_2_unicode_compatible
+class FiscalTributosForm(forms.Form):
+    """!
+    Clase que contiene el formulario para la carga de datos de Tributos Fiscales
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 19-09-2016
+    @version 1.0.0
+    """
+    pass
+
+
+@python_2_unicode_compatible
+class FiscalIngresosForm(forms.Form):
+    """!
+    Clase que contiene el formulario para la carga de datos de Ingresos Fiscales
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 19-09-2016
+    @version 1.0.0
+    """
+    pass
+
+
+@python_2_unicode_compatible
+class FiscalGastoForm(forms.Form):
+    """!
+    Clase que contiene el formulario para la carga de datos de Gastos Fiscales
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 19-09-2016
+    @version 1.0.0
+    """
+    pass
+
+
+@python_2_unicode_compatible
+class FiscalEndeudamientoForm(forms.Form):
+    """!
+    Clase que contiene el formulario para la carga de datos de Endeudamiento Fiscal
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 19-09-2016
+    @version 1.0.0
+    """
+    pass
