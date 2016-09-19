@@ -28,11 +28,9 @@ from captcha.fields import CaptchaField, CaptchaTextInput
 from django import forms
 from django.forms import (
     ModelForm, TextInput, EmailInput, CharField, EmailField, PasswordInput,
-    Select
+    Select, MultiWidget, MultiValueField, ChoiceField
 )
 from django.contrib.auth.models import User
-from django.forms import MultiWidget, Select, TextInput, MultiValueField, ChoiceField, CharField
-from django.utils.translation import ugettext_lazy as _
 
 
 """!
