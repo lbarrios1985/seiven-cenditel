@@ -1,0 +1,72 @@
+{% extends 'base.template.html' %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% block content_header_title %}{% trans 'CARGAR DATOS' %}{% endblock %}
+{% block content_header_roadmap %}
+    <li><a href="{% url 'economico-cargar-datos' %}">{% trans 'Economía - Cargar Datos' %}</a></li>
+    <li class="active">{% block active_link %}{% trans 'Real - PIB' %}{% endblock %}</li>
+{% endblock %}
+{% block content %}
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h2 class="panel-title">{% trans 'Economía' %} - {% trans 'Real' %} - {% trans 'PIB' %}</h2>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <p>
+                        {% blocktrans %}
+                            Para cargar los datos asociados al <b>Producto Interno Bruto - PIB </b> seleccione el
+                            tipo, dominio y el año base.
+                        {% endblocktrans %}
+                    </p>
+                </div>
+            </div>
+            <div class="row separador-row">
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    <label for="{{ form.tipo.auto_id }}" class="control-label">{{ form.tipo.label }}</label>
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    {{ form.tipo }}
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    <label for="{{ form.dominio.auto_id }}" class="control-label">{{ form.dominio.label }}</label>
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    {{ form.dominio }}
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    <label for="{{ form.anho_base.auto_id }}" class="control-label">{{ form.anho_base.label }}</label>
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    {{ form.anho_base }}
+                </div>
+            </div>
+            <div class="row separador-row">
+            	<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2">
+                    <label class="control-label">{% trans 'Período' %}</label>
+            	</div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                    <label for="{{ form.periodo_anho_ini.auto_id }}" class="control-label">{{ form.periodo_anho_ini.label }}</label>
+            	</div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    {{ form.periodo_anho_ini }}
+            	</div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                    <label for="{{ form.periodo_anho_fin.auto_id }}" class="control-label">{{ form.periodo_anho_fin.label }}</label>
+            	</div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    {{ form.periodo_anho_fin }}
+            	</div>
+            </div>
+            <div class="row separador-row text-center">
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                	<h2><a href="#"><i class="fa fa-download"></i> {% trans 'Descargar archivo' %}</a></h2>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <h2><a href="#"><i class="fa fa-upload"></i> {% trans 'Cargar archivo' %}</a></h2>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
