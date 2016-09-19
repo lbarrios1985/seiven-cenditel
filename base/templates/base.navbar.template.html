@@ -74,13 +74,33 @@
                                 </span>
                             </a>
                         </li>
-                        <li>
-                            <a href="#">
-                                <span class="">
-                                    <i class="fa fa-folder-open"></i>&#160;
-                                    {% trans 'Gestión de Datos' %}
-                                </span>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="fa fa-folder-open"></i>&#160;{% trans 'Gestión de Datos' %}
                             </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="#">
+                                        {% trans 'Cargar Datos' %}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        {% trans 'Consultar Datos' %}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        {% trans 'Indicadores' %}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        {% trans 'Reportes' %}
+                                    </a>
+                                </li>
+                            </ul>
+
                         </li>
                         <li>
                             <a href="#">
