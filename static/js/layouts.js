@@ -1,6 +1,6 @@
 $(document).ready(function() {
     var select2 = $(".select2"), refresh_captcha = $('.js-captcha-refresh'),
-        input_captcha = $('input[name="captcha_1"]');
+        input_captcha = $('input[name="captcha_1"]'), input_fecha = $(".fecha");
 
     if (select2.length > 0) {
         select2.select2();
@@ -26,6 +26,12 @@ $(document).ready(function() {
             });
 
             return false;
+        });
+    }
+
+    if (input_fecha.length) {
+        var fecha = input_fecha.datepicker({
+            format: 'dd/mm/yyyy'
         });
     }
 });
