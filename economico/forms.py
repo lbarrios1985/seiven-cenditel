@@ -24,7 +24,7 @@ from django.forms import (
 )
 
 from base.constant import (
-    DOMINIO_PRECIOS, DOMINIO_PIB, TIPO_PIB, TIPO_DEMANDA_GLOBAL, TRIMESTRES
+    DOMINIO_PRECIOS, DOMINIO_PIB, DOMINIO_AGREGADO_MONETARIO, TIPO_PIB, TIPO_DEMANDA_GLOBAL, TRIMESTRES
 )
 
 
@@ -35,6 +35,7 @@ Contiene el objeto que registra la vitacora de eventos del módulo base.
 logger = logging.getLogger("base")
 
 
+@python_2_unicode_compatible
 class RealPreciosForm(forms.Form):
     """!
     Clase que contiene el formulario para la carga de datos de precios
@@ -100,6 +101,7 @@ class RealPreciosForm(forms.Form):
     )
 
 
+@python_2_unicode_compatible
 class RealPIBForm(forms.Form):
     """!
     Clase que contiene el formulario para la carga de datos de precios
@@ -156,6 +158,7 @@ class RealPIBForm(forms.Form):
     )
 
 
+@python_2_unicode_compatible
 class RealDemandaGlobalForm(forms.Form):
     """!
     Clase que contiene el formulario para la carga de datos de demanda global
@@ -214,6 +217,89 @@ class RealDemandaGlobalForm(forms.Form):
     ## Año final
     periodo_anho_fin = ChoiceField(
         label='', choices=(),
+        widget=Select(attrs={
+            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
+            'title': _(u"Seleccione el año final")
+        })
+    )
+
+
+@python_2_unicode_compatible
+class MonetarioAgregadosForm(forms.Form):
+    """!
+    Clase que contiene el formulario para la carga de datos de Agregados Monetarios
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 19-09-2016
+    @version 1.0.0
+    """
+
+    ## Dominio del registro
+    dominio = ChoiceField(
+        label=_(u"Dominio"), choices=DOMINIO_AGREGADO_MONETARIO,
+        widget=Select(attrs={
+            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
+            'title': _(u"Seleccione el dominio a registrar")
+        })
+    )
+
+    start_date = CharField(label=_('Desde'),max_length=10, widget=TextInput(attrs={
+        'class': 'form-control fecha', 'data-toggle': 'tooltip', 'title': _('Indique la fecha inicial'),
+    }))
+
+    end_date = CharField(label=_('Hasta'), max_length=10, widget=TextInput(attrs={
+        'class': 'form-control fecha', 'data-toggle': 'tooltip', 'title': _('Indique la fecha final')
+    }))
+
+    ## Semana inicial
+    periodo_semana_ini = ChoiceField(
+        label=_("Desde"), choices=(),
+        widget=Select(attrs={
+            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
+            'title': _(u"Seleccione la semana inicial")
+        })
+    )
+
+    ## Mes inicial
+    periodo_mes_ini = ChoiceField(
+        label=_("Desde"), choices=(),
+        widget=Select(attrs={
+            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
+            'title': _(u"Seleccione el mes inicial")
+        })
+    )
+
+    ## Año inicial
+    periodo_anho_ini = ChoiceField(
+        label=_("Desde"), choices=(),
+        widget=Select(attrs={
+            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
+            'title': _(u"Seleccione el año inicial")
+        })
+    )
+
+    ## Semana final
+    periodo_semana_fin = ChoiceField(
+        label=_("Hasta"), choices=(),
+        widget=Select(attrs={
+            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
+            'title': _(u"Seleccione la semana final")
+        })
+    )
+
+    ## Mes final
+    periodo_mes_fin = ChoiceField(
+        label=_("Hasta"), choices=(),
+        widget=Select(attrs={
+            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
+            'title': _(u"Seleccione el mes final")
+        })
+    )
+
+    ## Año final
+    periodo_anho_fin = ChoiceField(
+        label=_("Hasta"), choices=(),
         widget=Select(attrs={
             'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
             'title': _(u"Seleccione el año final")

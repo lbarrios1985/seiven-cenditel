@@ -17,7 +17,7 @@ from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 
 from .forms import (
-    RealPreciosForm, RealPIBForm, RealDemandaGlobalForm
+    RealPreciosForm, RealPIBForm, RealDemandaGlobalForm, MonetarioAgregadosForm
 )
 
 
@@ -81,3 +81,19 @@ def demanda_global(request):
     form = RealDemandaGlobalForm()
 
     return render_to_response('economico.demanda.global.html', {'form': form}, context_instance=RequestContext(request))
+
+
+@login_required
+def agregados_monetarios(request):
+    """!
+    Función que permite mostrar el furmulario para el registro de Agregados Monetarios
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 19-09-2016
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con el formulario de datos para el registro de Agregados Monetarios
+    """
+    form = MonetarioAgregadosForm()
+
+    return render_to_response('economico.agregados.monetarios.html', {'form': form}, context_instance=RequestContext(request))
