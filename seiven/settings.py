@@ -217,6 +217,15 @@ LOGGING = dict(version=1, disable_existing_loggers=True, formatters={
         'interval': 1,
         'backupCount': 52
     },
+    'economico': {
+        'class': 'logging.handlers.TimedRotatingFileHandler',
+        'level': 'DEBUG',
+        'formatter': 'std',
+        'filename': os.path.join(LOGS_PATH, 'economico.log'),
+        'when': 'w6',
+        'interval': 1,
+        'backupCount': 52
+    },
     'usuario': {
         'class': 'logging.handlers.TimedRotatingFileHandler',
         'level': 'DEBUG',
@@ -244,6 +253,11 @@ LOGGING = dict(version=1, disable_existing_loggers=True, formatters={
         'level': 'DEBUG',
         'handlers': ['base'],
         'qualname': 'base'
+    },
+    'economico': {
+        'level': 'DEBUG',
+        'handlers': ['economico'],
+        'qualname': 'economico'
     },
     'usuario': {
         'level': 'DEBUG',
