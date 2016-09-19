@@ -40,9 +40,3 @@ def inicio(request):
         return redirect('acceso')
 
     return render_to_response('base.template.html', {'form': form}, context_instance=RequestContext(request))
-
-
-@login_required
-def cargar_datos(request):
-
-    return render_to_response('base.menu.area.html', {}, context_instance=RequestContext(request))

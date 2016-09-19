@@ -15,7 +15,7 @@ from django.conf.urls import url, patterns
 
 
 urlpatterns = [
-url(r'^cargar-datos/?$', 'base.views.cargar_datos', name='cargar-datos'),
+
 ]
 
 
