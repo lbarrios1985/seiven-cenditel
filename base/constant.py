@@ -84,6 +84,15 @@ DOMINIO_PIB = (
     ('EO', _('Enfoque Oferta'))
 )
 
+## Selección de Dominio de Agregados Monetarios
+DOMINIO_AGREGADO_MONETARIO = (
+    ("", _("Seleccione...")),
+    ('RB', _('Reservas Bancarias')),
+    ('LM', _('Liquidez Monetaria')),
+    ('BMU', _('Base Monetaria Uso')),
+    ('BMF', _('Base Monetaria Fuente'))
+)
+
 ## Selección de Tipo de PIB
 TIPO_PIB = (
     ('', _('Seleccione...')),
