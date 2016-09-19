@@ -201,6 +201,14 @@ h1, h2, h3, h4, h5, h6 {
     visibility: hidden !important;
 }
 
+/* Navbar */
+#seiven-navbar li {
+    font-size: 12px;
+}
+.navbar-default, .main-header .logo {
+    background-color: #41B9B7 !important;
+}
+
 
 
 /**
