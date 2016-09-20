@@ -23,6 +23,12 @@ urlpatterns = [
     url(r'^cargar-datos/operaciones-interbancarias/$', 'economico.views.operaciones_interbancarias', name='economico-operaciones-interbancarias'),
     url(r'^cargar-datos/tasas-interes/$', 'economico.views.tasas_interes', name='economico-tasas-interes'),
     url(r'^cargar-datos/instrumentos-politica/$', 'economico.views.instrumento_politica', name='economico-instrumento-politica'),
+    url(r'^cargar-datos/balanza-comercial/$', 'economico.views.balanza_comercial', name='economico-balanza-comercial'),
+    url(r'^cargar-datos/reservas-tipo-cambio/$', 'economico.views.reservas_tipo_cambio', name='economico-reservas-tipo-cambio'),
+    url(r'^cargar-datos/tributos/$', 'economico.views.tributos', name='economico-tributos'),
+    url(r'^cargar-datos/ingresos/$', 'economico.views.ingresos', name='economico-ingresos'),
+    url(r'^cargar-datos/gastos/$', 'economico.views.gastos', name='economico-gastos'),
+    url(r'^cargar-datos/endeudamiento/$', 'economico.views.endeudamiento', name='economico-endeudamiento'),
 ]
 
 

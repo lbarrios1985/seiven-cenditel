@@ -51,13 +51,13 @@
                              class="img-area img-responsive" data-list="list_externo">
                         <ul id="list_externo" style="display: none">
                             <li>
-                                <a href="#">{% trans 'Balanza Comercial' %}</a>
+                                <a href="{% url 'economico-balanza-comercial' %}">{% trans 'Balanza Comercial' %}</a>
                             </li>
                             <li>
                                 <a href="#">{% trans 'Cuenta Capital' %}</a>
                             </li>
                             <li>
-                                <a href="#">{% trans 'Reservas - Tipo de Cambio' %}</a>
+                                <a href="{% url 'economico-reservas-tipo-cambio' %}">{% trans 'Reservas - Tipo de Cambio' %}</a>
                             </li>
                         </ul>
                     </div>
@@ -66,16 +66,16 @@
                              class="img-area img-responsive" data-list="list_fiscal">
                         <ul id="list_fiscal" style="display: none">
                             <li>
-                                <a href="#">{% trans 'Tributos' %}</a>
+                                <a href="{% url 'economico-tributos' %}">{% trans 'Tributos' %}</a>
                             </li>
                             <li>
-                                <a href="#">{% trans 'Ingresos' %}</a>
+                                <a href="{% url 'economico-ingresos' %}">{% trans 'Ingresos' %}</a>
                             </li>
                             <li>
-                                <a href="#">{% trans 'Gasto' %}</a>
+                                <a href="{% url 'economico-gastos' %}">{% trans 'Gasto' %}</a>
                             </li>
                             <li>
-                                <a href="#">{% trans 'Endeudamiento' %}</a>
+                                <a href="{% url 'economico-endeudamiento' %}">{% trans 'Endeudamiento' %}</a>
                             </li>
                         </ul>
                     </div>
@@ -88,9 +88,9 @@
         $(document).ready(function() {
             $('img').on('click', function() {
                 $("ul#list_real").hide();
-		$("ul#list_monetario_financiero").hide();
-		$("ul#list_externo").hide();
-		$("ul#list_fiscal").hide();
+                $("ul#list_monetario_financiero").hide();
+                $("ul#list_externo").hide();
+                $("ul#list_fiscal").hide();
 
                 show_hide($(this).attr('data-list'));
             });

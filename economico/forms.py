@@ -331,7 +331,7 @@ class RealPIBForm(TipoForm, AnhoBaseForm, DominioForm, AnhoIniForm, AnhoFinForm)
 
 
 @python_2_unicode_compatible
-class RealDemandaGlobalForm(AnhoBaseForm, AnhoIniForm, AnhoFinForm, TrimestreIniForm, TrimestreFinForm):
+class RealDemandaGlobalForm(AnhoBaseForm, AnhoIniForm, AnhoFinForm, TrimestreIniForm, TrimestreFinForm, TipoForm):
     """!
     Clase que contiene el formulario para la carga de datos de demanda global
 

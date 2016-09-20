@@ -15,10 +15,12 @@ from __future__ import unicode_literals
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
+from django.utils.translation import ugettext_lazy as _
 
 from .forms import (
     RealPreciosForm, RealPIBForm, RealDemandaGlobalForm, MonetarioAgregadosForm, MonetarioOperacionesInterbancariasForm,
-    MonetarioTasasInteresForm, MonetarioInstrumentoPoliticaForm
+    MonetarioTasasInteresForm, MonetarioInstrumentoPoliticaForm, ExternoBalanzaComercialForm, ExternoReservaCambioForm,
+    ExternoCuentaCapitalForm, FiscalForm
 )
 
 
@@ -109,7 +111,7 @@ def operaciones_interbancarias(request):
     @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
     @date 20-09-2016
     @param request <b>{object}</b> Objeto que obtiene la petición
-    @return Devuelve el response con el formulario de datos para el registro de Agregados Monetarios
+    @return Devuelve el response con el formulario de datos para el registro de Operaciones Interbancarias
     """
     form = MonetarioOperacionesInterbancariasForm()
 
@@ -127,7 +129,7 @@ def tasas_interes(request):
     @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
     @date 20-09-2016
     @param request <b>{object}</b> Objeto que obtiene la petición
-    @return Devuelve el response con el formulario de datos para el registro de Agregados Monetarios
+    @return Devuelve el response con el formulario de datos para el registro de Tasas de Interés
     """
     form = MonetarioTasasInteresForm()
 
@@ -143,8 +145,104 @@ def instrumento_politica(request):
     @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
     @date 20-09-2016
     @param request <b>{object}</b> Objeto que obtiene la petición
-    @return Devuelve el response con el formulario de datos para el registro de Agregados Monetarios
+    @return Devuelve el response con el formulario de datos para el registro de Instrumentos de Política
     """
     form = MonetarioInstrumentoPoliticaForm()
 
     return render_to_response('economico.instrumento.politicas.html', {'form': form}, context_instance=RequestContext(request))
+
+
+@login_required
+def balanza_comercial(request):
+    """!
+    Función que permite mostrar el furmulario para el registro de Balanza Comercial
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 20-09-2016
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con el formulario de datos para el registro de Balanza Comercial
+    """
+    form = ExternoBalanzaComercialForm()
+
+    return render_to_response('economico.balanza.comercial.html', {'form': form}, context_instance=RequestContext(request))
+
+
+@login_required
+def reservas_tipo_cambio(request):
+    """!
+    Función que permite mostrar el furmulario para el registro de Reservas - Tipo de Cambio
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 20-09-2016
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con el formulario de datos para el registro de Reservas - Tipo de Cambio
+    """
+    form = ExternoReservaCambioForm()
+
+    return render_to_response('economico.reservas.tipo.cambio.html', {'form': form}, context_instance=RequestContext(request))
+
+
+@login_required
+def tributos(request):
+    """!
+    Función que permite mostrar el furmulario para el registro de Tributos Fiscales
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 20-09-2016
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con el formulario de datos para el registro de Tributos Fiscales
+    """
+    form = FiscalForm()
+
+    return render_to_response('economico.fiscal.html', {'form': form, 'title': _('Tributos')}, context_instance=RequestContext(request))
+
+
+@login_required
+def ingresos(request):
+    """!
+    Función que permite mostrar el furmulario para el registro de Ingresos Fiscales
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 20-09-2016
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con el formulario de datos para el registro de Ingresos Fiscales
+    """
+    form = FiscalForm()
+
+    return render_to_response('economico.fiscal.html', {'form': form, 'title': _('Ingresos')}, context_instance=RequestContext(request))
+
+
+@login_required
+def gastos(request):
+    """!
+    Función que permite mostrar el furmulario para el registro de Gastos Fiscales
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 20-09-2016
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con el formulario de datos para el registro de Gastos Fiscales
+    """
+    form = FiscalForm()
+
+    return render_to_response('economico.fiscal.html', {'form': form, 'title': _('Gastos')}, context_instance=RequestContext(request))
+
+
+@login_required
+def endeudamiento(request):
+    """!
+    Función que permite mostrar el furmulario para el registro de Endeudamiento Fiscal
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 20-09-2016
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con el formulario de datos para el registro de Endeudamiento Fiscal
+    """
+    form = FiscalForm()
+
+    return render_to_response('economico.fiscal.html', {'form': form, 'title': _('Endeudamiento')}, context_instance=RequestContext(request))
