@@ -87,7 +87,11 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $('img').on('click', function() {
-                $("ul").hide();
+                $("ul#list_real").hide();
+		$("ul#list_monetario_financiero").hide();
+		$("ul#list_externo").hide();
+		$("ul#list_fiscal").hide();
+
                 show_hide($(this).attr('data-list'));
             });
         });
