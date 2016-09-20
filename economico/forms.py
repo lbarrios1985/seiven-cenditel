@@ -24,7 +24,8 @@ from django.forms import (
 )
 
 from base.constant import (
-    DOMINIO_PRECIOS, DOMINIO_PIB, DOMINIO_AGREGADO_MONETARIO, TIPO_PIB, TIPO_DEMANDA_GLOBAL, TRIMESTRES
+    DOMINIO_PRECIOS, DOMINIO_PIB, DOMINIO_AGREGADO_MONETARIO, TIPO_PIB, TIPO_DEMANDA_GLOBAL, TRIMESTRES, MESES,
+    DOMINIO_COMERCIAL, DOMINIO_CAMBIO
 )
 
 
@@ -36,24 +37,57 @@ logger = logging.getLogger("economico")
 
 
 @python_2_unicode_compatible
-class RealPreciosForm(forms.Form):
+class DominioForm(forms.Form):
     """!
-    Clase que contiene el formulario para la carga de datos de precios
+    Clase que contiene el campo común para la selección del dominio
 
     @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
     @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
-    @date 19-09-2016
+    @date 20-09-2016
     @version 1.0.0
     """
 
     ## Dominio del registro
     dominio = ChoiceField(
-        label=_(u"Dominio"), choices=DOMINIO_PRECIOS,
+        label=_(u"Dominio"), choices=(),
         widget=Select(attrs={
             'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
             'title': _(u"Seleccione el dominio a registrar")
         })
     )
+
+
+@python_2_unicode_compatible
+class TipoForm(forms.Form):
+    """!
+    Clase que contiene el campo común para la selección del tipo
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 20-09-2016
+    @version 1.0.0
+    """
+
+    ## Tipo de registro
+    tipo = ChoiceField(
+        label=_(u"Tipo"), choices=(),
+        widget=Select(attrs={
+            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
+            'title': _(u"Seleccione el tipo a registrar")
+        })
+    )
+
+
+@python_2_unicode_compatible
+class AnhoBaseForm(forms.Form):
+    """!
+    Clase que contiene el campo común para la selección del año base
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 20-09-2016
+    @version 1.0.0
+    """
 
     ## Año base a registrar
     anho_base = ChoiceField(
@@ -64,93 +98,84 @@ class RealPreciosForm(forms.Form):
         })
     )
 
+
+@python_2_unicode_compatible
+class MesIniForm(forms.Form):
+    """!
+    Clase que contiene el campo común para la selección del período del mes inicial
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 20-09-2016
+    @version 1.0.0
+    """
+
     ## Mes inicial
     periodo_mes_ini = ChoiceField(
-        label=_(u"Desde"), choices=(),
+        label=_(u"Desde"), choices=MESES,
         widget=Select(attrs={
             'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
             'title': _(u"Seleccione el mes inicial")
         })
     )
 
-    ## Año inicial
-    periodo_anho_ini = ChoiceField(
-        label='', choices=(),
-        widget=Select(attrs={
-            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
-            'title': _(u"Seleccione el año inicial")
-        })
-    )
+
+@python_2_unicode_compatible
+class MesFinForm(forms.Form):
+    """!
+    Clase que contiene el campo común para la selección del período del mes final
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 20-09-2016
+    @version 1.0.0
+    """
 
     ## Mes final
     periodo_mes_fin = ChoiceField(
-        label=_(u"Hasta"), choices=(),
+        label=_(u"Hasta"), choices=MESES,
         widget=Select(attrs={
             'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
             'title': _(u"Seleccione el mes final")
         })
     )
 
-    ## Año final
-    periodo_anho_fin = ChoiceField(
-        label='', choices=(),
-        widget=Select(attrs={
-            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
-            'title': _(u"Seleccione el año final")
-        })
-    )
-
 
 @python_2_unicode_compatible
-class RealPIBForm(forms.Form):
+class AnhoIniForm(forms.Form):
     """!
-    Clase que contiene el formulario para la carga de datos de precios
+    Clase que contiene el campo común para la selección del período del año inicial
 
     @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
     @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
-    @date 19-09-2016
+    @date 20-09-2016
     @version 1.0.0
     """
 
-    ## Tipo de PIB
-    tipo = ChoiceField(
-        label=_(u"Tipo"), choices=TIPO_PIB,
-        widget=Select(attrs={
-            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
-            'title': _(u"Seleccione el tipo de PIB a registrar")
-        })
-    )
-
-    ## Dominio del registro
-    dominio = ChoiceField(
-        label=_(u"Dominio"), choices=DOMINIO_PIB,
-        widget=Select(attrs={
-            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
-            'title': _(u"Seleccione el dominio a registrar")
-        })
-    )
-
-    ## Año base a registrar
-    anho_base = ChoiceField(
-        label=_(u"Año Base"), choices=(),
-        widget=Select(attrs={
-            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
-            'title': _(u"Seleccione el año base")
-        })
-    )
-
     ## Año inicial
     periodo_anho_ini = ChoiceField(
-        label=_("Desde"), choices=(),
+        label=_('Desde'), choices=(),
         widget=Select(attrs={
             'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
             'title': _(u"Seleccione el año inicial")
         })
     )
 
+
+@python_2_unicode_compatible
+class AnhoFinForm(forms.Form):
+    """!
+    Clase que contiene el campo común para la selección del período del año final
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 20-09-2016
+    @version 1.0.0
+    """
+
     ## Año final
     periodo_anho_fin = ChoiceField(
-        label=_("hasta"), choices=(),
+        label=_('Hasta'), choices=(),
         widget=Select(attrs={
             'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
             'title': _(u"Seleccione el año final")
@@ -159,33 +184,15 @@ class RealPIBForm(forms.Form):
 
 
 @python_2_unicode_compatible
-class RealDemandaGlobalForm(forms.Form):
+class TrimestreIniForm(forms.Form):
     """!
-    Clase que contiene el formulario para la carga de datos de demanda global
+    Clase que contiene el campo común para la selección del período del trimestre inicial
 
     @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
     @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
-    @date 19-09-2016
+    @date 20-09-2016
     @version 1.0.0
     """
-
-    ## Tipo de PIB
-    tipo = ChoiceField(
-        label=_(u"Tipo"), choices=TIPO_DEMANDA_GLOBAL,
-        widget=Select(attrs={
-            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
-            'title': _(u"Seleccione el tipo de Demanda Global a registrar")
-        })
-    )
-
-    ## Año base a registrar
-    anho_base = ChoiceField(
-        label=_(u"Año Base"), choices=(),
-        widget=Select(attrs={
-            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
-            'title': _(u"Seleccione el año base")
-        })
-    )
 
     ## Trimestre inicial
     periodo_trimestre_ini = ChoiceField(
@@ -196,14 +203,17 @@ class RealDemandaGlobalForm(forms.Form):
         })
     )
 
-    ## Año inicial
-    periodo_anho_ini = ChoiceField(
-        label='', choices=(),
-        widget=Select(attrs={
-            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
-            'title': _(u"Seleccione el año inicial")
-        })
-    )
+
+@python_2_unicode_compatible
+class TrimestreFinForm(forms.Form):
+    """!
+    Clase que contiene el campo común para la selección del período del trimestre final
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 20-09-2016
+    @version 1.0.0
+    """
 
     ## Trimestre final
     periodo_trimestre_fin = ChoiceField(
@@ -214,43 +224,17 @@ class RealDemandaGlobalForm(forms.Form):
         })
     )
 
-    ## Año final
-    periodo_anho_fin = ChoiceField(
-        label='', choices=(),
-        widget=Select(attrs={
-            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
-            'title': _(u"Seleccione el año final")
-        })
-    )
-
 
 @python_2_unicode_compatible
-class MonetarioAgregadosForm(forms.Form):
+class SemanaIniForm(forms.Form):
     """!
-    Clase que contiene el formulario para la carga de datos de Agregados Monetarios
+    Clase que contiene el campo común para la selección del período de la semana inicial
 
     @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
     @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
-    @date 19-09-2016
+    @date 20-09-2016
     @version 1.0.0
     """
-
-    ## Dominio del registro
-    dominio = ChoiceField(
-        label=_(u"Dominio"), choices=DOMINIO_AGREGADO_MONETARIO,
-        widget=Select(attrs={
-            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
-            'title': _(u"Seleccione el dominio a registrar")
-        })
-    )
-
-    start_date = CharField(label=_('Desde'),max_length=10, widget=TextInput(attrs={
-        'class': 'form-control fecha', 'data-toggle': 'tooltip', 'title': _('Indique la fecha inicial'),
-    }))
-
-    end_date = CharField(label=_('Hasta'), max_length=10, widget=TextInput(attrs={
-        'class': 'form-control fecha', 'data-toggle': 'tooltip', 'title': _('Indique la fecha final')
-    }))
 
     ## Semana inicial
     periodo_semana_ini = ChoiceField(
@@ -261,23 +245,17 @@ class MonetarioAgregadosForm(forms.Form):
         })
     )
 
-    ## Mes inicial
-    periodo_mes_ini = ChoiceField(
-        label=_("Desde"), choices=(),
-        widget=Select(attrs={
-            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
-            'title': _(u"Seleccione el mes inicial")
-        })
-    )
 
-    ## Año inicial
-    periodo_anho_ini = ChoiceField(
-        label=_("Desde"), choices=(),
-        widget=Select(attrs={
-            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
-            'title': _(u"Seleccione el año inicial")
-        })
-    )
+@python_2_unicode_compatible
+class SemanaFinForm(forms.Form):
+    """!
+    Clase que contiene el campo común para la selección del período de la semana final
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 20-09-2016
+    @version 1.0.0
+    """
 
     ## Semana final
     periodo_semana_fin = ChoiceField(
@@ -288,27 +266,106 @@ class MonetarioAgregadosForm(forms.Form):
         })
     )
 
-    ## Mes final
-    periodo_mes_fin = ChoiceField(
-        label=_("Hasta"), choices=(),
-        widget=Select(attrs={
-            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
-            'title': _(u"Seleccione el mes final")
-        })
-    )
 
-    ## Año final
-    periodo_anho_fin = ChoiceField(
-        label=_("Hasta"), choices=(),
-        widget=Select(attrs={
-            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
-            'title': _(u"Seleccione el año final")
-        })
-    )
+@python_2_unicode_compatible
+class StartDateForm(forms.Form):
+    """!
+    Clase que contiene el campo común para la fecha inicial de consulta
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 20-09-2016
+    @version 1.0.0
+    """
+    start_date = CharField(label=_('Desde'), max_length=10, widget=TextInput(attrs={
+        'class': 'form-control fecha', 'data-toggle': 'tooltip', 'title': _('Indique la fecha inicial'),
+    }))
 
 
 @python_2_unicode_compatible
-class MonetarioOperacionesInterbancariasForm(forms.Form):
+class EndDateForm(forms.Form):
+    """!
+    Clase que contiene el campo común para la fecha final de consulta
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 20-09-2016
+    @version 1.0.0
+    """
+    end_date = CharField(label=_('Hasta'), max_length=10, widget=TextInput(attrs={
+        'class': 'form-control fecha', 'data-toggle': 'tooltip', 'title': _('Indique la fecha final')
+    }))
+
+
+@python_2_unicode_compatible
+class RealPreciosForm(AnhoBaseForm, DominioForm, MesIniForm, MesFinForm, AnhoIniForm, AnhoFinForm):
+    """!
+    Clase que contiene el formulario para la carga de datos de precios
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 19-09-2016
+    @version 1.0.0
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(RealPreciosForm, self).__init__(*args, **kwargs)
+        self.fields['dominio'].choices = DOMINIO_PRECIOS
+
+
+@python_2_unicode_compatible
+class RealPIBForm(TipoForm, AnhoBaseForm, DominioForm, AnhoIniForm, AnhoFinForm):
+    """!
+    Clase que contiene el formulario para la carga de datos de precios
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 19-09-2016
+    @version 1.0.0
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(RealPIBForm, self).__init__(*args, **kwargs)
+        self.fields['dominio'].choices = DOMINIO_PIB
+        self.fields['tipo'].choices = TIPO_PIB
+
+
+@python_2_unicode_compatible
+class RealDemandaGlobalForm(AnhoBaseForm, AnhoIniForm, AnhoFinForm, TrimestreIniForm, TrimestreFinForm):
+    """!
+    Clase que contiene el formulario para la carga de datos de demanda global
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 19-09-2016
+    @version 1.0.0
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(RealDemandaGlobalForm, self).__init__(*args, **kwargs)
+        self.fields['tipo'].choices = TIPO_DEMANDA_GLOBAL
+
+
+@python_2_unicode_compatible
+class MonetarioAgregadosForm(
+    DominioForm, MesIniForm, MesFinForm, AnhoIniForm, AnhoFinForm, SemanaIniForm, SemanaFinForm, StartDateForm, EndDateForm
+):
+    """!
+    Clase que contiene el formulario para la carga de datos de Agregados Monetarios
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 19-09-2016
+    @version 1.0.0
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(MonetarioAgregadosForm, self).__init__(*args, **kwargs)
+        self.fields['dominio'].choices = DOMINIO_AGREGADO_MONETARIO
+
+
+@python_2_unicode_compatible
+class MonetarioOperacionesInterbancariasForm(StartDateForm, EndDateForm):
     """!
     Clase que contiene el formulario para la carga de datos de Operaciones Interbancarias
 
@@ -317,11 +374,10 @@ class MonetarioOperacionesInterbancariasForm(forms.Form):
     @date 19-09-2016
     @version 1.0.0
     """
-    pass
 
 
 @python_2_unicode_compatible
-class MonetarioTasasInteresForm(forms.Form):
+class MonetarioTasasInteresForm(SemanaIniForm, SemanaFinForm, MesIniForm, MesFinForm, AnhoIniForm, AnhoFinForm):
     """!
     Clase que contiene el formulario para la carga de datos de Tasas de Interés
 
@@ -330,11 +386,10 @@ class MonetarioTasasInteresForm(forms.Form):
     @date 19-09-2016
     @version 1.0.0
     """
-    pass
 
 
 @python_2_unicode_compatible
-class MonetarioInstrumentoPoliticaForm(forms.Form):
+class MonetarioInstrumentoPoliticaForm(MesIniForm, MesFinForm, AnhoIniForm, AnhoFinForm):
     """!
     Clase que contiene el formulario para la carga de datos de Instrumentos de Políticas
 
@@ -343,11 +398,10 @@ class MonetarioInstrumentoPoliticaForm(forms.Form):
     @date 19-09-2016
     @version 1.0.0
     """
-    pass
 
 
 @python_2_unicode_compatible
-class ExternoBalanzaComercialForm(forms.Form):
+class ExternoBalanzaComercialForm(TipoForm, DominioForm, AnhoBaseForm, TrimestreIniForm, TrimestreFinForm, AnhoIniForm, AnhoFinForm):
     """!
     Clase que contiene el formulario para la carga de datos de Balanza Comercial
 
@@ -356,7 +410,11 @@ class ExternoBalanzaComercialForm(forms.Form):
     @date 19-09-2016
     @version 1.0.0
     """
-    pass
+
+    def __init__(self, *args, **kwargs):
+        super(ExternoBalanzaComercialForm, self).__init__(*args, **kwargs)
+        self.fields['tipo'].choices = TIPO_PIB
+        self.fields['dominio'].choices = DOMINIO_COMERCIAL
 
 
 @python_2_unicode_compatible
@@ -373,7 +431,9 @@ class ExternoCuentaCapitalForm(forms.Form):
 
 
 @python_2_unicode_compatible
-class ExternoReservaCambioForm(forms.Form):
+class ExternoReservaCambioForm(
+    DominioForm, StartDateForm, EndDateForm, SemanaIniForm, SemanaFinForm, MesIniForm, MesFinForm, AnhoIniForm, AnhoFinForm
+):
     """!
     Clase que contiene el formulario para la carga de datos de Reservas - Tipo de Cambio
 
@@ -382,56 +442,19 @@ class ExternoReservaCambioForm(forms.Form):
     @date 19-09-2016
     @version 1.0.0
     """
-    pass
+
+    def __init__(self, *args, **kwargs):
+        super(ExternoReservaCambioForm, self).__init__(*args, **kwargs)
+        self.fields['dominio'].choices = DOMINIO_CAMBIO
 
 
 @python_2_unicode_compatible
-class FiscalTributosForm(forms.Form):
+class FiscalForm(AnhoIniForm, AnhoFinForm):
     """!
-    Clase que contiene el formulario para la carga de datos de Tributos Fiscales
+    Clase que contiene el formulario para la carga de datos de Registros Fiscales
 
     @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
     @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
     @date 19-09-2016
     @version 1.0.0
     """
-    pass
-
-
-@python_2_unicode_compatible
-class FiscalIngresosForm(forms.Form):
-    """!
-    Clase que contiene el formulario para la carga de datos de Ingresos Fiscales
-
-    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
-    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
-    @date 19-09-2016
-    @version 1.0.0
-    """
-    pass
-
-
-@python_2_unicode_compatible
-class FiscalGastoForm(forms.Form):
-    """!
-    Clase que contiene el formulario para la carga de datos de Gastos Fiscales
-
-    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
-    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
-    @date 19-09-2016
-    @version 1.0.0
-    """
-    pass
-
-
-@python_2_unicode_compatible
-class FiscalEndeudamientoForm(forms.Form):
-    """!
-    Clase que contiene el formulario para la carga de datos de Endeudamiento Fiscal
-
-    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
-    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
-    @date 19-09-2016
-    @version 1.0.0
-    """
-    pass
