@@ -20,6 +20,9 @@ urlpatterns = [
     url(r'^cargar-datos/pib/$', 'economico.views.pib', name='economico-pib'),
     url(r'^cargar-datos/demanda-global/$', 'economico.views.demanda_global', name='economico-demanda-global'),
     url(r'^cargar-datos/agregados-monetarios/$', 'economico.views.agregados_monetarios', name='economico-agregados-monetarios'),
+    url(r'^cargar-datos/operaciones-interbancarias/$', 'economico.views.operaciones_interbancarias', name='economico-operaciones-interbancarias'),
+    url(r'^cargar-datos/tasas-interes/$', 'economico.views.tasas_interes', name='economico-tasas-interes'),
+    url(r'^cargar-datos/instrumentos-politica/$', 'economico.views.instrumento_politica', name='economico-instrumento-politica'),
 ]
 
 

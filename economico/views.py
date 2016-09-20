@@ -17,7 +17,8 @@ from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 
 from .forms import (
-    RealPreciosForm, RealPIBForm, RealDemandaGlobalForm, MonetarioAgregadosForm
+    RealPreciosForm, RealPIBForm, RealDemandaGlobalForm, MonetarioAgregadosForm, MonetarioOperacionesInterbancariasForm,
+    MonetarioTasasInteresForm, MonetarioInstrumentoPoliticaForm
 )
 
 
@@ -97,3 +98,53 @@ def agregados_monetarios(request):
     form = MonetarioAgregadosForm()
 
     return render_to_response('economico.agregados.monetarios.html', {'form': form}, context_instance=RequestContext(request))
+
+
+@login_required
+def operaciones_interbancarias(request):
+    """!
+    Función que permite mostrar el furmulario para el registro de Operaciones Interbancarias
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 20-09-2016
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con el formulario de datos para el registro de Agregados Monetarios
+    """
+    form = MonetarioOperacionesInterbancariasForm()
+
+    return render_to_response(
+        'economico.operaciones.interbancarias.html', {'form': form}, context_instance=RequestContext(request)
+    )
+
+
+@login_required
+def tasas_interes(request):
+    """!
+    Función que permite mostrar el furmulario para el registro de Tasas de Interés
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 20-09-2016
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con el formulario de datos para el registro de Agregados Monetarios
+    """
+    form = MonetarioTasasInteresForm()
+
+    return render_to_response('economico.tasas.interes.html', {'form': form}, context_instance=RequestContext(request))
+
+
+@login_required
+def instrumento_politica(request):
+    """!
+    Función que permite mostrar el furmulario para el registro de Instrumentos de Políticas
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 20-09-2016
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con el formulario de datos para el registro de Agregados Monetarios
+    """
+    form = MonetarioInstrumentoPoliticaForm()
+
+    return render_to_response('economico.instrumento.politicas.html', {'form': form}, context_instance=RequestContext(request))
