@@ -93,6 +93,20 @@ DOMINIO_AGREGADO_MONETARIO = (
     ('BMF', _('Base Monetaria Fuente'))
 )
 
+## Selección de Dominio Comercial
+DOMINIO_COMERCIAL = (
+    ("", _("Seleccione...")),
+    ('I', _('Importaciones')),
+    ('E', _('Exportaciones'))
+)
+
+## Selección de dominio de tipo de cambio
+DOMINIO_CAMBIO = (
+    ("", _("Seleccione...")),
+    ('TC', _('Tipo de Cambio')),
+    ('RI', _('Reservas Internacionales'))
+)
+
 ## Selección de Tipo de PIB
 TIPO_PIB = (
     ('', _('Seleccione...')),
@@ -114,4 +128,21 @@ TRIMESTRES = (
     ('2', _('II')),
     ('3', _('III')),
     ('4', _('IV'))
+)
+
+## Selección de meses
+MESES = (
+    ('', _('Seleccione...')),
+    ('01', _('Enero')),
+    ('02', _('Febrero')),
+    ('03', _('Marzo')),
+    ('04', _('Abril')),
+    ('05', _('Mayo')),
+    ('06', _('Junio')),
+    ('07', _('Julio')),
+    ('08', _('Agosto')),
+    ('09', _('Septiembre')),
+    ('10', _('Octubre')),
+    ('11', _('Noviembre')),
+    ('12', _('Diciembre')),
 )
