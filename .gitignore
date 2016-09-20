@@ -2,6 +2,7 @@
 .idea
 static/tmp
 *.db
+*.sqlite3
 *.dot
 *.xml
 tmp/*.png
