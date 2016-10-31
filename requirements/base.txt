@@ -1,7 +1,7 @@
 #
 ###### Archivo de requerimientos basicos de bibliotecas de python ######
 #
-Django>=1.9.5,<1.10
+Django>=1.10
 psycopg2
 django-simple-captcha
 #

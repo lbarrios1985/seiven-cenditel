@@ -76,3 +76,30 @@ def calcular_diferencia_fechas(fecha_inicial, fecha_final=date_now):
     diff_dates = fecha_final - fecha_inicial
 
     return diff_dates.days
+
+
+def cargar_anho_base(anho_inicial=None, anho_final=None):
+    """!
+    Función que permite cargar una lista de años para la selección del año base
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 17-10-2016
+    @param anho_inicial <b>{object}</b> Objeto que contiene el año inicial.
+    @param anho_final <b>{object}</b> Objeto que contiene el año final.
+    @return Devuelve un listado de años
+    """
+
+    anho_final = anho_inicial if anho_inicial else '1950'
+
+    anho_final = anho_final if anho_final else datetime.now()
+
+    lista = ('', _('Seleccione...')),
+
+    try:
+        for year in range(anho_inicial, anho_final):
+            lista += (year, year),
+    except Exception as e:
+        pass
+
+    return list
