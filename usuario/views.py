@@ -24,7 +24,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core import urlresolvers
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext
 from django.views.generic import CreateView, UpdateView, ListView
 from django.utils.translation import ugettext_lazy as _
@@ -102,7 +102,7 @@ def acceso(request):
                 alert = str(_("Su usuario se encuentra inactivo. Intente más tarde..."))
 
 
-    return render_to_response('base.template.html', {'form': form, 'alert': alert}, context_instance=RequestContext(request))
+    return render(request, 'base.template.html', {'form': form, 'alert': alert})
 
 
 def salir(request):
@@ -179,7 +179,7 @@ def olvido_clave(request):
                 messages.info(request, _("Se le ha enviado, al correo electrónico indicado, la información necesaria "
                                          "para la modificación de la contraseña"))
 
-    return render_to_response('usuario.recuperar.clave.html', {'form': form, 'alert': alert}, context_instance=RequestContext(request))
+    return render(request, 'usuario.recuperar.clave.html', {'form': form, 'alert': alert})
 
 
 def confirmar_modificar_clave(request):
@@ -211,10 +211,10 @@ def confirmar_modificar_clave(request):
         else:
             mensaje = str(_("El enlace utilizado expiró. Contacte al administrador del sistema."))
 
-    return render_to_response('usuario.validar.olvido.clave.html', {
+    return render(request, 'usuario.validar.olvido.clave.html', {
         'verificado': verificado, 'emailapp': settings.EMAIL_FROM, 'mensaje': mensaje,
         'modificar_clave_url': modificar_clave_url
-    }, context_instance=RequestContext(request))
+    })
 
 
 def modificar_clave(request):
@@ -246,8 +246,7 @@ def modificar_clave(request):
             logger.info(str(_("El usuario [%s] modificó su contraseña por olvido") % username))
             return HttpResponseRedirect(urlresolvers.reverse("acceso"))
 
-    return render_to_response('usuario.modificar.clave.html', {'form': form, 'fortaleza_clave': True},
-                              context_instance=RequestContext(request))
+    return render(request, 'usuario.modificar.clave.html', {'form': form, 'fortaleza_clave': True})
 
 
 def confirmar_registro(request):
@@ -289,12 +288,9 @@ def confirmar_registro(request):
         else:
             mensaje = str(_("El enlace utilizado expiró. Contacte al administrador del sistema."))
 
-    return render_to_response(
-        'usuario.validar.cuenta.html', {
-            'verificado': verificado, 'emailapp': settings.EMAIL_FROM, 'mensaje': mensaje, 'login_url': login_url
-        },
-        context_instance=RequestContext(request)
-    )
+    return render(request, 'usuario.validar.cuenta.html', {
+        'verificado': verificado, 'emailapp': settings.EMAIL_FROM, 'mensaje': mensaje, 'login_url': login_url
+    })
 
 
 class RegistroCreate(SuccessMessageMixin, CreateView):

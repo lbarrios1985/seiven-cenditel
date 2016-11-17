@@ -13,7 +13,7 @@ Copyleft (@) 2015 CENDITEL nodo Mérida - https://mpv.cenditel.gob.ve/seiven
 from __future__ import unicode_literals
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render, redirect
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 
@@ -35,7 +35,7 @@ def cargar_datos(request):
     @param request <b>{object}</b> Objeto que obtiene la petición
     @return Devuelve el response con la página del sub-menu de carga de datos para el área económica
     """
-    return render_to_response('economico.menu.area.html', {}, context_instance=RequestContext(request))
+    return render(request, 'economico.menu.area.html', {})
 
 
 @login_required
@@ -51,7 +51,7 @@ def precios(request):
     """
     form = RealPreciosForm()
 
-    return render_to_response('economico.precios.html', {'form': form}, context_instance=RequestContext(request))
+    return render(request, 'economico.precios.html', {'form': form})
 
 
 @login_required
@@ -67,7 +67,7 @@ def pib(request):
     """
     form = RealPIBForm()
 
-    return render_to_response('economico.pib.html', {'form': form}, context_instance=RequestContext(request))
+    return render(request, 'economico.pib.html', {'form': form})
 
 
 @login_required
@@ -83,7 +83,7 @@ def demanda_global(request):
     """
     form = RealDemandaGlobalForm()
 
-    return render_to_response('economico.demanda.global.html', {'form': form}, context_instance=RequestContext(request))
+    return render(request, 'economico.demanda.global.html', {'form': form})
 
 
 @login_required
@@ -99,7 +99,7 @@ def agregados_monetarios(request):
     """
     form = MonetarioAgregadosForm()
 
-    return render_to_response('economico.agregados.monetarios.html', {'form': form}, context_instance=RequestContext(request))
+    return render(request, 'economico.agregados.monetarios.html', {'form': form})
 
 
 @login_required
@@ -115,9 +115,7 @@ def operaciones_interbancarias(request):
     """
     form = MonetarioOperacionesInterbancariasForm()
 
-    return render_to_response(
-        'economico.operaciones.interbancarias.html', {'form': form}, context_instance=RequestContext(request)
-    )
+    return render(request, 'economico.operaciones.interbancarias.html', {'form': form})
 
 
 @login_required
@@ -133,7 +131,7 @@ def tasas_interes(request):
     """
     form = MonetarioTasasInteresForm()
 
-    return render_to_response('economico.tasas.interes.html', {'form': form}, context_instance=RequestContext(request))
+    return render(request, 'economico.tasas.interes.html', {'form': form})
 
 
 @login_required
@@ -149,7 +147,7 @@ def instrumento_politica(request):
     """
     form = MonetarioInstrumentoPoliticaForm()
 
-    return render_to_response('economico.instrumento.politicas.html', {'form': form}, context_instance=RequestContext(request))
+    return render(request, 'economico.instrumento.politicas.html', {'form': form})
 
 
 @login_required
@@ -165,7 +163,7 @@ def balanza_comercial(request):
     """
     form = ExternoBalanzaComercialForm()
 
-    return render_to_response('economico.balanza.comercial.html', {'form': form}, context_instance=RequestContext(request))
+    return render(request, 'economico.balanza.comercial.html', {'form': form})
 
 
 @login_required
@@ -181,7 +179,7 @@ def reservas_tipo_cambio(request):
     """
     form = ExternoReservaCambioForm()
 
-    return render_to_response('economico.reservas.tipo.cambio.html', {'form': form}, context_instance=RequestContext(request))
+    return render(request, 'economico.reservas.tipo.cambio.html', {'form': form})
 
 
 @login_required
@@ -197,7 +195,7 @@ def tributos(request):
     """
     form = FiscalForm()
 
-    return render_to_response('economico.fiscal.html', {'form': form, 'title': _('Tributos')}, context_instance=RequestContext(request))
+    return render(request, 'economico.fiscal.html', {'form': form, 'title': _('Tributos')})
 
 
 @login_required
@@ -213,7 +211,7 @@ def ingresos(request):
     """
     form = FiscalForm()
 
-    return render_to_response('economico.fiscal.html', {'form': form, 'title': _('Ingresos')}, context_instance=RequestContext(request))
+    return render(request, 'economico.fiscal.html', {'form': form, 'title': _('Ingresos')})
 
 
 @login_required
@@ -229,7 +227,7 @@ def gastos(request):
     """
     form = FiscalForm()
 
-    return render_to_response('economico.fiscal.html', {'form': form, 'title': _('Gastos')}, context_instance=RequestContext(request))
+    return render(request, 'economico.fiscal.html', {'form': form, 'title': _('Gastos')})
 
 
 @login_required
@@ -245,4 +243,4 @@ def endeudamiento(request):
     """
     form = FiscalForm()
 
-    return render_to_response('economico.fiscal.html', {'form': form, 'title': _('Endeudamiento')}, context_instance=RequestContext(request))
+    return render(request, 'economico.fiscal.html', {'form': form, 'title': _('Endeudamiento')})

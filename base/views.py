@@ -13,7 +13,7 @@ Copyleft (@) 2015 CENDITEL nodo Mérida - https://mpv.cenditel.gob.ve/seiven
 from __future__ import unicode_literals
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render, redirect
 from django.template import RequestContext
 
 from usuario.forms import AutenticarForm
@@ -39,4 +39,4 @@ def inicio(request):
         form = AutenticarForm()
         return redirect('acceso')
 
-    return render_to_response('base.template.html', {'form': form}, context_instance=RequestContext(request))
+    return render(request, 'base.template.html', {'form': form})
