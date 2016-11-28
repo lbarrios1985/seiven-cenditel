@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^$', base_views.inicio, name='inicio'),
     url(r'^', include('base.urls')),
     url(r'economico/', include('economico.urls')),
+    url(r'^gestion-informacion/', include('gestion_informacion.urls')),
     url(r'^', include('usuario.urls')),
     url(r'^captcha/', include('captcha.urls')),
 ]

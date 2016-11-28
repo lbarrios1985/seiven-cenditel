@@ -61,7 +61,9 @@ if DEBUG:
 ## Listado de aplicaciones del projecto
 PROJECT_APPS = [
     'base',
-    'usuario'
+    'usuario',
+    'economico',
+    'gestion_informacion',
 ]
 
 ## Listado de aplicaciones cargadas por el sistema
