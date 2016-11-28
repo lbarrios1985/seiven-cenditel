@@ -13,6 +13,8 @@ Copyleft (@) 2015 CENDITEL nodo Mérida - https://mpv.cenditel.gob.ve/seiven
 from __future__ import unicode_literals
 
 from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
+
 from django.shortcuts import render, redirect
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
@@ -51,7 +53,7 @@ def precios(request):
     """
     form = RealPreciosForm()
 
-    return render(request, 'economico.precios.html', {'form': form})
+    return render(request, 'economico.precios.html', {'form': form, 'url_down': reverse('descargar_archivo')})
 
 
 @login_required
