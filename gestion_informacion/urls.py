@@ -12,6 +12,7 @@ Copyleft (@) 2015 CENDITEL nodo Mérida - https://mpv.cenditel.gob.ve/seiven
 # @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
 from __future__ import unicode_literals
 from django.conf.urls import url
+from . import ajax as gestion_ajax
 
 
 urlpatterns = [
@@ -21,4 +22,5 @@ urlpatterns = [
 
 ## URLs de peticiones AJAX
 urlpatterns += [
+    url(r'^ajax/descargar_archivo/?$', gestion_ajax.descargar_archivo, name='descargar_archivo'),
 ]
