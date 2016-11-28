@@ -200,6 +200,9 @@ EMAIL_FROM = 'seiven@cenditel.gob.ve'
 ## Registro de vitácoras de errores (logs)
 LOGS_PATH = '/var/log/seiven'
 
+## Ruta en la que se guardan los archivos para la gestión de información
+GESTION_INFORMACION_FILES = os.path.join(BASE_DIR, "static/files")
+
 ## Configuración de los niveles de vitácoras (logs) a registrar
 LOGGING = dict(version=1, disable_existing_loggers=True, formatters={
     'std': {
