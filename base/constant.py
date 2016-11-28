@@ -71,20 +71,20 @@ NIVELES_ACCESO = (
 )
 
 ## Dominio sobre los registros
-DOMINIO = (
-    ("NAC"), _("Nacional"),
-    ("CAR"), _("Caracas"),
-    ("MAR"), _("Maracay"),
-    ("CGY"), _("Ciudad Guayana"),
-    ("BPC"), _("Barcelona - Puerto La Cruz"),
-    ("VAL"), _("Valencia"),
-    ("BAR"), _("Barquisimeto"),
-    ("MCB"), _("Maracaibo"),
-    ("MRD"), _("Mérida"),
-    ("MAT"), _("Maturín"),
-    ("SCR"), _("San Cristóbal"),
-    ("RNC"), _("Resto Nacional"),
-)
+DOMINIO = [
+    (("NAC"), _("Nacional")),
+    (("CAR"), _("Caracas")),
+    (("MAR"), _("Maracay")),
+    (("CGY"), _("Ciudad Guayana")),
+    (("BPC"), _("Barcelona - Puerto La Cruz")),
+    (("VAL"), _("Valencia")),
+    (("BAR"), _("Barquisimeto")),
+    (("MCB"), _("Maracaibo")),
+    (("MRD"), _("Mérida")),
+    (("MAT"), _("Maturín")),
+    (("SCR"), _("San Cristóbal")),
+    (("RNC"), _("Resto Nacional")),
+]
 
 ## Selección de Dominio de Precios
 DOMINIO_PRECIOS = (
@@ -173,10 +173,10 @@ PERIOCIDAD = (
 )
 
 ## Sub área de registro
-ECONOMICO_SUB_AREA = (
-    ('PRE'), _('Precios'),
-    ('PIB'), _('PIB'),
-    ('DEM'), _('Demanda'),
-    ('OFE'), _('Oferta'),
-)
+ECONOMICO_SUB_AREA = [
+    (('PRE'), _('Precios')),
+    (('PIB'), _('PIB')),
+    (('DEM'), _('Demanda')),
+    (('OFE'), _('Oferta')),
+]
 
