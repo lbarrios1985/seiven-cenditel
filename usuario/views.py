@@ -386,8 +386,7 @@ class ModificarPerfilView(SuccessMessageMixin, UpdateView):
         @return Retorna los valores iniciales del formulario
         """
         usr = User.objects.get(username=self.request.user)
-        #institucion = Institucion.objects.get(pk=self.request.user.profile.institucion)
-        print(self.request.user.profile.institucion.pk)
+
         return {
             'nombre': usr.first_name, 'apellido': usr.last_name, 'correo': usr.email, 'tipo_documento': usr.username,
             'institucion': self.request.user.profile.institucion.pk, 'ocupacion': self.request.user.profile.ocupacion,
