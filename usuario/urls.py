@@ -24,4 +24,5 @@ urlpatterns = [
     url(r'^confirm/?$', usuario_views.confirmar_registro, name='confirmar_registro'),
     url(r'^confirm-modificar-clave/?$', usuario_views.confirmar_modificar_clave, name='confirmar_modificar_clave'),
     url(r'^modificar-clave/?$', usuario_views.modificar_clave, name='modificar_clave'),
+    url(r'^perfil/update/(?P<pk>\d+)/$', login_required(usuario_views.ModificarPerfilView.as_view()), name='modificar_perfil'),
 ]

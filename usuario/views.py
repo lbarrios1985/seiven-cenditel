@@ -29,9 +29,9 @@ from django.template import RequestContext
 from django.views.generic import CreateView, UpdateView, ListView
 from django.utils.translation import ugettext_lazy as _
 
-from base.constant import REGISTRO_MESSAGE, EMAIL_SUBJECT_REGISTRO, CADUCIDAD_LINK_REGISTRO
+from base.constant import REGISTRO_MESSAGE, UPDATE_MESSAGE, EMAIL_SUBJECT_REGISTRO, CADUCIDAD_LINK_REGISTRO
 from base.functions import enviar_correo, calcular_diferencia_fechas
-from .forms import AutenticarForm, RegistroForm, OlvidoClaveForm, ModificarClaveForm, PerfilForm
+from .forms import AutenticarForm, RegistroForm, OlvidoClaveForm, ModificarClaveForm
 
 import logging
 
@@ -359,3 +359,66 @@ class RegistroCreate(SuccessMessageMixin, CreateView):
             )
 
         return super(RegistroCreate, self).form_valid(form)
+
+
+class ModificarPerfilView(SuccessMessageMixin, UpdateView):
+    """!
+    Clase que muestra el formulario de modificación de datos del perfil de usuario
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 02-12-2016
+    @version 1.0.0
+    """
+    model = User
+    form_class = RegistroForm
+    template_name = 'usuario.update.html'
+    success_url = reverse_lazy('inicio')
+    success_message = UPDATE_MESSAGE
+
+    def get_initial(self, **kwargs):
+        """!
+        Metodo que asigna los valores iniciales del formulario del perfil de usuario con los datos actualmente registrados
+
+        @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+        @copyright GNU/GPLv2
+        @date @date 02-12-2016
+        @return Retorna los valores iniciales del formulario
+        """
+        usr = User.objects.get(username=self.request.user)
+        #institucion = Institucion.objects.get(pk=self.request.user.profile.institucion)
+        print(self.request.user.profile.institucion.pk)
+        return {
+            'nombre': usr.first_name, 'apellido': usr.last_name, 'correo': usr.email, 'tipo_documento': usr.username,
+            'institucion': self.request.user.profile.institucion.pk, 'ocupacion': self.request.user.profile.ocupacion,
+        }
+
+    def form_valid(self, form):
+        """!
+        Metodo que valida si el formulario es valido, en cuyo caso se procede a modificar los datos del perfil del usuario
+
+        @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+        @copyright GNU/GPLv2
+        @date @date 02-12-2016
+        @return Retorna el formulario validado y modifica los datos de perfil del usuario
+        """
+        """
+        self.object = form.save(commit=False)
+        usuario = self.request.user
+        usr = User.objects.get(username=usuario)
+        institucion = Institucion.objects.get(nombre=form.cleaned_data['institucion'])
+        cargo = Cargo.objects.get(nombre=form.cleaned_data['cargo'])
+        correo = form.cleaned_data['correo'].lower()
+        nombre, apellido = form.cleaned_data['nombre'], form.cleaned_data['apellido']
+        if usr.first_name!=nombre: usr.first_name = nombre
+        if usr.last_name!=apellido: usr.last_name = apellido
+        if usr.email!=correo: usr.email = correo
+        usr.save()
+        form.instance.user = usr
+        form.instance.institucion = institucion
+        form.instance.cargo = cargo
+        self.object.save()
+
+        logger.info(u"Se han actualizado los datos del usuario [%s]" % usuario)
+        """
+        return super(ModificarPerfilView, self).form_valid(form)
