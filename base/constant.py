@@ -51,6 +51,9 @@ REGISTRO_MESSAGE = '%s %s %s (spam) %s %s' % \
                           "ocasiones no sea filtrado. En caso contrario contacte al administrador del sistema")),
                     str(admin_email))
 
+## Mensaje a mostrar cuando los datos hayan sido actualizados correctamente
+UPDATE_MESSAGE = _("Los datos fueron actualizados con exito.")
+
 ## Días de caducidad para el enlace de registro de usuarios
 CADUCIDAD_LINK_REGISTRO = 1
 
