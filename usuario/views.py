@@ -31,7 +31,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from base.constant import REGISTRO_MESSAGE, UPDATE_MESSAGE, EMAIL_SUBJECT_REGISTRO, CADUCIDAD_LINK_REGISTRO
 from base.functions import enviar_correo, calcular_diferencia_fechas
-from .forms import AutenticarForm, RegistroForm, OlvidoClaveForm, ModificarClaveForm
+from .forms import AutenticarForm, RegistroForm, OlvidoClaveForm, ModificarClaveForm, PerfilForm
 
 import logging
 
@@ -370,8 +370,8 @@ class ModificarPerfilView(SuccessMessageMixin, UpdateView):
     @date 02-12-2016
     @version 1.0.0
     """
-    model = User
-    form_class = RegistroForm
+    model = UserProfile
+    form_class = PerfilForm
     template_name = 'usuario.update.html'
     success_url = reverse_lazy('inicio')
     success_message = UPDATE_MESSAGE
