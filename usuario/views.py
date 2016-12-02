@@ -338,7 +338,7 @@ class RegistroCreate(SuccessMessageMixin, CreateView):
         )
         ## Asigna un enlace de verificación en el registro de usuarios
         link = self.request.build_absolute_uri("%s?userid=%s&key=%s" % (
-            urlresolvers.reverse('usuario.views.confirmar_registro'),
+            urlresolvers.reverse(confirmar_registro),
             self.object.username, hash_user(self.object, is_new_user=True).decode()
         ))
 

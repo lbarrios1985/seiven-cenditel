@@ -49,13 +49,13 @@ class UserProfile(models.Model):
     ocupacion = models.CharField(max_length=2, choices=OCUPACION[1:])
 
     ## Establece la última fecha de modificación de la contraseña, lo cual permite establecer la caducidad de la misma
-    fecha_modpass = models.DateTimeField(null=True, help_text=_("Fecha en la que se modificó la contraseña"))
+    fecha_modpass = models.DateTimeField(null=True, blank=True, help_text=_("Fecha en la que se modificó la contraseña"))
 
     ## Contiene datos sobre la institucion a la cual pertenece el usuario
     institucion = models.ForeignKey(Institucion, help_text=_("Institucion de la cual proviene el usuario"))
 
     ## Indica el nivel de acceso que tiene el usuario
-    nivel_acceso = models.PositiveSmallIntegerField(choices=NIVELES_ACCESO, null=True)
+    nivel_acceso = models.PositiveSmallIntegerField(choices=NIVELES_ACCESO, null=True, blank=True)
 
 
     ## Establece la relación entre el usuario y el perfil
