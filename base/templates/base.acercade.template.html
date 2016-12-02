@@ -1,0 +1,48 @@
+{% extends 'base.template.html' %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% block contenido %}
+    <div class="row separador-bottom">
+        <div class="col-sm-12">
+            <h3 class="text-center">{% trans 'Sistema Estadístico Integral de Venezuela' %}</h3>
+        </div>
+        <div class="col-sm-12 padding-side-25">
+            <div class="panel panel-default panel-resalt">
+            	<div class="panel-body">
+            	   <p class="text-justify">
+                       {% blocktrans %}
+                           Es un sistema de información libre que tiene por objeto integrar, sistematizar y procesar
+                           los datos estadísticos generados por la Administración Pública Nacional para procesar y
+                           ofrecer información relevante a los altos niveles de gobierno y a la sociedad en general.
+                           Esta herramienta tecnológica contribuye al acceso, intercambio y difusión de información
+                           estadística nacional en lo económico, social e industrial y, en consecuencia, fortalece el
+                           funcionamiento del Sistema Estadístico Nacional (SEN), con miras a facilitar el diseño,
+                           implementación, seguimiento y evaluación de políticas públicas que permitan medir el logro e
+                           impacto de los objetivos planteados en el Plan de la Nación.
+                       {% endblocktrans %}
+                   </p>
+            	</div>
+            </div>
+        </div>
+        <div class="col-sm-12">
+            <h4 class="text-center">{% trans 'Mas información en:' %}</h4>
+        </div>
+        <div class="col-sm-12 padding-side-35">
+            <div class="panel panel-default panel-resalt-mini">
+            	<div class="panel-body text-center">
+                    <h5>
+                        <a href="https://mpv.cenditel.gob.ve/seiven" target="_blank">
+                            https://mpv.cenditel.gob.ve/seiven
+                        </a>
+                    </h5>
+                    <h5>
+                        <a href="http://www.cenditel.gob.ve">www.cenditel.gob.ve</a>
+                    </h5>
+            	</div>
+            </div>
+        </div>
+        <div class="col-sm-9">
+            <a href="{% url 'acceso' %}" class="btn btn-primary pull-right">{% trans 'Ingresar' %}</a>
+        </div>
+    </div>
+{% endblock %}

@@ -22,6 +22,19 @@ __licence__ = "GNU Public License v2"
 __revision__ = ""
 __docstring__ = "DoxyGen"
 
+
+def acerca_de(request):
+    """!
+    Función que permite mostrar información del sistema
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 02-12-2016
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con la página de información del sistema
+    """
+    return render(request, 'base.acercade.template.html', {})
+
 @login_required
 def inicio(request):
     """!

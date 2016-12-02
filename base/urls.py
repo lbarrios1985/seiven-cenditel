@@ -12,10 +12,11 @@ Copyleft (@) 2015 CENDITEL nodo Mérida - https://mpv.cenditel.gob.ve/seiven
 # @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
 from __future__ import unicode_literals
 from django.conf.urls import url
+from . import views as base_views
 
 
 urlpatterns = [
-
+    url(r'^acerca-de/?$', base_views.acerca_de, name='acerca-de'),
 ]
 
 
