@@ -162,7 +162,7 @@ USE_I18N = True
 USE_L10N = True
 
 ## Determina si se emplea la zona horaria
-USE_TZ = True
+USE_TZ = False
 
 ## Configuración de la raíz donde se encuentran los archivos estaticos del sistema (para entornos en producción)
 STATIC_ROOT = ''
