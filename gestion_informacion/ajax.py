@@ -54,17 +54,38 @@ def descargar_archivo(request):
         ## Nombre del modelo en el cual se va a buscar la información a incluir en el archivo
         mod = request.GET.get('mod', None)
 
+        filter = request.GET.get('filter', None)
+
+        if filter:
+            filter = json.loads(filter)
+
         if app and mod:
             modelo = apps.get_model(app, mod)
             workbook = xlwt.Workbook()
             sheet = workbook.add_sheet("Datos")
             instance = modelo()
-            datos = instance.gestion_init()
+            datos = instance.gestion_init(**filter)
             font_bold = xlwt.easyxf('font: bold 1')
 
+            if datos['cabecera'][0]:
+                c = 0
+
+                for cabecera in datos['cabecera'][0]:
+                    style = font_bold
+                    if cabecera['color'] and cabecera['text_color']:
+                        style = xlwt.easyxf('pattern: pattern solid, fore_colour %s; font: color %s, bold True; align: horiz center;' % (cabecera['color'], cabecera['text_color']))
+                    if cabecera['combine'] > 0:
+                        count_merge = c + cabecera['combine']
+                        sheet.write_merge(0, 0, c, count_merge, cabecera['tag'], style)
+                        c = count_merge + 1
+                    else:
+                        sheet.write(0, c, cabecera['tag'], style)
+                        sheet.col(c).width = 357 * (len(cabecera['tag']) + 1)
+                        c += 1
+
             i = 0
-            for cabecera in datos['cabecera']:
-                sheet.write(0, i, cabecera['label'], font_bold)
+            for cabecera in datos['cabecera'][1]:
+                sheet.write(1, i, cabecera['label'], font_bold)
                 sheet.col(i).width = 256 * (len(cabecera['label']) + 1)
                 i += 1
 

@@ -4,9 +4,10 @@
  * @param app [string] Contiene el nombre de la aplicación o módulo para la gestión de los datos
  * @param mod ['string'] Contiene el nombre del modelo del cual descargará los datos
  */
-function descargar_archivo(url, app, mod) {
+function descargar_archivo(url, app, mod, filter) {
+    params = (typeof(filter)!="undefined") ? {app:app, mod:mod, filter: filter} : {app:app, mod:mod};
 
-    $.getJSON(url, {app:app, mod:mod}, function(datos) {
+    $.getJSON(url, params, function(datos) {
         if (datos.resultado) {
             bootbox.alert(datos.message);
             window.open(URL_STATIC_INFO_FILES+datos.archivo);

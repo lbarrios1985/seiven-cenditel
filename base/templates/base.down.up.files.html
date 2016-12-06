@@ -2,8 +2,10 @@
 <div class="row separador-row text-center">
     <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
         <h2>
-            <a href="#"
-               {% if url_down and app and mod %}onclick="descargar_archivo('{{ url_down }}', '{{ app }}', '{{ mod }}')"{% endif %}>
+            <a href="#" class="download-file"
+               {% if url_down and app and mod %}
+                    onclick="descargar_archivo('{{ url_down }}', '{{ app }}', '{{ mod }}', '{' + $('#filters').val() + '}')"
+               {% endif %}>
                 <i class="fa fa-download"></i> {% trans 'Descargar archivo' %}
             </a>
         </h2>
@@ -15,4 +17,5 @@
             </a>
         </h2>
     </div>
+    <input type="hidden" id="filters" readonly="readonly">
 </div>

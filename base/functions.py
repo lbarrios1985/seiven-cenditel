@@ -90,16 +90,16 @@ def cargar_anho_base(anho_inicial=None, anho_final=None):
     @return Devuelve un listado de años
     """
 
-    anho_final = anho_inicial if anho_inicial else '1950'
+    anho_inicial = anho_inicial if anho_inicial else '1950'
 
-    anho_final = anho_final if anho_final else datetime.now()
+    anho_final = anho_final if anho_final else datetime.now().year
 
-    lista = ('', _('Seleccione...')),
+    lista = ('', str(_('Seleccione...'))),
 
     try:
-        for year in range(anho_inicial, anho_final):
+        for year in range(int(anho_inicial), int(anho_final) + 1):
             lista += (year, year),
     except Exception as e:
         pass
 
-    return list
+    return lista

@@ -27,6 +27,7 @@ from base.constant import (
     DOMINIO_PRECIOS, DOMINIO_PIB, DOMINIO_AGREGADO_MONETARIO, TIPO_PIB, TIPO_DEMANDA_GLOBAL, TRIMESTRES, MESES,
     DOMINIO_COMERCIAL, DOMINIO_CAMBIO
 )
+from base.functions import cargar_anho_base
 
 
 """!
@@ -98,6 +99,10 @@ class AnhoBaseForm(forms.Form):
         })
     )
 
+    def __init__(self, *args, **kwargs):
+        super(AnhoBaseForm, self).__init__(*args, **kwargs)
+        self.fields['anho_base'].choices = cargar_anho_base(anho_inicial='2007')
+
 
 @python_2_unicode_compatible
 class MesIniForm(forms.Form):
@@ -161,6 +166,10 @@ class AnhoIniForm(forms.Form):
         })
     )
 
+    def __init__(self, *args, **kwargs):
+        super(AnhoIniForm, self).__init__(*args, **kwargs)
+        self.fields['periodo_anho_ini'].choices = cargar_anho_base(anho_inicial='2007')
+
 
 @python_2_unicode_compatible
 class AnhoFinForm(forms.Form):
@@ -181,6 +190,10 @@ class AnhoFinForm(forms.Form):
             'title': _(u"Seleccione el año final")
         })
     )
+
+    def __init__(self, *args, **kwargs):
+        super(AnhoFinForm, self).__init__(*args, **kwargs)
+        self.fields['periodo_anho_fin'].choices = cargar_anho_base(anho_inicial='2007')
 
 
 @python_2_unicode_compatible
@@ -387,7 +400,6 @@ class MonetarioTasasInteresForm(SemanaIniForm, SemanaFinForm, MesIniForm, MesFin
     @version 1.0.0
     """
 
-
 @python_2_unicode_compatible
 class MonetarioInstrumentoPoliticaForm(MesIniForm, MesFinForm, AnhoIniForm, AnhoFinForm):
     """!
@@ -398,7 +410,6 @@ class MonetarioInstrumentoPoliticaForm(MesIniForm, MesFinForm, AnhoIniForm, Anho
     @date 19-09-2016
     @version 1.0.0
     """
-
 
 @python_2_unicode_compatible
 class ExternoBalanzaComercialForm(TipoForm, DominioForm, AnhoBaseForm, TrimestreIniForm, TrimestreFinForm, AnhoIniForm, AnhoFinForm):
