@@ -90,6 +90,7 @@ class Precios(models.Model):
             except Exception as e:
                 pass
 
+        ## Extrae los campos del modelo de precios por grupo
         for grupo in PreciosGrupo._meta.get_fields():
             if not grupo.attname in exclude_fields:
                 fields[1].append({
@@ -97,6 +98,7 @@ class Precios(models.Model):
                     'null': grupo.null, 'validators': grupo.validators, 'error_messages': grupo.error_messages
                 })
 
+        ## Extrae los campos del modelo de precios por sector
         for sector in PreciosSector._meta.get_fields():
             if not sector.attname in exclude_fields:
                 fields[1].append({
@@ -104,6 +106,7 @@ class Precios(models.Model):
                     'null': sector.null, 'validators': sector.validators, 'error_messages': sector.error_messages
                 })
 
+        ## Extrae los campos del modelo de precios por naturaleza
         for naturaleza in PreciosNaturaleza._meta.get_fields():
             if not naturaleza.attname in exclude_fields:
                 fields[1].append({
@@ -111,6 +114,7 @@ class Precios(models.Model):
                     'null': naturaleza.null, 'validators': naturaleza.validators, 'error_messages': naturaleza.error_messages
                 })
 
+        ## Extrae los campos del modelo de precios por servicios
         for servicios in PreciosServicios._meta.get_fields():
             if not servicios.attname in exclude_fields:
                 fields[1].append({
@@ -118,6 +122,7 @@ class Precios(models.Model):
                     'null': servicios.null, 'validators': servicios.validators, 'error_messages': servicios.error_messages
                 })
 
+        ## Extrae los campos del modelo de precios por núcleo inflacionario
         for inflacionario in PreciosInflacionario._meta.get_fields():
             if not inflacionario.attname in exclude_fields:
                 fields[1].append({
@@ -125,12 +130,19 @@ class Precios(models.Model):
                     'null': inflacionario.null, 'validators': inflacionario.validators, 'error_messages': inflacionario.error_messages
                 })
 
+        ## Extrae los campos del modelo de precios por productos controlados y no controlados
         for productos in PreciosProductos._meta.get_fields():
             if not productos.attname in exclude_fields:
                 fields[1].append({
                     'field': productos.attname, 'label': str(productos.verbose_name), 'type': productos.get_internal_type(),
                     'null': productos.null, 'validators': productos.validators, 'error_messages': productos.error_messages
                 })
+
+        ## Estrae los registros asociados a descargar en archivo
+        for p in Precios.objects.filter(**kwargs):
+            registros = [p.anho, p.mes, p.inpc]
+            #registros.append()
+            data.append(registros)
 
         return {'cabecera': fields, 'relations': relations, 'data': data, 'output': 'precios'}
 
