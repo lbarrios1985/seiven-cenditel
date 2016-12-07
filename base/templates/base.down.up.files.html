@@ -12,10 +12,16 @@
     </div>
     <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
         <h2>
-            <a href="{% if not url_up %}#{% else %}{{ url_up }}{% endif %}">
+            <a href="#" class="upload-file">
                 <i class="fa fa-upload"></i> {% trans 'Cargar archivo' %}
             </a>
+            <form id="form-upload-file" action="{{ url_up }}" method="post" role="form">
+                {% csrf_token %}
+                <input type="file" class="form-control" name="file" id="file" style="display:none">
+                <input type="hidden" id="filters" name="filter" readonly="readonly">
+                <input type="hidden" id="app" name="app" value="{{ app }}" readonly="readonly">
+                <input type="hidden" id="mod" name="mod" value="{{ mod }}" readonly="readonly">
+            </form>
         </h2>
     </div>
-    <input type="hidden" id="filters" readonly="readonly">
 </div>

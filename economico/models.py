@@ -19,6 +19,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from base.constant import DOMINIO, PERIOCIDAD, TRIMESTRES, MESES, ECONOMICO_SUB_AREA
 
+import pyexcel
+
 __licence__ = "GNU Public License v2"
 __revision__ = ""
 __docstring__ = "DoxyGen"
@@ -145,6 +147,12 @@ class Precios(models.Model):
             data.append(registros)
 
         return {'cabecera': fields, 'relations': relations, 'data': data, 'output': 'precios'}
+
+    def gestion_process(self, file, *args, **kwargs):
+        print(file)
+        load_file = pyexcel.get_sheet(file_name=file)
+        print(load_file.content)
+        return {'result': True, 'message': str(_("archivo correcto"))}
 
 
 @python_2_unicode_compatible

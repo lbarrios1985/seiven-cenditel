@@ -23,4 +23,5 @@ urlpatterns = [
 ## URLs de peticiones AJAX
 urlpatterns += [
     url(r'^ajax/descargar_archivo/?$', gestion_ajax.descargar_archivo, name='descargar_archivo'),
+    url(r'^ajax/cargar_archivo/?$', gestion_ajax.cargar_archivo, name='cargar_archivo'),
 ]

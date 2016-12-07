@@ -53,7 +53,9 @@ def precios(request):
     """
     form = RealPreciosForm()
 
-    return render(request, 'economico.precios.html', {'form': form, 'url_down': reverse('descargar_archivo')})
+    return render(request, 'economico.precios.html', {
+        'form': form, 'url_down': reverse('descargar_archivo'), 'url_up': reverse('cargar_archivo')
+    })
 
 
 @login_required

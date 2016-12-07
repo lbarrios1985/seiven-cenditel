@@ -59,12 +59,45 @@
                 <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.periodo_mes_fin }}</div>
                 <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.periodo_anho_fin }}</div>
             </div>
-            {% include 'base.down.up.files.html' with url_down=url_down app='economico' mod='Precios' %}
+            {% include 'base.down.up.files.html' with app='economico' mod='Precios' %}
         </div>
     </div>
 {% endblock %}
 {% block extra_footer %}
     <script>
+        function set_filters() {
+            var filters = $("#filters"), json_filter = '';
+            var dominio = $('#{{ form.dominio.auto_id }}');
+            var anho_base = $("#{{ form.anho_base.auto_id }}");
+            var periodo_mes_ini = $("#{{ form.periodo_mes_ini.auto_id }}");
+            var periodo_mes_fin = $("#{{ form.periodo_mes_fin.auto_id }}");
+            var periodo_anho_ini = $("#{{ form.periodo_anho_ini.auto_id }}");
+            var periodo_anho_fin = $("#{{ form.periodo_anho_fin.auto_id }}");
+
+            if (dominio.val()) {
+                json_filter += "\"dominio\": \"" + dominio.val() + "\",";
+            }
+            if (anho_base.val()) {
+                json_filter += "\"anho_base\": \"" + anho_base.val() + "\",";
+            }
+            if (periodo_mes_ini.val()) {
+                json_filter += "\"periodo_mes_ini\": \"" + periodo_mes_ini.val() + "\",";
+            }
+            if (periodo_mes_fin.val()) {
+                json_filter += "\"periodo_mes_fin\": \"" + periodo_mes_fin.val() + "\",";
+            }
+            if (periodo_anho_ini.val()) {
+                json_filter += "\"periodo_anho_ini\": \"" + periodo_anho_ini.val() + "\",";
+            }
+            if (periodo_anho_fin.val()) {
+                json_filter += "\"periodo_anho_fin\": \"" + periodo_anho_fin.val() + "\",";
+            }
+
+            if (json_filter) {
+                json_filter = json_filter.slice(0, -1);
+                filters.val(json_filter);
+            }
+        }
         $(document).ready(function() {
             $('#{{ form.dominio.auto_id }}').on('change', function() {
                 $(this).val().split('dominio: ' + $(this).val() + ",").join("");
@@ -76,37 +109,39 @@
 
             $('.download-file').on('click', function(e) {
                 e.preventDefault();
-                var filters = $("#filters"), json_filter = '';
-                var dominio = $('#{{ form.dominio.auto_id }}');
-                var anho_base = $("#{{ form.anho_base.auto_id }}");
-                var periodo_mes_ini = $("#{{ form.periodo_mes_ini.auto_id }}");
-                var periodo_mes_fin = $("#{{ form.periodo_mes_fin.auto_id }}");
-                var periodo_anho_ini = $("#{{ form.periodo_anho_ini.auto_id }}");
-                var periodo_anho_fin = $("#{{ form.periodo_anho_fin.auto_id }}");
+                set_filters();
+            });
 
-                if (dominio.val()) {
-                    json_filter += "\"dominio\": \"" + dominio.val() + "\",";
-                }
-                if (anho_base.val()) {
-                    json_filter += "\"anho_base\": \"" + anho_base.val() + "\",";
-                }
-                if (periodo_mes_ini.val()) {
-                    json_filter += "\"periodo_mes_ini\": \"" + periodo_mes_ini.val() + "\",";
-                }
-                if (periodo_mes_fin.val()) {
-                    json_filter += "\"periodo_mes_fin\": \"" + periodo_mes_fin.val() + "\",";
-                }
-                if (periodo_anho_ini.val()) {
-                    json_filter += "\"periodo_anho_ini\": \"" + periodo_anho_ini.val() + "\",";
-                }
-                if (periodo_anho_fin.val()) {
-                    json_filter += "\"periodo_anho_fin\": \"" + periodo_anho_fin.val() + "\",";
-                }
+            $('.upload-file').on('click', function(e) {
+                e.preventDefault();
 
-                if (json_filter) {
-                    json_filter = json_filter.slice(0, -1);
-                    filters.val(json_filter);
-                }
+                var file = $("#file"), form_upload = $('#form-upload-file');
+                file.click();
+                file.on('change', function(e) {
+                    e.preventDefault();
+                    form_upload.ajaxForm({
+                        beforeSubmit: function(arr, $form, options) {
+                            set_filters();
+                        },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.result) {
+                                bootbox.alert(response.message);
+                            }
+                            else {
+                                bootbox.alert(response.message);
+                            }
+                        },
+                        error: function(jqxhr, textStatus, error) {
+                            var err = textStatus + ", " + error;
+                            bootbox.alert( MSG_PETICION_AJAX_FALLIDA + err );
+                            console.log(MSG_PETICION_AJAX_FALLIDA + err);
+                        }
+                    });
+
+                    form_upload.submit();
+                });
 
             });
         });
