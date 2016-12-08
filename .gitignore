@@ -1,6 +1,7 @@
 *.pyc
 .idea
 static/tmp
+static/files/*.*
 *.db
 *.sqlite3
 *.dot
