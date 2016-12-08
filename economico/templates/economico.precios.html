@@ -65,6 +65,9 @@
 {% endblock %}
 {% block extra_footer %}
     <script>
+        /**
+         * Función que configura los filtros de acuerdo a la selección del usuario
+         */
         function set_filters() {
             var filters = $("#filters"), json_filter = '';
             var dominio = $('#{{ form.dominio.auto_id }}');
@@ -98,52 +101,5 @@
                 filters.val(json_filter);
             }
         }
-        $(document).ready(function() {
-            $('#{{ form.dominio.auto_id }}').on('change', function() {
-                $(this).val().split('dominio: ' + $(this).val() + ",").join("");
-                if ($(this).val() != "") {
-                    var filters = $("#filters");
-                    filters.val(filters.val() + 'dominio: ' + $(this).val() + ',');
-                }
-            });
-
-            $('.download-file').on('click', function(e) {
-                e.preventDefault();
-                set_filters();
-            });
-
-            $('.upload-file').on('click', function(e) {
-                e.preventDefault();
-
-                var file = $("#file"), form_upload = $('#form-upload-file');
-                file.click();
-                file.on('change', function(e) {
-                    e.preventDefault();
-                    form_upload.ajaxForm({
-                        beforeSubmit: function(arr, $form, options) {
-                            set_filters();
-                        },
-                        type: 'post',
-                        dataType: 'json',
-                        success: function(response) {
-                            if (response.result) {
-                                bootbox.alert(response.message);
-                            }
-                            else {
-                                bootbox.alert(response.message);
-                            }
-                        },
-                        error: function(jqxhr, textStatus, error) {
-                            var err = textStatus + ", " + error;
-                            bootbox.alert( MSG_PETICION_AJAX_FALLIDA + err );
-                            console.log(MSG_PETICION_AJAX_FALLIDA + err);
-                        }
-                    });
-
-                    form_upload.submit();
-                });
-
-            });
-        });
     </script>
 {% endblock %}

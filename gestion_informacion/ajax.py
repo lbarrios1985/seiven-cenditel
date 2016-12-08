@@ -155,7 +155,7 @@ def cargar_archivo(request):
 
             modelo = apps.get_model(app, mod)
             instance = modelo()
-            process = instance.gestion_process(archivo, **filter)
+            process = instance.gestion_process(archivo, request.user, **filter)
 
             if process['result']:
                 return HttpResponse(json.dumps({'result': True, 'message': str(MSG_UPLOAD_FILE_SUCCESS)}))

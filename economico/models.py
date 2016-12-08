@@ -14,16 +14,25 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.utils import six
+from django.conf import settings
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
-from base.constant import DOMINIO, PERIOCIDAD, TRIMESTRES, MESES, ECONOMICO_SUB_AREA
+from base.constant import (
+    DOMINIO, PERIOCIDAD, TRIMESTRES, MESES, ECONOMICO_SUB_AREA, CONVERT_MES, EMAIL_SUBJECT_LOAD_DATA
+)
+from base.functions import enviar_correo, check_val_data
 
 import pyexcel
 
 __licence__ = "GNU Public License v2"
 __revision__ = ""
 __docstring__ = "DoxyGen"
+
+administrador, admin_email = '', ''
+if settings.ADMINS:
+    administrador = settings.ADMINS[0][0]
+    admin_email = settings.ADMINS[0][1]
 
 
 @python_2_unicode_compatible
@@ -41,22 +50,25 @@ class Precios(models.Model):
     inpc = models.DecimalField(max_digits=18, decimal_places=2, verbose_name=_("INPC"))
 
     ## Ciudad del registro. La información registrada es solo para el tipo de dominio por ciudad
-    ciudad = models.CharField(max_length=3, choices=DOMINIO[1:], null=True, verbose_name=_("Ciudad"))
+    ciudad = models.CharField(max_length=3, choices=DOMINIO[1:], null=True, default=None, verbose_name=_("Ciudad"))
+
+    class Meta:
+        unique_together = ("anho", "mes")
 
     def gestion_init(self, *args, **kwargs): #ciudad=None, anho_base=None, mes_ini=None, mes_fin=None, anho_ini=None, anho_fin=None
 
         grupo_label = str(PreciosGrupo._meta.verbose_name)
-        grupo_count_fields = PreciosGrupo._meta.get_fields()[:-3].__len__()
+        grupo_count_fields = PreciosGrupo._meta.get_fields()[:-4].__len__()
         sector_label = str(PreciosSector._meta.verbose_name)
-        sector_count_fields = PreciosSector._meta.get_fields()[:-3].__len__()
+        sector_count_fields = PreciosSector._meta.get_fields()[:-4].__len__()
         naturaleza_label = str(PreciosNaturaleza._meta.verbose_name)
-        naturaleza_count_fields = PreciosNaturaleza._meta.get_fields()[:-3].__len__()
+        naturaleza_count_fields = PreciosNaturaleza._meta.get_fields()[:-4].__len__()
         servicios_label = str(PreciosServicios._meta.verbose_name)
-        servicios_count_fields = PreciosServicios._meta.get_fields()[:-3].__len__()
+        servicios_count_fields = PreciosServicios._meta.get_fields()[:-4].__len__()
         inflacionario_label = str(PreciosInflacionario._meta.verbose_name)
-        inflacionario_count_fields = PreciosInflacionario._meta.get_fields()[:-3].__len__()
+        inflacionario_count_fields = PreciosInflacionario._meta.get_fields()[:-4].__len__()
         productos_label = str(PreciosProductos._meta.verbose_name)
-        productos_count_fields = PreciosProductos._meta.get_fields()[:-3].__len__()
+        productos_count_fields = PreciosProductos._meta.get_fields()[:-4].__len__()
         fields = [
             [
                 {'tag': '', 'color': '', 'text_color': '', 'combine': 0},
@@ -71,7 +83,7 @@ class Precios(models.Model):
             ],
             []
         ]
-        relations, data, exclude_fields = [], [], ['id', 'anho_base', 'real_precios_id']
+        relations, data, exclude_fields = [], [], ['id', 'anho_base', 'real_precios_id', 'base']
 
         if not 'dominio' in kwargs or not kwargs['dominio'] == 'C':
             exclude_fields.append('ciudad')
@@ -148,11 +160,115 @@ class Precios(models.Model):
 
         return {'cabecera': fields, 'relations': relations, 'data': data, 'output': 'precios'}
 
-    def gestion_process(self, file, *args, **kwargs):
-        print(file)
+    def gestion_process(self, file, user, *args, **kwargs):
         load_file = pyexcel.get_sheet(file_name=file)
-        print(load_file.content)
-        return {'result': True, 'message': str(_("archivo correcto"))}
+        anho_base, i, col_ini, errors, result, message = '', 0, 2, '', True, ''
+        load_data_msg = str(_("Datos Cargados"))
+
+        for row in load_file.row[2:]:
+            try:
+                # Asigna el año base del registro
+                anho_b = anho_base = row[0] if i == 0 else anho_base
+
+                # Asigna el año de la fila que se esta procesando
+                anho = row[0]
+
+                # Asigna el número de mes
+                mes = [CONVERT_MES[m] for m in CONVERT_MES if m.find(row[1]) >= 0][0]
+
+                # Asigna la ciudad si el dominio no es nacional
+                ciudad = row[2] if 'dominio' in kwargs and kwargs['dominio'] == 'C' else None
+
+                # Asigna el INPC total para el año base
+                inpc = row[3] if self.ciudad else row[2]
+
+                # Condición que indica si el registro corresponde al año base
+                base = True if i == 0 else False
+
+                # Gestión para los datos básicos de precios
+                real_p, created = Precios.objects.update_or_create(anho=anho, mes=mes, ciudad=ciudad, defaults={
+                    'anho_base': anho_b, 'inpc': inpc
+                })
+
+
+                # Gestión de datos para el Índice por Grupos
+                PreciosGrupo.objects.update_or_create(real_precios=real_p, defaults={
+                    'base': base,
+                    'alimento_bebida': check_val_data(row[4] if self.ciudad else row[3]),
+                    'bebida_tabaco': check_val_data(row[5] if self.ciudad else row[4]),
+                    'vestido_calzado': check_val_data(row[6] if self.ciudad else row[5]),
+                    'alquiler_vivienda': check_val_data(row[7] if self.ciudad else row[6]),
+                    'servicio_vivienda': check_val_data(row[8] if self.ciudad else row[7]),
+                    'equipamiento_hogar': check_val_data(row[9] if self.ciudad else row[8]),
+                    'salud': check_val_data(row[10] if self.ciudad else row[9]),
+                    'transporte': check_val_data(row[11] if self.ciudad else row[10]),
+                    'comunicaciones': check_val_data(row[12] if self.ciudad else row[11]),
+                    'esparcimiento': check_val_data(row[13] if self.ciudad else row[12]),
+                    'educacion': check_val_data(row[14] if self.ciudad else row[13]),
+                    'restaurant_hotel': check_val_data(row[15] if self.ciudad else row[14]),
+                    'bienes_servicios': check_val_data(row[16] if self.ciudad else row[15])
+                })
+
+                # Gestión de datos para el Índice por Sector de Origen
+                PreciosSector.objects.update_or_create(real_precios=real_p, defaults={
+                    'base': base,
+                    'durables': check_val_data(row[17] if self.ciudad else row[16]),
+                    'semi_durables': check_val_data(row[18] if self.ciudad else row[17]),
+                    'no_durables': check_val_data(row[19] if self.ciudad else row[18])
+                })
+
+                # Gestión de datos para el Índice por Naturaleza y Durabilidad
+                PreciosNaturaleza.objects.update_or_create(real_precios=real_p, defaults={
+                    'base': base,
+                    'bienes': check_val_data(row[20] if self.ciudad else row[19]),
+                    'agricolas': check_val_data(row[21] if self.ciudad else row[20]),
+                    'pesquero': check_val_data(row[22] if self.ciudad else row[21]),
+                    'agroindustrial': check_val_data(row[23] if self.ciudad else row[22]),
+                    'otros': check_val_data(row[24] if self.ciudad else row[23])
+                })
+
+                # Gestión de datos para el Índice por Servicios
+                PreciosServicios.objects.update_or_create(real_precios=real_p, defaults={
+                    'base': base,
+                    'total': check_val_data(row[25] if self.ciudad else row[24]),
+                    'basicos': check_val_data(row[26] if self.ciudad else row[25]),
+                    'otros': check_val_data(row[27] if self.ciudad else row[26])
+                })
+
+                # Gestion de datos para el Índice por Núcleo Inflacionario
+                PreciosInflacionario.objects.update_or_create(real_precios=real_p, defaults={
+                    'base': base,
+                    'nucleo': check_val_data(row[28] if self.ciudad else row[27]),
+                    'alimentos': check_val_data(row[29] if self.ciudad else row[28]),
+                    'textiles': check_val_data(row[30] if self.ciudad else row[29]),
+                    'bienes': check_val_data(row[31] if self.ciudad else row[30]),
+                    'servicios': check_val_data(row[32] if self.ciudad else row[31])
+                })
+
+                # Gestión de datos para el Índice de Productos Controlados y No Controlados
+                PreciosProductos.objects.update_or_create(real_precios=real_p, defaults={
+                    'base': base,
+                    'controlados': check_val_data(row[33] if self.ciudad else row[32]),
+                    'no_controlados': check_val_data(row[34] if self.ciudad else row[33])
+                })
+
+            except Exception as e:
+                errors = errors + "<li>%s</li>" % str(e)
+
+            i += 1
+
+        if errors:
+            message = str(_("Error procesando datos. Verifique su correo para detalles del error"))
+            load_data_msg = str(_("Error al procesar datos"))
+
+
+        ## Envia correo electronico al usuario indicando el estatus de la carga de datos
+        enviar_correo(user.email, 'gestion.informacion.load.mail', EMAIL_SUBJECT_LOAD_DATA, {
+            'load_data_msg': load_data_msg, 'administrador': administrador, 'admin_email': admin_email,
+            'errors': errors
+        })
+
+        return {'result': result, 'message': message}
 
 
 @python_2_unicode_compatible
@@ -210,6 +326,8 @@ class PreciosGrupo(models.Model):
         max_digits=18, decimal_places=2, default=0.0, verbose_name=_("(13) Bienes y Servicios Diversos")
     )
 
+    base = models.BooleanField(default=False, verbose_name=_("Indicador base"))
+
     real_precios = models.ForeignKey(Precios, verbose_name=_("Sector Real"))
 
     class Meta:
@@ -230,6 +348,8 @@ class PreciosSector(models.Model):
     no_durables = models.DecimalField(
         max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Bienes no durables")
     )
+
+    base = models.BooleanField(default=False, verbose_name=_("Indicador base"))
 
     real_precios = models.ForeignKey(Precios, verbose_name=_("Sector Real"))
 
@@ -260,6 +380,8 @@ class PreciosNaturaleza(models.Model):
         max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Otros manufacturados")
     )
 
+    base = models.BooleanField(default=False, verbose_name=_("Indicador base"))
+
     real_precios = models.ForeignKey(Precios, verbose_name=_("Sector Real"))
 
     class Meta:
@@ -279,6 +401,8 @@ class PreciosServicios(models.Model):
     otros = models.DecimalField(
         max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Otros servicios")
     )
+
+    base = models.BooleanField(default=False, verbose_name=_("Indicador base"))
 
     real_precios = models.ForeignKey(Precios, verbose_name=_("Sector Real"))
 
@@ -307,6 +431,8 @@ class PreciosInflacionario(models.Model):
         max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Servicios no administrados")
     )
 
+    base = models.BooleanField(default=False, verbose_name=_("Indicador base"))
+
     real_precios = models.ForeignKey(Precios, verbose_name=_("Sector Real"))
 
     class Meta:
@@ -321,6 +447,8 @@ class PreciosProductos(models.Model):
     no_controlados = models.DecimalField(
         max_digits=18, decimal_places=2, default=0.0, verbose_name=_("No Controlados")
     )
+
+    base = models.BooleanField(default=False, verbose_name=_("Indicador base"))
 
     real_precios = models.ForeignKey(Precios, verbose_name=_("Sector Real"))
 

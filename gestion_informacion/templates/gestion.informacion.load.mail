@@ -1,0 +1,15 @@
+{{ load_data_msg|safe }}
+
+{% if errors %}
+    Se presentaron algunos errores al momento de registrar la información, por favor verifique los errores descritos a
+    continuación:
+    <ul>
+    {{ errors|safe }}
+    </ul>
+{% else %}
+    Los datos fueron cargados satisfactoriamente
+{% endif %}
+
+Administrador del Sistema
+{{ administrador|safe }}
+{{ admin_email|safe }}

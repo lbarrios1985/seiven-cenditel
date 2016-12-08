@@ -33,6 +33,9 @@ APP_NAME = "SEIVEN"
 ## Asunto del mensaje de bienvenida
 EMAIL_SUBJECT_REGISTRO = "Bienvenido a %s" % APP_NAME
 
+## Asunto del mensaje de información sobre la carga de datos
+EMAIL_SUBJECT_LOAD_DATA = "Gestión de Datos - SEIVEN"
+
 admin_email = ''
 if settings.ADMINS:
     ## Contiene el correo electrónico del administrador del sistema
@@ -183,3 +186,9 @@ ECONOMICO_SUB_AREA = [
     (('OFE'), _('Oferta')),
 ]
 
+
+CONVERT_MES = {
+    _('Enero') : '01', _('Febrero') : '02', _('Marzo') : '03', _('Abril') : '04', _('Mayo') : '05', _('Junio') : '06',
+    _('Julio') : '07', _('Agosto') : '08', _('Septiembre') : '09', _('Octubre') : '10', _('Noviembre') : '11',
+    _('Diciembre') : '12',
+}

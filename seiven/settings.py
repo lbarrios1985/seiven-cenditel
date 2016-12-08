@@ -34,7 +34,9 @@ DEBUG = True
 ALLOWED_HOSTS = ['localhost']
 
 ## Identifica a los administradores del sistema
-ADMINS = []
+ADMINS = [
+    ('', ''),
+]
 
 ## Listado de aplicaciones base del sistema
 PREREQ_APPS = [
@@ -102,10 +104,13 @@ ECONOMICO_TEMPLATES = os.path.join(BASE_DIR, "economico/templates")
 ## Directorio en donde se encuentran las plantillas del módulo de usuarios
 USUARIO_TEMPLATES = os.path.join(BASE_DIR, "usuario/templates")
 
+## Directorio en donde se encuentran las plantillas de gestión de información
+GESTION_INFORMACION_TEMPLATES = os.path.join(BASE_DIR, "gestion_informacion/templates")
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ROOT_TEMPLATES, BASE_TEMPLATES, ECONOMICO_TEMPLATES, USUARIO_TEMPLATES],
+        'DIRS': [ROOT_TEMPLATES, BASE_TEMPLATES, ECONOMICO_TEMPLATES, USUARIO_TEMPLATES, GESTION_INFORMACION_TEMPLATES],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

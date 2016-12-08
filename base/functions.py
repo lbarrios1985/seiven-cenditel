@@ -22,10 +22,14 @@ from django.core.mail import send_mail
 from django.template import Context
 from django.template.loader import get_template
 from django.utils.translation import ugettext_lazy as _
+from decimal import Decimal
 
 logger = logging.getLogger('base')
 
 date_now = datetime.now()
+
+## Verifica el dato a registrar, si no existe le asigna cero (0)
+check_val_data = lambda val: Decimal(str(val).replace(',','.')) if val else 0
 
 
 def enviar_correo(email, template, subject, vars = None):
