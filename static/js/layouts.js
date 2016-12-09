@@ -40,7 +40,6 @@ $(document).ready(function() {
         /** Accion a ejecutar al solicitar la descarga de archivos */
         $('.download-file').on('click', function(e) {
             e.preventDefault();
-            set_filters();
         });
 
         /** realiza la accion de hacer click en el campo de archivo para cargar un archivo */
@@ -54,7 +53,7 @@ $(document).ready(function() {
             e.preventDefault();
             form_upload.ajaxForm({
                 beforeSubmit: function(arr, $form, options) {
-                    set_filters();
+
                 },
                 type: 'post',
                 dataType: 'json',
@@ -65,6 +64,7 @@ $(document).ready(function() {
                     else {
                         bootbox.alert(response.message);
                     }
+
                 },
                 error: function(jqxhr, textStatus, error) {
                     var err = textStatus + ", " + error;
@@ -77,6 +77,9 @@ $(document).ready(function() {
             form_upload.on('submit', function(e) {
                 e.preventDefault();
             });
+
+            /** Reestablece la condicion de envio del formulario */
+            form_upload.unbind('submit');
 
         });
     }

@@ -56,6 +56,24 @@ class Precios(models.Model):
         unique_together = ("anho", "mes")
 
     def gestion_init(self, *args, **kwargs): #ciudad=None, anho_base=None, mes_ini=None, mes_fin=None, anho_ini=None, anho_fin=None
+        """!
+        Método que permite descargar un archivo con los datos a gestionar
+
+        @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 05-12-2016
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve los datos a incluír en el archivo
+        """
+        if 'dominio' in kwargs:
+            if kwargs['dominio'] == 'N':
+                kwargs['dominio'] = None
+                kwargs['ciudad'] = kwargs.pop('dominio')
+            else:
+                kwargs['ciudad__in'] = [d for d in DOMINIO[1:][0]]
+
 
         grupo_label = str(PreciosGrupo._meta.verbose_name)
         grupo_count_fields = PreciosGrupo._meta.get_fields()[:-4].__len__()
@@ -161,9 +179,30 @@ class Precios(models.Model):
         return {'cabecera': fields, 'relations': relations, 'data': data, 'output': 'precios'}
 
     def gestion_process(self, file, user, *args, **kwargs):
+        """!
+        Método que permite cargar y gestionar datos
+
+        @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 05-12-2016
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param file <b>{string}</b> Ruta y nombre del archivo a gestionar
+        @param user <b>{object}</b> Objeto que contiene los datos del usuario que realiza la acción
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve el resultado de la acción con su correspondiente mensaje
+        """
         load_file = pyexcel.get_sheet(file_name=file)
         anho_base, i, col_ini, errors, result, message = '', 0, 2, '', True, ''
         load_data_msg = str(_("Datos Cargados"))
+
+        if 'dominio' in kwargs:
+            if (kwargs['dominio'] == 'C' and load_file.row[1][2] == 'INPC') or (kwargs['dominio'] == 'N' and load_file.row[1][2] != 'INPC'):
+                result = False
+        if 'anho_base' in kwargs and kwargs['anho_base'] != load_file.row[2][0]:
+            result = False
+        if not result:
+            return {'result': False, 'message': str(_("El documento a cargar no es válido o no corresponde a los parámetros seleccionados"))}
 
         for row in load_file.row[2:]:
             try:
@@ -180,7 +219,7 @@ class Precios(models.Model):
                 ciudad = row[2] if 'dominio' in kwargs and kwargs['dominio'] == 'C' else None
 
                 # Asigna el INPC total para el año base
-                inpc = row[3] if self.ciudad else row[2]
+                inpc = row[3] if ciudad else row[2]
 
                 # Condición que indica si el registro corresponde al año base
                 base = True if i == 0 else False
@@ -253,7 +292,7 @@ class Precios(models.Model):
                 })
 
             except Exception as e:
-                errors = errors + "<li>%s</li>" % str(e)
+                errors = errors + "- %s\n" % str(e)
 
             i += 1
 

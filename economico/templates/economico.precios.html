@@ -65,17 +65,18 @@
 {% endblock %}
 {% block extra_footer %}
     <script>
+        var dominio = $('#{{ form.dominio.auto_id }}');
+        var anho_base = $("#{{ form.anho_base.auto_id }}");
+        var periodo_mes_ini = $("#{{ form.periodo_mes_ini.auto_id }}");
+        var periodo_mes_fin = $("#{{ form.periodo_mes_fin.auto_id }}");
+        var periodo_anho_ini = $("#{{ form.periodo_anho_ini.auto_id }}");
+        var periodo_anho_fin = $("#{{ form.periodo_anho_fin.auto_id }}");
+
         /**
          * Función que configura los filtros de acuerdo a la selección del usuario
          */
         function set_filters() {
             var filters = $("#filters"), json_filter = '';
-            var dominio = $('#{{ form.dominio.auto_id }}');
-            var anho_base = $("#{{ form.anho_base.auto_id }}");
-            var periodo_mes_ini = $("#{{ form.periodo_mes_ini.auto_id }}");
-            var periodo_mes_fin = $("#{{ form.periodo_mes_fin.auto_id }}");
-            var periodo_anho_ini = $("#{{ form.periodo_anho_ini.auto_id }}");
-            var periodo_anho_fin = $("#{{ form.periodo_anho_fin.auto_id }}");
 
             if (dominio.val()) {
                 json_filter += "\"dominio\": \"" + dominio.val() + "\",";
@@ -101,5 +102,14 @@
                 filters.val(json_filter);
             }
         }
+
+        $(document).ready(function() {
+            dominio.on('change', function() { set_filters() });
+            anho_base.on('change', function() { set_filters() });
+            periodo_mes_ini.on('change', function() { set_filters() });
+            periodo_mes_fin.on('change', function() { set_filters() });
+            periodo_anho_ini.on('change', function() { set_filters() });
+            periodo_anho_fin.on('change', function() { set_filters() });
+        });
     </script>
 {% endblock %}
