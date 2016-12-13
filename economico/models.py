@@ -17,6 +17,8 @@ from django.utils import six
 from django.conf import settings
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
+from django.db.models import Q
+from datetime import datetime
 
 from base.constant import (
     DOMINIO, PERIOCIDAD, TRIMESTRES, MESES, ECONOMICO_SUB_AREA, CONVERT_MES, EMAIL_SUBJECT_LOAD_DATA
@@ -52,6 +54,9 @@ class Precios(models.Model):
     ## Ciudad del registro. La información registrada es solo para el tipo de dominio por ciudad
     ciudad = models.CharField(max_length=3, choices=DOMINIO[1:], null=True, default=None, verbose_name=_("Ciudad"))
 
+    ## Registro del mes y año
+    fecha = models.DateField(null=True, verbose_name=_("Fecha"))
+
     class Meta:
         unique_together = ("anho", "mes")
 
@@ -67,116 +72,141 @@ class Precios(models.Model):
         @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
         @return Devuelve los datos a incluír en el archivo
         """
+
+        fields = [
+            [
+                {'tag': '', 'cabecera': True},
+                {'tag': '', 'cabecera': True},
+                {'tag': '', 'cabecera': True},
+                {'tag': str(_("Índice por Grupo")), 'color': 'indigo', 'text_color': 'white', 'combine': 13, 'cabecera': True},
+                {'tag': str(_("Índice por Sector de Origen")), 'color': 'orange', 'text_color': 'white', 'combine': 3, 'cabecera': True},
+                {'tag': str(_("Índice por Naturaleza y Durabilidad")), 'color': 'gray25', 'text_color': 'black', 'combine': 5, 'cabecera': True},
+                {'tag': str(_("Índice de Servicios")), 'color': 'green', 'text_color': 'white', 'combine': 3, 'cabecera': True},
+                {'tag': str(_("Índice del Núcleo Inflacionario")), 'color': 'red', 'text_color': 'white', 'combine': 5, 'cabecera': True},
+                {'tag': str(_("Índice de Productos Controlados y no Controlados")), 'color': 'aqua', 'text_color': 'black', 'combine': 2, 'cabecera': True},
+            ],
+            [
+                {'tag': str(_('Año')), 'cabecera': True}, {'tag': str(_('Mes')), 'cabecera': True}, {'tag': str(_('INPC')), 'cabecera': True},
+                {'tag': str(_('(1) Alimentos y Bebidas no Alcoholicas')), 'cabecera': True},
+                {'tag': str(_('(2) Bebidas Alcoholicas y Tabaco')), 'cabecera': True},
+                {'tag': str(_('(3) Vestido y Calzado')), 'cabecera': True},
+                {'tag': str(_('(4) Alquiler de Vivienda')), 'cabecera': True},
+                {'tag': str(_('(5) Servicios de Vivienda Excepto Teléfono')), 'cabecera': True},
+                {'tag': str(_('(6) Equipamiento de Hogar')), 'cabecera': True},
+                {'tag': str(_('(7) Salud')), 'cabecera': True},
+                {'tag': str(_('(8) Transporte')), 'cabecera': True},
+                {'tag': str(_('(9) Comunicaciones')), 'cabecera': True},
+                {'tag': str(_('(10) Esparcimiento y Cultura')), 'cabecera': True},
+                {'tag': str(_('(11) Servicios de Educación')), 'cabecera': True},
+                {'tag': str(_('(12) Restaurant y Hotel')), 'cabecera': True},
+                {'tag': str(_('(13) Bienes y Servicios Diversos')), 'cabecera': True},
+                {'tag': str(_('Bienes durables')), 'cabecera': True},
+                {'tag': str(_('Bienes semidurables')), 'cabecera': True},
+                {'tag': str(_('Bienes no durables')), 'cabecera': True},
+                {'tag': str(_('Bienes')), 'cabecera': True},
+                {'tag': str(_('Agrícolas')), 'cabecera': True},
+                {'tag': str(_('Productos pesqueros')), 'cabecera': True},
+                {'tag': str(_('Agroindustrial')), 'cabecera': True},
+                {'tag': str(_('Otros manufacturados')), 'cabecera': True},
+                {'tag': str(_('Total Servicios')), 'cabecera': True},
+                {'tag': str(_('Servicios Básicos')), 'cabecera': True},
+                {'tag': str(_('Otros Servicios')), 'cabecera': True},
+                {'tag': str(_('Núcleo Inflacionario (NI)')), 'cabecera': True},
+                {'tag': str(_('Alimentos Elaborados')), 'cabecera': True},
+                {'tag': str(_('Textiles y Prendas de Vestir')), 'cabecera': True},
+                {'tag': str(_('Bienes industriales excepto alimentos y textiles')), 'cabecera': True},
+                {'tag': str(_('Servicios no administrados')), 'cabecera': True},
+                {'tag': str(_('Controlados')), 'cabecera': True},
+                {'tag': str(_('No Controlados')), 'cabecera': True}
+            ]
+        ]
+        exclude_fields = ['id', 'anho_base', 'real_precios_id', 'base']
+
+        dominio, data_type = str(_('INPC')), 'N'
+
+        # Condición para filtrar y mostrar la información según la selección del usuario
         if 'dominio' in kwargs:
             if kwargs['dominio'] == 'N':
                 kwargs['dominio'] = None
                 kwargs['ciudad'] = kwargs.pop('dominio')
             else:
+                dominio, data_type = str(_('Ciudad')), 'C'
+                kwargs['ciudad__in'] = kwargs.pop('dominio')
                 kwargs['ciudad__in'] = [d for d in DOMINIO[1:][0]]
+                # Agrega la columna correspondiente a las ciudades
+                fields[0].insert(2, {'tag': '', 'cabecera': True})
+                fields[1].insert(2, {'tag': dominio, 'cabecera': True})
 
-
-        grupo_label = str(PreciosGrupo._meta.verbose_name)
-        grupo_count_fields = PreciosGrupo._meta.get_fields()[:-4].__len__()
-        sector_label = str(PreciosSector._meta.verbose_name)
-        sector_count_fields = PreciosSector._meta.get_fields()[:-4].__len__()
-        naturaleza_label = str(PreciosNaturaleza._meta.verbose_name)
-        naturaleza_count_fields = PreciosNaturaleza._meta.get_fields()[:-4].__len__()
-        servicios_label = str(PreciosServicios._meta.verbose_name)
-        servicios_count_fields = PreciosServicios._meta.get_fields()[:-4].__len__()
-        inflacionario_label = str(PreciosInflacionario._meta.verbose_name)
-        inflacionario_count_fields = PreciosInflacionario._meta.get_fields()[:-4].__len__()
-        productos_label = str(PreciosProductos._meta.verbose_name)
-        productos_count_fields = PreciosProductos._meta.get_fields()[:-4].__len__()
-        fields = [
-            [
-                {'tag': '', 'color': '', 'text_color': '', 'combine': 0},
-                {'tag': '', 'color': '', 'text_color': '', 'combine': 0},
-                {'tag': '', 'color': '', 'text_color': '', 'combine': 0},
-                {'tag': grupo_label, 'color': 'indigo', 'text_color': 'white', 'combine': grupo_count_fields},
-                {'tag': sector_label, 'color': 'orange', 'text_color': 'white', 'combine': sector_count_fields},
-                {'tag': naturaleza_label, 'color': 'gray25', 'text_color': 'black', 'combine': naturaleza_count_fields},
-                {'tag': servicios_label, 'color': 'green', 'text_color': 'white', 'combine': servicios_count_fields},
-                {'tag': inflacionario_label, 'color': 'red', 'text_color': 'white', 'combine': inflacionario_count_fields},
-                {'tag': productos_label, 'color': 'aqua', 'text_color': 'black', 'combine': productos_count_fields},
-            ],
-            []
-        ]
-        relations, data, exclude_fields = [], [], ['id', 'anho_base', 'real_precios_id', 'base']
-
-        if not 'dominio' in kwargs or not kwargs['dominio'] == 'C':
+        elif not 'dominio' in kwargs or not kwargs['dominio'] == 'C':
             exclude_fields.append('ciudad')
 
-        for f in self._meta.get_fields():
-            try:
-                field, label, null = f.attname, str(f.verbose_name), f.null
-                if not field in exclude_fields and not f.get_internal_type() == "ManyToOneRel":
-                    type, validators, error_messages = f.get_internal_type(), f.validators, f.error_messages
-
-                    if type == "ForeignKey":
-                        relations.append(f.rel.to)
-
-                    fields[1].append({
-                        'field': field, 'label': label, 'type': type, 'null': null, 'validators': validators,
-                        'error_messages': error_messages
-                    })
-            except Exception as e:
-                pass
-
-        ## Extrae los campos del modelo de precios por grupo
-        for grupo in PreciosGrupo._meta.get_fields():
-            if not grupo.attname in exclude_fields:
-                fields[1].append({
-                    'field': grupo.attname, 'label': str(grupo.verbose_name), 'type': grupo.get_internal_type(),
-                    'null': grupo.null, 'validators': grupo.validators, 'error_messages': grupo.error_messages
-                })
-
-        ## Extrae los campos del modelo de precios por sector
-        for sector in PreciosSector._meta.get_fields():
-            if not sector.attname in exclude_fields:
-                fields[1].append({
-                    'field': sector.attname, 'label': str(sector.verbose_name), 'type': sector.get_internal_type(),
-                    'null': sector.null, 'validators': sector.validators, 'error_messages': sector.error_messages
-                })
-
-        ## Extrae los campos del modelo de precios por naturaleza
-        for naturaleza in PreciosNaturaleza._meta.get_fields():
-            if not naturaleza.attname in exclude_fields:
-                fields[1].append({
-                    'field': naturaleza.attname, 'label': str(naturaleza.verbose_name), 'type': naturaleza.get_internal_type(),
-                    'null': naturaleza.null, 'validators': naturaleza.validators, 'error_messages': naturaleza.error_messages
-                })
-
-        ## Extrae los campos del modelo de precios por servicios
-        for servicios in PreciosServicios._meta.get_fields():
-            if not servicios.attname in exclude_fields:
-                fields[1].append({
-                    'field': servicios.attname, 'label': str(servicios.verbose_name), 'type': servicios.get_internal_type(),
-                    'null': servicios.null, 'validators': servicios.validators, 'error_messages': servicios.error_messages
-                })
-
-        ## Extrae los campos del modelo de precios por núcleo inflacionario
-        for inflacionario in PreciosInflacionario._meta.get_fields():
-            if not inflacionario.attname in exclude_fields:
-                fields[1].append({
-                    'field': inflacionario.attname, 'label': str(inflacionario.verbose_name), 'type': inflacionario.get_internal_type(),
-                    'null': inflacionario.null, 'validators': inflacionario.validators, 'error_messages': inflacionario.error_messages
-                })
-
-        ## Extrae los campos del modelo de precios por productos controlados y no controlados
-        for productos in PreciosProductos._meta.get_fields():
-            if not productos.attname in exclude_fields:
-                fields[1].append({
-                    'field': productos.attname, 'label': str(productos.verbose_name), 'type': productos.get_internal_type(),
-                    'null': productos.null, 'validators': productos.validators, 'error_messages': productos.error_messages
-                })
+        if 'anho_base' in kwargs:
+            precios_base = {'anho': kwargs['anho_base']}
+            if 'ciudad__in' in kwargs:
+                precios_base.update({'ciudad__in': kwargs['ciudad__in']})
+        else:
+            precios_base = {}
 
         ## Estrae los registros asociados a descargar en archivo
-        for p in Precios.objects.filter(**kwargs):
-            registros = [p.anho, p.mes, p.inpc]
-            #registros.append()
-            data.append(registros)
+        for p in Precios.objects.filter(Q(**kwargs) | Q(**precios_base)):
+            mes = str(_("Enero"))
+            for m in CONVERT_MES:
+                if CONVERT_MES[m] == p.mes:
+                    mes = str(m)
 
-        return {'cabecera': fields, 'relations': relations, 'data': data, 'output': 'precios'}
+            # Registros de Año y Mes
+            registros = [{'tag': p.anho}, {'tag': mes}]
+
+            # Registros por ciudad si es solicitado
+            if data_type == 'C':
+                for d in DOMINIO[1:]:
+                    if d[0] == p.ciudad:
+                        registros.append({'tag': str(d[1])})
+
+            # Índice Nacional de Precios al Consumidor
+            registros.append({'tag': str(p.inpc)})
+
+            #Asigna los índices por grupo
+            grp = p.preciosgrupo_set.get()
+            for g in grp._meta.get_fields():
+                if not g.attname in exclude_fields:
+                    registros.append({'tag': str(grp.__getattribute__(g.attname))})
+
+            # Asigna los indices por sector de origen
+            sec = p.preciossector_set.get()
+            for s in sec._meta.get_fields():
+                if not s.attname in exclude_fields:
+                    registros.append({'tag': str(sec.__getattribute__(s.attname))})
+
+            # Asigna los indices por naturaleza y durabilidad
+            nat = p.preciosnaturaleza_set.get()
+            for n in nat._meta.get_fields():
+                if not n.attname in exclude_fields:
+                    registros.append({'tag': str(nat.__getattribute__(n.attname))})
+
+            # Asigna los ínidces por servicio
+            ser = p.preciosservicios_set.get()
+            for sv in ser._meta.get_fields():
+                if not sv.attname in exclude_fields:
+                    registros.append({'tag': str(ser.__getattribute__(sv.attname))})
+
+            # Asigna los ínidces por núcleo inflacionario
+            inf = p.preciosinflacionario_set.get()
+            for ni in inf._meta.get_fields():
+                if not ni.attname in exclude_fields:
+                    registros.append({'tag': str(inf.__getattribute__(ni.attname))})
+
+
+            # Asigna los ínidces por productos controlados y no controlados
+            prd = p.preciosproductos_set.get()
+            for pr in prd._meta.get_fields():
+                if not pr.attname in exclude_fields:
+                    registros.append({'tag': str(prd.__getattribute__(pr.attname))})
+
+            # Agrega los datos a la nueva fila del archivo a generar
+            fields.append(registros)
+
+        return {'fields': fields, 'output': 'precios'}
 
     def gestion_process(self, file, user, *args, **kwargs):
         """!
@@ -224,10 +254,32 @@ class Precios(models.Model):
                 # Condición que indica si el registro corresponde al año base
                 base = True if i == 0 else False
 
+                # Registro de año y mes para los filtros
+                fecha = datetime(int(anho), int(mes), 1)
+
+                # Condiciones para filtrar la información a cargar según las especificaciones del usuario
+                if 'anho_base' in kwargs and kwargs['anho_base'] != load_file.row[2][0]:
+                    continue
+                if 'fecha__month__gte' in kwargs and 'fecha__month__lte' in kwargs and kwargs[
+                    'fecha__month__lte'] < mes < kwargs['fecha__month__gte']:
+                    continue
+                elif 'fecha__month__gte' in kwargs and mes < kwargs['fecha__month__gte']:
+                    continue
+                elif 'fecha__month__lte' in kwargs and mes > kwargs['fecha__month__lte']:
+                    continue
+                if 'fecha__year__gte' in kwargs and 'fecha__year__lte' in kwargs and kwargs[
+                    'fecha__year__lte'] < anho < kwargs['fecha__year__gte']:
+                    continue
+                elif 'fecha__year__gte' in kwargs and anho < kwargs['fecha__year__gte']:
+                    continue
+                elif 'fecha__year__lte' in kwargs and anho > kwargs['fecha__year__lte']:
+                    continue
+
                 # Gestión para los datos básicos de precios
-                real_p, created = Precios.objects.update_or_create(anho=anho, mes=mes, ciudad=ciudad, defaults={
-                    'anho_base': anho_b, 'inpc': inpc
-                })
+                real_p, created = Precios.objects.update_or_create(
+                    anho=anho, mes=mes, ciudad=ciudad, fecha=fecha,
+                    defaults={ 'anho_base': anho_b, 'inpc': inpc }
+                )
 
 
                 # Gestión de datos para el Índice por Grupos

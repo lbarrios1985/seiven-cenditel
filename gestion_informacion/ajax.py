@@ -12,6 +12,8 @@ Copyleft (@) 2015 CENDITEL nodo Mérida - https://mpv.cenditel.gob.ve/seiven
 # @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
 from __future__ import unicode_literals, absolute_import
 
+import os
+
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.apps import apps
@@ -26,8 +28,6 @@ from base.messages import (
 
 import logging
 import json
-import pyexcel
-import csv
 import xlwt
 
 __licence__ = "GNU Public License v2"
@@ -67,47 +67,39 @@ def descargar_archivo(request):
         if app and mod:
             modelo = apps.get_model(app, mod)
             workbook = xlwt.Workbook()
-            sheet = workbook.add_sheet("Datos")
+            sheet = workbook.add_sheet("Datos", cell_overwrite_ok=True)
             instance = modelo()
-            datos = instance.gestion_init(**filter)
-            font_bold = xlwt.easyxf('font: bold 1')
+            contenido = instance.gestion_init(**filter)
 
-            if datos['cabecera'][0]:
-                c = 0
+            row = 0
+            ## Loop que permite agregar datos al archivo a descargar
+            for con in contenido['fields']:
+                index_col, style = 0, 'align: horiz center;'
+                for col in con:
+                    if 'color' in col:
+                        style += 'pattern: pattern solid, fore_colour %s;' % col['color']
+                    if 'text_color' in col:
+                        style += 'font: color %s, bold True;' % col['text_color']
+                    custom_style = xlwt.easyxf(style)
+                    sheet.write(row, index_col, col['tag'], custom_style)
+                    if 'cabecera' in col:
+                        sheet.col(index_col).width = int(333 * (len(col['tag']) + 1))
 
-                for cabecera in datos['cabecera'][0]:
-                    style = font_bold
-                    if cabecera['color'] and cabecera['text_color']:
-                        style = xlwt.easyxf('pattern: pattern solid, fore_colour %s; font: color %s, bold True; align: horiz center;' % (cabecera['color'], cabecera['text_color']))
-                    if cabecera['combine'] > 0:
-                        count_merge = c + cabecera['combine']
-                        sheet.write_merge(0, 0, c, count_merge, cabecera['tag'], style)
-                        c = count_merge + 1
+                    if 'combine' in col and col['combine'] > 0:
+                        sheet.merge(row, row, index_col, (index_col + (col['combine']-1)), custom_style)
+                        index_col = col['combine'] + index_col
                     else:
-                        sheet.write(0, c, cabecera['tag'], style)
-                        sheet.col(c).width = int(256 * (len(cabecera['tag']) + 1))
-                        c += 1
+                        index_col += 1
+                row += 1
 
-            i = 0
-            for cabecera in datos['cabecera'][1]:
-                sheet.write(1, i, cabecera['label'], font_bold)
-                sheet.col(i).width = int(256 * (len(cabecera['label']) + 1))
-                i += 1
+            # Ruta y nombre del archivo a generar
+            archivo = "%s/%s.xls" % (settings.GESTION_INFORMACION_FILES, contenido['output'])
 
-            # Se obtiene la cantidad de datos
-            cantidad = len(datos['data'])
-            # Si existen datos se crean las filas requeridas
-            if cantidad > 0:
-                for i in range(1, cantidad + 1):
-                    row = len(datos['cabecera'])
-                    for j in range(0, row):
-                        sheet.write(i, j, datos['data'][i - 1][j])
-
-            archivo = "%s/%s.xls" % (settings.GESTION_INFORMACION_FILES, datos['output'])
-
+            # Guarda el contenido de la hoja de cálculo al archivo indicado
             workbook.save(archivo)
 
-            open_file = "%s.xls" % datos['output']
+            # Nombre del archivo a utilizar para la descarga
+            open_file = "%s.xls" % contenido['output']
 
             return HttpResponse(json.dumps({
                 'resultado': True, 'archivo': open_file, 'message': str(MSG_CREATED_FILE_SUCCESS)
@@ -156,6 +148,9 @@ def cargar_archivo(request):
             modelo = apps.get_model(app, mod)
             instance = modelo()
             process = instance.gestion_process(archivo, request.user, **filter)
+
+            # elimina el archivo después de cargar los datos
+            os.unlink(ruta)
 
             if process['result']:
                 return HttpResponse(json.dumps({'result': True, 'message': str(MSG_UPLOAD_FILE_SUCCESS)}))

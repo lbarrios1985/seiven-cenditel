@@ -85,16 +85,16 @@
                 json_filter += "\"anho_base\": \"" + anho_base.val() + "\",";
             }
             if (periodo_mes_ini.val()) {
-                json_filter += "\"periodo_mes_ini\": \"" + periodo_mes_ini.val() + "\",";
+                json_filter += "\"fecha__month__gte\": \"" + periodo_mes_ini.val() + "\",";
             }
             if (periodo_mes_fin.val()) {
-                json_filter += "\"periodo_mes_fin\": \"" + periodo_mes_fin.val() + "\",";
+                json_filter += "\"fecha__month__lte\": \"" + periodo_mes_fin.val() + "\",";
             }
             if (periodo_anho_ini.val()) {
-                json_filter += "\"periodo_anho_ini\": \"" + periodo_anho_ini.val() + "\",";
+                json_filter += "\"fecha__year__gte\": \"" + periodo_anho_ini.val() + "\",";
             }
             if (periodo_anho_fin.val()) {
-                json_filter += "\"periodo_anho_fin\": \"" + periodo_anho_fin.val() + "\",";
+                json_filter += "\"fecha__year__lte\": \"" + periodo_anho_fin.val() + "\",";
             }
 
             if (json_filter) {
