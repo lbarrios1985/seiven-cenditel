@@ -71,7 +71,9 @@ def pib(request):
     """
     form = RealPIBForm()
 
-    return render(request, 'economico.pib.html', {'form': form})
+    return render(request, 'economico.pib.html', {
+        'form': form, 'url_down': reverse('descargar_archivo'), 'url_up': reverse('cargar_archivo')
+    })
 
 
 @login_required

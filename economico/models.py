@@ -60,7 +60,7 @@ class Precios(models.Model):
     class Meta:
         unique_together = ("anho", "mes")
 
-    def gestion_init(self, *args, **kwargs): #ciudad=None, anho_base=None, mes_ini=None, mes_fin=None, anho_ini=None, anho_fin=None
+    def gestion_init(self, *args, **kwargs):
         """!
         Método que permite descargar un archivo con los datos a gestionar
 
@@ -344,13 +344,13 @@ class Precios(models.Model):
                 })
 
             except Exception as e:
-                errors = errors + "- %s\n" % str(e)
+                errors += "- %s\n" % str(e)
 
             i += 1
 
         if errors:
             message = str(_("Error procesando datos. Verifique su correo para detalles del error"))
-            load_data_msg = str(_("Error al procesar datos"))
+            load_data_msg = str(_("Error al procesar datos del área Económica - Real"))
 
 
         ## Envia correo electronico al usuario indicando el estatus de la carga de datos
@@ -545,3 +545,330 @@ class PreciosProductos(models.Model):
 
     class Meta:
         verbose_name = _("Índice de Productos Controlados y no Controlados")
+
+
+# ------------ Económico Real - PIB --------------------
+@python_2_unicode_compatible
+class PIB(models.Model):
+    # Año base del registro
+    anho_base =  models.CharField(max_length=4, null=True)
+
+    anho = models.CharField(max_length=4, verbose_name=_("Año"))
+
+    nominal = models.DecimalField(
+        max_digits=18, decimal_places=2, default=None, null=True, blank=True, verbose_name=_("PIB Nominal")
+    )
+
+    class Meta:
+        verbose_name = _('Producto Interno Bruto (PIB)')
+
+    def gestion_init(self, *args, **kwargs):
+        fields = [
+            [
+                {'tag': '', 'cabecera': True},
+                {'tag': str(PIBDemanda._meta.verbose_name), 'color': 'orange', 'text_color': 'white', 'combine': 4,'cabecera': True},
+                {'tag': str(PIBProduccion._meta.verbose_name), 'color': 'green', 'text_color': 'white', 'combine': 3, 'cabecera': True},
+            ],
+            [
+                {'tag': str(_('Año')), 'cabecera': True}
+            ]
+        ]
+        exclude_fields = ['id', 'anho', 'pib_id', 'base']
+        is_nominal, is_demanda, is_produccion = True, True, True
+
+        if any('nominal' in index for index in kwargs):
+            if kwargs['nominal__isnull'] == "true":
+                kwargs['nominal__isnull'] = True
+                is_nominal = False
+            else:
+                kwargs['nominal__isnull'] = False
+
+
+        if is_nominal:
+            fields[0].insert(1, {'tag': '', 'cabecera': True})
+            fields[1].extend([{'tag': str(_("PIB Nominal")), 'cabecera': True}])
+
+        demanda = [
+            {'tag': str(PIBDemanda._meta.get_field('gasto_consumo').verbose_name), 'cabecera': True},
+            {'tag': str(PIBDemanda._meta.get_field('formacion_capital').verbose_name), 'cabecera': True},
+            {'tag': str(PIBDemanda._meta.get_field('exportacion_bienes').verbose_name), 'cabecera': True},
+            {'tag': str(PIBDemanda._meta.get_field('importacion_bienes').verbose_name), 'cabecera': True}
+        ]
+
+        produccion = [
+            {'tag': str(PIBProduccion._meta.get_field('valor_agregado').verbose_name), 'cabecera': True},
+            {'tag': str(PIBProduccion._meta.get_field('impuesto_producto').verbose_name), 'cabecera': True},
+            {'tag': str(PIBProduccion._meta.get_field('subvencion_productos').verbose_name), 'cabecera': True}
+        ]
+
+        if any('pibdemanda' in index for index in kwargs):
+            kwargs['pibdemanda__isnull'] = False
+            kwargs['pibproduccion__isnull'] = True
+            fields[1].extend(demanda)
+            is_produccion = False
+        elif any('pibproduccion' in index for index in kwargs):
+            kwargs['pibdemanda__isnull'] = True
+            kwargs['pibproduccion__isnull'] = False
+            fields[1].extend(produccion)
+            is_demanda = False
+        else:
+            fields[1].extend(demanda)
+            fields[1].extend(produccion)
+
+        if 'anho_base' in kwargs:
+            pib_base = {'anho_base': kwargs['anho_base']}
+            kwargs.pop('anho_base')
+        else:
+            pib_base = {}
+
+        for pib in PIB.objects.filter(Q(**kwargs) | Q(**pib_base)).order_by('anho'):
+            # Registros por año
+            registros = [{'tag': pib.anho}]
+
+            if is_nominal:
+                registros.append({'tag': str(pib.nominal) if pib.nominal else str(0.0)})
+
+            if is_demanda and pib.pibdemanda_set.all():
+                # Asigna los índices por demanda
+                dem = pib.pibdemanda_set.get()
+                for d in dem._meta.get_fields():
+                    if not d.attname in exclude_fields:
+                        registros.append({'tag': str(dem.__getattribute__(d.attname))})
+
+            if is_produccion and pib.pibproduccion_set.all():
+                # Asigna los índices por oferta
+                prod = pib.pibproduccion_set.get()
+                for p in prod._meta.get_fields():
+                    if not p.attname in exclude_fields:
+                        registros.append({'tag': str(prod.__getattribute__(p.attname))})
+
+            # Agrega los datos a la nueva fila del archivo a generar
+            fields.append(registros)
+
+        return {'fields': fields, 'output': 'pib'}
+
+    def gestion_process(self, file, user, *args, **kwargs):
+        load_file = pyexcel.get_sheet(file_name=file)
+        anho_base, i, col_ini, errors, result, message, is_nominal = '', 0, 2, '', True, '', False
+        is_demanda, is_produccion = True, True
+        load_data_msg = str(_("Datos Cargados"))
+
+        if any('nominal' in index for index in kwargs):
+            is_nominal = True
+            if load_file.row[1][1] != str(_("PIB Nominal")):
+                result = False
+
+        if any('pibdemanda' in index for index in kwargs):
+            is_produccion =  False
+        if any('pibproduccion' in index for index in kwargs):
+            is_demanda = False
+
+        if not result:
+            return {
+                'result': False,
+                'message': str(_("El documento a cargar no es válido o no corresponde a los parámetros seleccionados"))
+            }
+
+        for row in load_file.row[2:]:
+            try:
+                # Asigna el año base del registro
+                anho_b = anho_base = row[0] if i == 0 else anho_base
+
+                # Posición inicial desde la cual se van a comenzar a registrar los datos en los modelos asociados
+                anho = row[0]
+
+                # Condición que indica si el registro corresponde al año base
+                base = True if i == 0 else False
+
+                nominal = row[1] if is_nominal else None
+
+                # Gestión para los datos básicos de pib
+                real_pib, created = PIB.objects.update_or_create(anho=anho, anho_base=anho_b, nominal=nominal)
+
+                defaults_demanda = {
+                    'base': base,
+                    'gasto_consumo': check_val_data(row[2] if is_nominal else row[1]),
+                    'formacion_capital': check_val_data(row[3] if is_nominal else row[2]),
+                    'exportacion_bienes': check_val_data(row[4] if is_nominal else row[3]),
+                    'importacion_bienes': check_val_data(row[5] if is_nominal else row[4])
+                }
+
+                if is_demanda:
+                    # Gestión de datos para el Índice por Demanda
+                    PIBDemanda.objects.update_or_create(pib=real_pib, defaults=defaults_demanda)
+                else:
+                    # Gestión de datos para el Índice por Producción
+                    PIBProduccion.objects.update_or_create(pib=real_pib, defaults={
+                        'base': base,
+                        'valor_agregado': check_val_data(row[2] if is_nominal else row[1]),
+                        'impuesto_producto': check_val_data(row[3] if is_nominal else row[2]),
+                        'subvencion_productos': check_val_data(row[4] if is_nominal else row[3]),
+                    })
+                    continue
+
+                if is_produccion:
+                    # Gestión de datos para el Índice por Producción
+                    PIBProduccion.objects.update_or_create(pib=real_pib, defaults={
+                        'base': base,
+                        'valor_agregado': check_val_data(row[6] if is_nominal else row[5]),
+                        'impuesto_producto': check_val_data(row[7] if is_nominal else row[6]),
+                        'subvencion_productos': check_val_data(row[8] if is_nominal else row[7]),
+                    })
+                else:
+                    # Gestión de datos para el Índice por Demanda
+                    PIBDemanda.objects.update_or_create(pib=real_pib, defaults=defaults_demanda)
+                    continue
+
+            except Exception as e:
+                errors += "- %s\n" % str(e)
+            i += 1
+
+        if errors:
+            message = str(_("Error procesando datos. Verifique su correo para detalles del error"))
+            load_data_msg = str(_("Error al procesar datos del área Económica - PIB"))
+
+        ## Envia correo electronico al usuario indicando el estatus de la carga de datos
+        enviar_correo(user.email, 'gestion.informacion.load.mail', EMAIL_SUBJECT_LOAD_DATA, {
+            'load_data_msg': load_data_msg, 'administrador': administrador, 'admin_email': admin_email,
+            'errors': errors
+        })
+
+        return {'result': result, 'message': message}
+
+
+@python_2_unicode_compatible
+class PIBDemanda(models.Model):
+    gasto_consumo = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Gasto de consumo final")
+    )
+
+    formacion_capital = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Formación Bruta de Capital")
+    )
+
+    exportacion_bienes = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Exportación de bienes y servicios")
+    )
+
+    importacion_bienes = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Menos importaciones de bienes y servicios")
+    )
+
+    base = models.BooleanField(default=False, verbose_name=_("Indicador base"))
+
+    pib = models.ForeignKey(PIB, verbose_name=_('Producto Interno Bruto'))
+
+    class Meta:
+        verbose_name = _('PIB sobre demanda')
+
+
+@python_2_unicode_compatible
+class PIBProduccion(models.Model):
+    valor_agregado = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Valor agregado a precios básicos")
+    )
+
+    impuesto_producto = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Impuestos sobre los productos")
+    )
+
+    subvencion_productos = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Subvenciones sobre los productos")
+    )
+
+    base = models.BooleanField(default=False, verbose_name=_("Indicador base"))
+
+    pib = models.ForeignKey(PIB, verbose_name=_('Producto Interno Bruto'))
+
+    class Meta:
+        verbose_name = _('PIB sobre oferta')
+
+
+@python_2_unicode_compatible
+class PIBActividad(models.Model):
+    trimestre = models.CharField(max_length=1, null=True, blank=True, verbose_name=_('Trimestre'))
+
+    total_consolidado = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("PIB Consolidado")
+    )
+
+    total_petrolera = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Actividad Petrolera")
+    )
+
+    total_no_petrolera = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Actividad No Petrolera")
+    )
+
+    mineria = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Mineria")
+    )
+
+    manufactura = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Manufactura")
+    )
+
+    electricidad_agua = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Electricidad y Agua")
+    )
+
+    construccion = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Construcción")
+    )
+
+    comercio_servicios = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Comercio y Servicios de Reparación")
+    )
+
+    transporte_almacenamiento = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Transporte y almacenamiento")
+    )
+
+    comunicaciones = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Comunicaciones")
+    )
+
+    instituciones_seguros = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Instituciones Financieras y Seguros")
+    )
+
+    servicios_alquiler = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0,
+        verbose_name=_("Servicios Inmobiliarios Empresariales y de Alquiler")
+    )
+
+    servicios_comunitarios = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0,
+        verbose_name=_("Serv. Comunitarios, Soc. Y Personales y Produc. de serv. Priv. no Lucrativos")
+    )
+
+    produccion_servicios = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Producción servicios del Gobierno General")
+    )
+
+    resto = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Resto")
+    )
+
+    sifmi = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Menos Sifmi")
+    )
+
+    neto_producto = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Neto Sobre los Productos")
+    )
+
+    base = models.BooleanField(default=False, verbose_name=_("Indicador base"))
+
+    pib = models.ForeignKey(PIB, verbose_name=_('Producto Interno Bruto'))
+
+    class Meta:
+        verbose_name = _('PIB sobre la Actividad')
+
+    def save(self, *args, **kwargs):
+        self.total_no_petrolera = self.mineria + self.manufactura + self.electricidad_agua + self.construccion + \
+                                  self.comercio_servicios + self.transporte_almacenamiento + self.comunicaciones + \
+                                  self.instituciones_seguros + self.servicios_alquiler + self.servicios_comunitarios + \
+                                  self.produccion_servicios + self.resto + self.sifmi + self.neto_producto
+        self.total_consolidado = self.total_petrolera + self.total_no_petrolera
+        super(PIBActividad, self).save(*args, **kwargs)
