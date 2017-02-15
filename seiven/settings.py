@@ -31,11 +31,11 @@ SECRET_KEY = '$#iabgq1k!v$$-a*3$tp)l)c!jr-bnyk(2-q!isylwtpnksbsv'
 DEBUG = True
 
 ## Identifica a los servidores permitidos que atienden las peticiones del sistema
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['localhost', '192.168.12.35']
 
 ## Identifica a los administradores del sistema
 ADMINS = [
-    ('', ''),
+    ('Ing. Roldan Vargas', 'rvargas@cenditel.gob.ve'),
 ]
 
 ## Listado de aplicaciones base del sistema
