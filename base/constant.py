@@ -129,6 +129,13 @@ DOMINIO_CAMBIO = (
     ('RI', _('Reservas Internacionales'))
 )
 
+## Selección de dominio de cuenta capital
+DOMINIO_CUENTA_CAPITAL = (
+    ("", _("Seleccione...")),
+    ('BP', _('Balanza de Pagos')),
+    ('DE', _('Deuda Externa'))
+)
+
 ## Selección de Tipo de PIB
 TIPO_PIB = (
     ('', _('Seleccione...')),

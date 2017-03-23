@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^cargar-datos/ingresos/$', economico_views.ingresos, name='economico-ingresos'),
     url(r'^cargar-datos/gastos/$', economico_views.gastos, name='economico-gastos'),
     url(r'^cargar-datos/endeudamiento/$', economico_views.endeudamiento, name='economico-endeudamiento'),
+    url(r'^cargar-datos/cuenta-capital/$', economico_views.capital, name='economico-cuenta-capital'),
 ]
 
 

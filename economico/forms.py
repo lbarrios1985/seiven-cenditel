@@ -25,7 +25,7 @@ from django.forms import (
 
 from base.constant import (
     DOMINIO_PRECIOS, DOMINIO_PIB, DOMINIO_AGREGADO_MONETARIO, TIPO_PIB, TIPO_DEMANDA_GLOBAL, TRIMESTRES, MESES,
-    DOMINIO_COMERCIAL, DOMINIO_CAMBIO
+    DOMINIO_COMERCIAL, DOMINIO_CAMBIO, DOMINIO_CUENTA_CAPITAL
 )
 from base.functions import cargar_anho_base
 
@@ -469,3 +469,18 @@ class FiscalForm(AnhoIniForm, AnhoFinForm):
     @date 19-09-2016
     @version 1.0.0
     """
+    
+    
+@python_2_unicode_compatible
+class CapitalForm(DominioForm, TrimestreIniForm, TrimestreFinForm, AnhoIniForm, AnhoFinForm):
+    """!
+    Clase que contiene el formulario para la carga de datos de Cuenta Capital
+
+    @author Rodrigo Boet (rboet at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 23-03-2017
+    @version 1.0.0
+    """
+    def __init__(self, *args, **kwargs):
+        super(CapitalForm, self).__init__(*args, **kwargs)
+        self.fields['dominio'].choices = DOMINIO_CUENTA_CAPITAL
