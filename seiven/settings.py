@@ -31,7 +31,7 @@ SECRET_KEY = '$#iabgq1k!v$$-a*3$tp)l)c!jr-bnyk(2-q!isylwtpnksbsv'
 DEBUG = True
 
 ## Identifica a los servidores permitidos que atienden las peticiones del sistema
-ALLOWED_HOSTS = ['localhost', '192.168.12.35']
+ALLOWED_HOSTS = ['localhost']
 
 ## Identifica a los administradores del sistema
 ADMINS = [
@@ -203,7 +203,7 @@ EMAIL_PORT = 25
 EMAIL_FROM = 'seiven@cenditel.gob.ve'
 
 ## Registro de vitácoras de errores (logs)
-LOGS_PATH = '/var/log/seiven'
+LOGS_PATH = '/home/cenditel/Proyectos/seiven'
 
 ## Ruta en la que se guardan los archivos para la gestión de información
 GESTION_INFORMACION_FILES = os.path.join(BASE_DIR, "static/files")

@@ -143,6 +143,11 @@ TIPO_DEMANDA_GLOBAL = (
     ('FB', _('Formación Bruta'))
 )
 
+TIPO_OFERTA_GLOBAL = (
+    ('', _('Seleccione...')),
+    ('OG', _('Oferta Global'))
+)
+
 ## Selección de Trimestres
 TRIMESTRES = (
     ('', _('Seleccione...')),

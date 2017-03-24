@@ -20,7 +20,7 @@ from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 
 from .forms import (
-    RealPreciosForm, RealPIBForm, RealDemandaGlobalForm, MonetarioAgregadosForm, MonetarioOperacionesInterbancariasForm,
+    RealPreciosForm, RealPIBForm, RealDemandaGlobalForm, RealOfertaGlobalForm, MonetarioAgregadosForm, MonetarioOperacionesInterbancariasForm,
     MonetarioTasasInteresForm, MonetarioInstrumentoPoliticaForm, ExternoBalanzaComercialForm, ExternoReservaCambioForm,
     ExternoCuentaCapitalForm, FiscalForm
 )
@@ -89,7 +89,26 @@ def demanda_global(request):
     """
     form = RealDemandaGlobalForm()
 
-    return render(request, 'economico.demanda.global.html', {'form': form})
+    return render(request, 'economico.demanda.global.html', {
+        'form': form, 'url_down': reverse('descargar_archivo'), 'url_up': reverse('cargar_archivo')
+    })
+    
+@login_required
+def oferta_global(request):
+    """!
+    Función que permite mostrar el furmulario para el registro de Oferta Global
+
+    @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 22-03-2017
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con el formulario de datos para el registro de Oferta Global
+    """
+    form = RealOfertaGlobalForm()
+
+    return render(request, 'economico.oferta.global.html', {
+        'form': form, 'url_down': reverse('descargar_archivo'), 'url_up': reverse('cargar_archivo')
+    })
 
 
 @login_required

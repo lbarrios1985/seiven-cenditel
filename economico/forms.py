@@ -24,7 +24,7 @@ from django.forms import (
 )
 
 from base.constant import (
-    DOMINIO_PRECIOS, DOMINIO_PIB, DOMINIO_AGREGADO_MONETARIO, TIPO_PIB, TIPO_DEMANDA_GLOBAL, TRIMESTRES, MESES,
+    DOMINIO_PRECIOS, DOMINIO_PIB, DOMINIO_AGREGADO_MONETARIO, TIPO_PIB, TIPO_DEMANDA_GLOBAL, TIPO_OFERTA_GLOBAL, TRIMESTRES, MESES,
     DOMINIO_COMERCIAL, DOMINIO_CAMBIO
 )
 from base.functions import cargar_anho_base
@@ -358,6 +358,20 @@ class RealDemandaGlobalForm(AnhoBaseForm, AnhoIniForm, AnhoFinForm, TrimestreIni
         super(RealDemandaGlobalForm, self).__init__(*args, **kwargs)
         self.fields['tipo'].choices = TIPO_DEMANDA_GLOBAL
 
+@python_2_unicode_compatible
+class RealOfertaGlobalForm(AnhoBaseForm, AnhoIniForm, AnhoFinForm, TrimestreIniForm, TrimestreFinForm, TipoForm):
+    """!
+    Clase que contiene el formulario para la carga de datos de Oferta global
+
+    @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 22-03-2017
+    @version 1.0.0
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(RealOfertaGlobalForm, self).__init__(*args, **kwargs)
+        self.fields['tipo'].choices = TIPO_OFERTA_GLOBAL
 
 @python_2_unicode_compatible
 class MonetarioAgregadosForm(
