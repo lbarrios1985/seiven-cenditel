@@ -13,3 +13,4 @@ fixtures
 *.sql
 *.log
 *~
+venv
