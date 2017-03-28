@@ -61,7 +61,57 @@
                 <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.periodo_trimestre_fin }}</div>
                 <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.periodo_anho_fin }}</div>
             </div>
-            {% include 'base.down.up.files.html' %}
+            {% include 'base.down.up.files.html' with app='economico' mod='OfertaGlobal' %}
         </div>
     </div>
+{% endblock %}
+{% block extra_footer %}
+    <script>
+        var tipo = $('#{{ form.tipo.auto_id }}');
+        var anho_base = $("#{{ form.anho_base.auto_id }}");
+        var periodo_trimestre_ini = $("#{{ form.periodo_trimestre_ini.auto_id }}");
+        var periodo_trimestre_fin = $("#{{ form.periodo_trimestre_fin.auto_id }}");
+        var periodo_anho_ini = $("#{{ form.periodo_anho_ini.auto_id }}");
+        var periodo_anho_fin = $("#{{ form.periodo_anho_fin.auto_id }}");
+
+        /**
+         * Función que configura los filtros de acuerdo a la selección del usuario
+         */
+        function set_filters() {
+            var filters = $("#filters"), json_filter = '';
+
+            if (tipo.val()) {
+                json_filter += "\"tipo\": \"" + tipo.val() + "\",";
+            }
+            if (anho_base.val()) {
+                json_filter += "\"anho_base\": \"" + anho_base.val() + "\",";
+            }
+            if (periodo_trimestre_ini.val()) {
+                json_filter += "\"fecha__month__gte\": \"" + periodo_trimestre_ini.val() + "\",";
+            }
+            if (periodo_trimestre_fin.val()) {
+                json_filter += "\"fecha__month__lte\": \"" + periodo_trimestre_fin.val() + "\",";
+            }
+            if (periodo_anho_ini.val()) {
+                json_filter += "\"fecha__year__gte\": \"" + periodo_anho_ini.val() + "\",";
+            }
+            if (periodo_anho_fin.val()) {
+                json_filter += "\"fecha__year__lte\": \"" + periodo_anho_fin.val() + "\",";
+            }
+
+            if (json_filter) {
+                json_filter = json_filter.slice(0, -1);
+                filters.val(json_filter);
+            }
+        }
+
+        $(document).ready(function() {
+            tipo.on('change', function() { set_filters() });
+            anho_base.on('change', function() { set_filters() });
+            periodo_trimestre_ini.on('change', function() { set_filters() });
+            periodo_trimestre_fin.on('change', function() { set_filters() });
+            periodo_anho_ini.on('change', function() { set_filters() });
+            periodo_anho_fin.on('change', function() { set_filters() });
+        });
+    </script>
 {% endblock %}

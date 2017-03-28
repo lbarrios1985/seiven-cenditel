@@ -872,3 +872,157 @@ class PIBActividad(models.Model):
                                   self.produccion_servicios + self.resto + self.sifmi + self.neto_producto
         self.total_consolidado = self.total_petrolera + self.total_no_petrolera
         super(PIBActividad, self).save(*args, **kwargs)
+
+
+#-----------------------------Económico Real - Demanda Global
+
+@python_2_unicode_compatible
+class DemandaGlobal(models.Model):
+    
+    ## Año base del registro
+    anho_base = models.CharField(max_length=4, null=True)
+
+    ## Año al que pertenece el(los) registro(s)
+    anho = models.CharField(max_length=4, verbose_name=_("Año"))
+
+    ## Trimestre seleccionado
+    trimestre = models.CharField(max_length=2, choices=TRIMESTRES[1:], verbose_name=_("Trimestre"))
+
+   
+    def gestion_init(self, *args, **kwargs):
+        """!
+        Método que permite descargar un archivo con los datos a gestionar
+
+        @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 27-03-2017
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve los datos a incluír en el archivo
+        """
+
+        fields = [
+            [
+                {'tag': str(_("Año")), 'color': 'indigo', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("Trimestre")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("Demanda Agregada Interna")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("Gasto de consumo final del gobierno")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("Gasto de consumo final privado")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("Formación bruta de capital fijo")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("Variación de existencias")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("Exportaciones de bienes y servicios")), 'color': 'black', 'text_color': 'white', 'cabecera': True}
+            ]
+        ]
+
+        return {'fields': fields, 'output': 'demanda'}
+
+    def gestion_process(self, file, user, *args, **kwargs):
+        """!
+        Método que permite cargar y gestionar datos
+
+        @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 27-03-2017
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param file <b>{string}</b> Ruta y nombre del archivo a gestionar
+        @param user <b>{object}</b> Objeto que contiene los datos del usuario que realiza la acción
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve el resultado de la acción con su correspondiente mensaje
+        """
+        load_file = pyexcel.get_sheet(file_name=file)
+        anho_base, i, col_ini, errors, result, message = '', 0, 2, '', True, ''
+        load_data_msg = str(_("Datos Cargados"))
+
+
+        if errors:
+            message = str(_("Error procesando datos. Verifique su correo para detalles del error"))
+            load_data_msg = str(_("Error al procesar datos del área Económica - Real"))
+
+
+        ## Envia correo electronico al usuario indicando el estatus de la carga de datos
+        enviar_correo(user.email, 'gestion.informacion.load.mail', EMAIL_SUBJECT_LOAD_DATA, {
+            'load_data_msg': load_data_msg, 'administrador': administrador, 'admin_email': admin_email,
+            'errors': errors
+        })
+
+        return {'result': result, 'message': message}
+
+#-----------------------------Económico Real - Oferta Global
+
+@python_2_unicode_compatible
+class OfertaGlobal(models.Model):
+    
+    ## Año base del registro
+    anho_base = models.CharField(max_length=4, null=True)
+
+    ## Año al que pertenece el(los) registro(s)
+    anho = models.CharField(max_length=4, verbose_name=_("Año"))
+
+    ## Trimestre seleccionado
+    trimestre = models.CharField(max_length=2, choices=TRIMESTRES[1:], verbose_name=_("Trimestre"))
+
+   
+    def gestion_init(self, *args, **kwargs):
+        """!
+        Método que permite descargar un archivo con los datos a gestionar
+
+        @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 27-03-2017
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve los datos a incluír en el archivo
+        """
+
+        fields = [
+            [
+                {'tag': str(_("Año")), 'color': 'indigo', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("Trimestre")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("Oferta Global")), 'color': 'blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("PIB")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("Petróleo")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("No Petróleo")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("Derechos de Importación")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("Impuestos netos sobre los productos")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("Importaciones y servicios")), 'color': 'black', 'text_color': 'white', 'cabecera': True}
+
+            ]
+        ]
+
+        return {'fields': fields, 'output': 'oferta'}
+
+    def gestion_process(self, file, user, *args, **kwargs):
+        """!
+        Método que permite cargar y gestionar datos
+
+        @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 27-03-2017
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param file <b>{string}</b> Ruta y nombre del archivo a gestionar
+        @param user <b>{object}</b> Objeto que contiene los datos del usuario que realiza la acción
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve el resultado de la acción con su correspondiente mensaje
+        """
+        load_file = pyexcel.get_sheet(file_name=file)
+        anho_base, i, col_ini, errors, result, message = '', 0, 2, '', True, ''
+        load_data_msg = str(_("Datos Cargados"))
+
+
+        if errors:
+            message = str(_("Error procesando datos. Verifique su correo para detalles del error"))
+            load_data_msg = str(_("Error al procesar datos del área Económica - Real"))
+
+
+        ## Envia correo electronico al usuario indicando el estatus de la carga de datos
+        enviar_correo(user.email, 'gestion.informacion.load.mail', EMAIL_SUBJECT_LOAD_DATA, {
+            'load_data_msg': load_data_msg, 'administrador': administrador, 'admin_email': admin_email,
+            'errors': errors
+        })
+
+        return {'result': result, 'message': message}
+
