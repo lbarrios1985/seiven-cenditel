@@ -949,6 +949,49 @@ class DemandaGlobal(models.Model):
 
         return {'result': result, 'message': message}
 
+@python_2_unicode_compatible
+class DemandaAgregadaInterna(models.Model):
+    
+    demanda_agregada_interna = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Demanda Agragada Interna")
+    )
+
+    gasto_consumo_final_gobierno = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Gasto de Consumo Final del Gobierno")
+    )
+
+    gasto_consumo_final_privado = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Gasto de Consumo Final Privado")
+    )
+
+    formacion_bruta_capital_fijo = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Formacion Bruta de Capital Fijo")
+    )
+
+    variación_existencias = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Variacion de Existencias")
+    )
+
+    demanda_global = models.ForeignKey(DemandaGlobal, verbose_name=_('Demanda Global'))
+
+    class Meta:
+        verbose_name = _('Demanda Agragada Interna')
+
+    def save(self, *args, **kwargs):
+        self.demanda_agregada_interna = self.gasto_consumo_final_gobierno + self.gasto_consumo_final_privado + \
+                                        self.formacion_bruta_capital_fijo + self.variación_existencias
+        super(DemandaAgregadaInterna, self).save(*args, **kwargs)
+
+class DemandaAgregadaExterna(models.Model):
+    exportacion_bienes_servicios = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Exportación de bienes y servicios")
+    )
+
+    demanda_global = models.ForeignKey(DemandaGlobal, verbose_name=_('Demanda GLobal'))
+
+    class Meta:
+        verbose_name = _('Demanda Agragada Externa')
+
 #-----------------------------Económico Real - Oferta Global
 
 @python_2_unicode_compatible
@@ -1026,3 +1069,45 @@ class OfertaGlobal(models.Model):
 
         return {'result': result, 'message': message}
 
+@python_2_unicode_compatible
+class OfertaInterna(models.Model):
+    
+    oferta_interna = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Oferta Interna")
+    )
+
+    petroleo = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Petróleo")
+    )
+
+    no_petroleo = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("No Petróleo")
+    )
+
+    derechos_importacion = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Derechos de Importación")
+    )
+
+    impuestos_netos_productos = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Impuestos Netos sobre los Productos")
+    )
+
+    oferta_global = models.ForeignKey(OfertaGlobal, verbose_name=_('Oferta Global'))
+
+    class Meta:
+        verbose_name = _('Oferta Interna')
+
+    def save(self, *args, **kwargs):
+        self.oferta_interna = self.petroleo + self.no_petroleo + \
+                              self.derechos_importacion + self.impuestos_netos_productos
+        super(OfertaInterna, self).save(*args, **kwargs)
+
+class OfertaExterna(models.Model):
+    importaciones_bienes_servicios = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Importaciones de bienes y servicios")
+    )
+
+    oferta_externa = models.ForeignKey(OfertaGlobal, verbose_name=_('Oferta GLobal'))
+
+    class Meta:
+        verbose_name = _('Oferta Externa')
