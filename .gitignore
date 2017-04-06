@@ -12,5 +12,5 @@ migrations
 fixtures
 *.sql
 *.log
+venv/
 *~
-/venv/
