@@ -68,7 +68,17 @@
     </div>
 {% endblock %}
 {% block extra_footer %}
+
     <script>
+    /**
+    * @brief El Script configura todos los filtros que seleccione el usuario y ademas de ello hace las validaciones pertinentes sobre dicha selección
+    *
+    * @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+    * @copyright GNU/GPLv2
+    * @date 05-04-2017
+    * @return me devuelve la seleccion que realiza el usuario luego de verificarla
+    */ 
+
         var tipo = $('#{{ form.tipo.auto_id }}');
         var anho_base = $("#{{ form.anho_base.auto_id }}");
         var periodo_trimestre_ini = $("#{{ form.periodo_trimestre_ini.auto_id }}");
@@ -89,16 +99,16 @@
                 json_filter += "\"anho_base\": \"" + anho_base.val() + "\",";
             }
             if (periodo_trimestre_ini.val()) {
-                json_filter += "\"fecha__month__gte\": \"" + periodo_trimestre_ini.val() + "\",";
+                json_filter += "\"trimestre_ini\": \"" + periodo_trimestre_ini.val() + "\",";
             }
             if (periodo_trimestre_fin.val()) {
-                json_filter += "\"fecha__month__lte\": \"" + periodo_trimestre_fin.val() + "\",";
+                json_filter += "\"trimestre_fin\": \"" + periodo_trimestre_fin.val() + "\",";
             }
             if (periodo_anho_ini.val()) {
-                json_filter += "\"fecha__year__gte\": \"" + periodo_anho_ini.val() + "\",";
+                json_filter += "\"anho_ini\": \"" + periodo_anho_ini.val() + "\",";
             }
             if (periodo_anho_fin.val()) {
-                json_filter += "\"fecha__year__lte\": \"" + periodo_anho_fin.val() + "\",";
+                json_filter += "\"anho_fin\": \"" + periodo_anho_fin.val() + "\",";
             }
 
             if (json_filter) {
@@ -106,23 +116,40 @@
                 filters.val(json_filter);
             }
 
-            /*dentro de esta condicion se especifican las distintas validaciones*/
-            if (tipo.val() != 'FB' && parseInt(periodo_anho_ini.val()) >= parseInt(anho_base.val()) && parseInt(periodo_anho_fin.val()) >= parseInt(anho_base.val()) && parseInt(periodo_anho_fin.val()) >= parseInt(periodo_anho_ini.val()) &&  parseInt(periodo_trimestre_ini.val()) <= parseInt(periodo_trimestre_fin.val())){
-                
-                    document.getElementById('oculto').style.display = 'block';  
-        
-            }
-            else {
-                bootbox.alert('Verificar su selección');
-                document.getElementById('oculto').style.display = 'none';
-            }
+            /**
+            * Aquí se realiza las validaciones de la selección que realice el usuario.
+            */
 
+            if (tipo.val()!='' && anho_base.val()!='' && periodo_trimestre_ini.val()!='' && periodo_trimestre_fin.val()!='' && periodo_anho_ini.val()!='' && periodo_anho_fin.val()!=''){
+
+                if (tipo.val() == 'DG'){
+
+                    if (parseInt(periodo_anho_fin.val()) == parseInt(periodo_anho_ini.val()) && parseInt(periodo_trimestre_ini.val()) <= parseInt(periodo_trimestre_fin.val())){
+                    
+                        document.getElementById('oculto').style.display = 'block';
+                    }
+
+                    else if (parseInt(periodo_anho_fin.val()) > parseInt(periodo_anho_ini.val())){
+                    
+                        document.getElementById('oculto').style.display = 'block';  
+                    }
+
+                    else{
+                        bootbox.alert('Verificar su selección');
+                        document.getElementById('oculto').style.display = 'none';
+                    }
+                }
+                else{
+                    bootbox.alert('Verificar su selección');
+                    document.getElementById('oculto').style.display = 'none';
+                }
+            }
         }
 
-       
-        
-        $(document).ready(function() {
-            /*dentro de estas funciones hare las validaciones necesarias de cada seleccion que haga el usuario*/
+        /**
+        * A medida que se realizan las selecciones voy modificando los filtros
+        */
+            $(document).ready(function() {
             tipo.on('change', function() {set_filters()});
             anho_base.on('change', function() { set_filters() });
             periodo_trimestre_ini.on('change', function() { set_filters() });

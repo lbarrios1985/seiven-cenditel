@@ -19,6 +19,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
 from datetime import datetime
+from itertools import islice , cycle
 
 from base.constant import (
     DOMINIO, PERIOCIDAD, TRIMESTRES, MESES, ECONOMICO_SUB_AREA, CONVERT_MES, EMAIL_SUBJECT_LOAD_DATA
@@ -915,6 +916,29 @@ class DemandaGlobal(models.Model):
             ]
         ]
 
+        """
+        colocar los trimestres y años correspondientes en el archivo de salida segun la seleccion realizada        
+        """
+        
+        x = int (kwargs['trimestre_fin']) - int (kwargs['trimestre_ini']) + 1 +  4 * (int (kwargs['anho_fin']) - int (kwargs['anho_ini'] ))
+        lst=['1','2','3','4']
+
+        for i, val in enumerate(lst):
+            if kwargs['trimestre_ini'] in val:
+                desired = list( islice( cycle( lst), i, i+x)) 
+                tmp=0
+                lolo=int (kwargs['anho_ini'])
+                for a in desired:
+                    aux=int(a)
+                    aux1=''
+                    if aux == 4:
+                        aux1=lolo+tmp
+                        tmp=tmp+1
+                    else:
+                        aux1=lolo+tmp
+                    fields.append([ {'tag': str(_(str(aux1)))}, {'tag': str(_(str(a)))}]) 
+
+
         return {'fields': fields, 'output': 'demanda'}
 
     def gestion_process(self, file, user, *args, **kwargs):
@@ -931,10 +955,39 @@ class DemandaGlobal(models.Model):
         @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
         @return Devuelve el resultado de la acción con su correspondiente mensaje
         """
+        
+        ## aqui debo recorrer todo el archivo excel y verificar las celdas
         load_file = pyexcel.get_sheet(file_name=file)
-        anho_base, i, col_ini, errors, result, message = '', 0, 2, '', True, ''
+        anho_base, i, col_ini, errors, result, message, is_nominal = '', 0, 2, '', True, '', False
+        is_demanda, is_produccion = True, True
         load_data_msg = str(_("Datos Cargados"))
 
+        
+        for row in load_file.row[1:]:
+            try:
+                
+                anho_base =  kwargs['anho_base']
+
+                anho = row[0]
+                
+                trimestre = row[1]
+                
+                real_demanda = DemandaGlobal.objects.update_or_create(anho=anho, anho_base=anho_base, trimestre=trimestre)
+                
+                DemandaAgregadaInterna.objects.update_or_create(demanda_global=real_demanda, defaults={
+                    'demanda_agregada_interna': check_val_data(row[2]),
+                    'gasto_consumo_final_gobierno': check_val_data(row[3]),
+                    'gasto_consumo_final_privado': check_val_data(row[4]),
+                    'formacion_bruta_capital_fijo': check_val_data(row[5]),
+                    'variación_existencias': check_val_data(row[6]),
+                })
+
+                DemandaAgregadaExterna.objects.update_or_create(demanda_global=real_demanda, defaults={
+                    'exportacion_bienes_servicios':check_val_data(row[6])
+                })
+               
+            except Exception as e:
+                errors += "- %s\n" % str(e)
 
         if errors:
             message = str(_("Error procesando datos. Verifique su correo para detalles del error"))
