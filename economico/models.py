@@ -889,7 +889,10 @@ class DemandaGlobal(models.Model):
     ## Trimestre seleccionado
     trimestre = models.CharField(max_length=2, choices=TRIMESTRES[1:], verbose_name=_("Trimestre"))
 
-   
+    ## Demanda Global
+    demanda_global = models.DecimalField(max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Demanda Global")
+    )
+
     def gestion_init(self, *args, **kwargs):
         """!
         Método que permite descargar un archivo con los datos a gestionar
@@ -958,22 +961,17 @@ class DemandaGlobal(models.Model):
         
         ## aqui debo recorrer todo el archivo excel y verificar las celdas
         load_file = pyexcel.get_sheet(file_name=file)
-        anho_base, i, col_ini, errors, result, message, is_nominal = '', 0, 2, '', True, '', False
-        is_demanda, is_produccion = True, True
+        anho_base, errors, result, message = '', '', True, ''
         load_data_msg = str(_("Datos Cargados"))
 
         
         for row in load_file.row[1:]:
             try:
-                
-                anho_base =  kwargs['anho_base']
 
-                anho = row[0]
+                real_demanda , created = DemandaGlobal.objects.update_or_create(anho=row[0], anho_base=kwargs['anho_base'], trimestre=row[1], demanda_global= row[2]+row[7])
                 
-                trimestre = row[1]
-                
-                real_demanda = DemandaGlobal.objects.update_or_create(anho=anho, anho_base=anho_base, trimestre=trimestre)
-                
+                ## Se crea  o actualiza el objeto de Demanda Agregada Interna luego de validar el valor en la hoja de calculo
+
                 DemandaAgregadaInterna.objects.update_or_create(demanda_global=real_demanda, defaults={
                     'demanda_agregada_interna': check_val_data(row[2]),
                     'gasto_consumo_final_gobierno': check_val_data(row[3]),
@@ -981,9 +979,11 @@ class DemandaGlobal(models.Model):
                     'formacion_bruta_capital_fijo': check_val_data(row[5]),
                     'variación_existencias': check_val_data(row[6]),
                 })
+                
+                #Se crea  o actualiza el objeto de Demanda Agregada Externa luego de validar el valor en la hoja de calculo
 
                 DemandaAgregadaExterna.objects.update_or_create(demanda_global=real_demanda, defaults={
-                    'exportacion_bienes_servicios':check_val_data(row[6])
+                    'exportacion_bienes_servicios':check_val_data(row[7])
                 })
                
             except Exception as e:
