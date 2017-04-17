@@ -30,7 +30,11 @@ urlpatterns = [
     url(r'^cargar-datos/ingresos/$', economico_views.ingresos, name='economico-ingresos'),
     url(r'^cargar-datos/gastos/$', economico_views.gastos, name='economico-gastos'),
     url(r'^cargar-datos/endeudamiento/$', economico_views.endeudamiento, name='economico-endeudamiento'),
+<<<<<<< HEAD
     url(r'^cargar-datos/oferta-global/$', economico_views.oferta_global, name='economico-oferta-global'),
+=======
+    url(r'^cargar-datos/cuenta-capital/$', economico_views.capital, name='economico-cuenta-capital'),
+>>>>>>> 8ec1e940e97a174e635684a32f42258a345e81c7
 ]
 
 

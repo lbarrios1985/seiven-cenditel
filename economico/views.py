@@ -22,7 +22,7 @@ from django.utils.translation import ugettext_lazy as _
 from .forms import (
     RealPreciosForm, RealPIBForm, RealDemandaGlobalForm, RealOfertaGlobalForm, MonetarioAgregadosForm, MonetarioOperacionesInterbancariasForm,
     MonetarioTasasInteresForm, MonetarioInstrumentoPoliticaForm, ExternoBalanzaComercialForm, ExternoReservaCambioForm,
-    ExternoCuentaCapitalForm, FiscalForm
+    ExternoCuentaCapitalForm, FiscalForm, CapitalForm
 )
 
 
@@ -269,3 +269,19 @@ def endeudamiento(request):
     form = FiscalForm()
 
     return render(request, 'economico.fiscal.html', {'form': form, 'title': _('Endeudamiento')})
+
+
+@login_required
+def capital(request):
+    """!
+    Función que permite mostrar el furmulario para el registro de Cuenta Capital
+
+    @author Rodrigo Boet (rboet at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 23-03-2017
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con el formulario de datos para el registro de la Cuenta Capital
+    """
+    form = CapitalForm()
+
+    return render(request, 'economico.cuenta.capital.html', {'form': form, 'title': _('Cuenta Capital')})
