@@ -551,11 +551,24 @@ class PreciosProductos(models.Model):
 # ------------ Económico Real - PIB --------------------
 @python_2_unicode_compatible
 class PIB(models.Model):
-    # Año base del registro
+    """!
+    Clase que contiene los registros comunes de los modelos relacionados con el Producto Interno Bruto
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @author Edgar A. Linares (elinares at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 05-12-2016
+    @date 05-04-2017
+    @version 1.0.0
+    """
+
+    ## Año base del registro
     anho_base =  models.CharField(max_length=4, null=True)
 
+    ## Año al que pertenece el(los) registro(s)
     anho = models.CharField(max_length=4, verbose_name=_("Año"))
 
+    ## Valor de los registros si son nominales, en caso contrario almacena False
     nominal = models.DecimalField(
         max_digits=18, decimal_places=2, default=None, null=True, blank=True, verbose_name=_("PIB Nominal")
     )
@@ -564,116 +577,228 @@ class PIB(models.Model):
         verbose_name = _('Producto Interno Bruto (PIB)')
 
     def gestion_init(self, *args, **kwargs):
-        fields = [
-            [
-                {'tag': '', 'cabecera': True},
-                {'tag': str(PIBDemanda._meta.verbose_name), 'color': 'orange', 'text_color': 'white', 'combine': 4,'cabecera': True},
-                {'tag': str(PIBProduccion._meta.verbose_name), 'color': 'green', 'text_color': 'white', 'combine': 3, 'cabecera': True},
-            ],
-            [
-                {'tag': str(_('Año')), 'cabecera': True}
+        """!
+        Método que permite descargar un archivo con los datos a gestionar en base a los parámetros
+        provenientes del template economico.pib.html
+
+        @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+        @author Edgar A. Linares (elinares at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 05-12-2016
+        @date 05-04-2017
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve los datos a incluír en el archivo correspondiente
+        """
+
+        """!
+        Sección para la selección de los datos del dominio Enfoque Demanda y Enfoque Oferta
+        tanto del tipo Real como Nominal
+        """
+        if any('pibdemanda' in index for index in kwargs) or any('pibproduccion' in index for index in kwargs):
+            fields = [
+                [
+                    {'tag': '', 'cabecera': True}
+                ],
+                [
+                    {'tag': str(_('Año')), 'cabecera': True}
+                ]
             ]
-        ]
-        exclude_fields = ['id', 'anho', 'pib_id', 'base']
-        is_nominal, is_demanda, is_produccion = True, True, True
+            exclude_fields = ['id', 'anho', 'pib_id', 'base']
 
-        if any('nominal' in index for index in kwargs):
-            if kwargs['nominal__isnull'] == "true":
-                kwargs['nominal__isnull'] = True
-                is_nominal = False
+            ## Comprobación del tipo de datos a cargar en el archivo
+            if any('nominal' in index for index in kwargs):
+                is_nominal = True
             else:
-                kwargs['nominal__isnull'] = False
+                is_nominal = False
 
+            ## Cabecera para el archivo del dominio Enfoque Demanda
+            demanda = [
+                {'tag': str(PIBDemanda._meta.get_field('gasto_consumo').verbose_name), 'cabecera': True},
+                {'tag': str(PIBDemanda._meta.get_field('formacion_capital').verbose_name), 'cabecera': True},
+                {'tag': str(PIBDemanda._meta.get_field('exportacion_bienes').verbose_name), 'cabecera': True},
+                {'tag': str(PIBDemanda._meta.get_field('importacion_bienes').verbose_name), 'cabecera': True}
+            ]
 
-        if is_nominal:
-            fields[0].insert(1, {'tag': '', 'cabecera': True})
-            fields[1].extend([{'tag': str(_("PIB Nominal")), 'cabecera': True}])
+            ## Cabecera para el archivo del dominio Enfoque Oferta
+            produccion = [
+                {'tag': str(PIBProduccion._meta.get_field('valor_agregado').verbose_name), 'cabecera': True},
+                {'tag': str(PIBProduccion._meta.get_field('impuesto_producto').verbose_name), 'cabecera': True},
+                {'tag': str(PIBProduccion._meta.get_field('subvencion_productos').verbose_name), 'cabecera': True}
+            ]
+            """!
+            Se incluyen los registros en el archivo a descargar
+            y el nombre del archivo correspondiente
+            """
+            if any('pibdemanda' in index for index in kwargs):
+                fields[0].insert(1, {'tag': str(PIBDemanda._meta.verbose_name), 'color': 'orange', 'text_color': 'white', 'combine': 4,'cabecera': True})
+                fields[1].extend(demanda)
+                if is_nominal:
+                    fields[0].insert(1, {'tag': '', 'cabecera': True})
+                    fields[1].insert(1, {'tag': str(_("PIB Nominal")), 'cabecera': True})
+                    nombre_archivo = 'PIB-Nominal_demanda'
+                else:
+                    nombre_archivo = 'PIB-Real_demanda'
+            elif any('pibproduccion' in index for index in kwargs):
+                fields[0].insert(1, {'tag': str(PIBProduccion._meta.verbose_name), 'color': 'green', 'text_color': 'white', 'combine': 3, 'cabecera': True})
+                fields[1].extend(produccion)
+                if is_nominal:                    
+                    nombre_archivo = 'PIB-Nominal_produccion'
+                else:
+                    nombre_archivo = 'PIB-Real_produccion'
 
-        demanda = [
-            {'tag': str(PIBDemanda._meta.get_field('gasto_consumo').verbose_name), 'cabecera': True},
-            {'tag': str(PIBDemanda._meta.get_field('formacion_capital').verbose_name), 'cabecera': True},
-            {'tag': str(PIBDemanda._meta.get_field('exportacion_bienes').verbose_name), 'cabecera': True},
-            {'tag': str(PIBDemanda._meta.get_field('importacion_bienes').verbose_name), 'cabecera': True}
-        ]
+        ## Sección para la selección de los datos del dominio Actividad Económica
+        if any('pibactividad' in index for index in kwargs):
+            fields = [
+                [
+                    {'tag': '', 'cabecera': True},
+                    {'tag': '', 'cabecera': True},
+                    {'tag': str(PIBActividad._meta.verbose_name), 'color': 'orange', 'text_color': 'white', 'combine': 18, 'cabecera': True}
+                ],
+                [
+                    {'tag': str(_('Año')), 'cabecera': True},                    
+                    {'tag': str(PIBActividad._meta.get_field('total_consolidado').verbose_name), 'color': 'indigo', 'text_color': 'white', 'cabecera': True},
+                    {'tag': str(PIBActividad._meta.get_field('total_petrolera').verbose_name), 'color': 'green', 'text_color': 'white', 'cabecera': True},
+                    {'tag': str(PIBActividad._meta.get_field('total_no_petrolera').verbose_name), 'color': 'ocean_blue', 'text_color': 'white', 'combine': 2, 'cabecera': True},
+                    {'tag': str(PIBActividad._meta.get_field('mineria').verbose_name), 'color': 'gray25', 'text_color': 'white', 'cabecera': True},
+                    {'tag': str(PIBActividad._meta.get_field('manufactura').verbose_name), 'cabecera': True},
+                    {'tag': str(PIBActividad._meta.get_field('electricidad_agua').verbose_name), 'cabecera': True},
+                    {'tag': str(PIBActividad._meta.get_field('construccion').verbose_name), 'cabecera': True},
+                    {'tag': str(PIBActividad._meta.get_field('comercio_servicios').verbose_name), 'cabecera': True},
+                    {'tag': str(PIBActividad._meta.get_field('transporte_almacenamiento').verbose_name), 'cabecera': True},
+                    {'tag': str(PIBActividad._meta.get_field('comunicaciones').verbose_name), 'cabecera': True},
+                    {'tag': str(PIBActividad._meta.get_field('instituciones_seguros').verbose_name), 'cabecera': True},
+                    {'tag': str(PIBActividad._meta.get_field('servicios_alquiler').verbose_name), 'cabecera': True},
+                    {'tag': str(PIBActividad._meta.get_field('servicios_comunitarios').verbose_name), 'cabecera': True},
+                    {'tag': str(PIBActividad._meta.get_field('produccion_servicios').verbose_name), 'cabecera': True},
+                    {'tag': str(PIBActividad._meta.get_field('resto').verbose_name), 'color': 'red', 'text': 'white', 'cabecera': True},
+                    {'tag': str(PIBActividad._meta.get_field('sifmi').verbose_name), 'cabecera': True},
+                    {'tag': str(PIBActividad._meta.get_field('neto_producto').verbose_name), 'color': 'aqua', 'text_color': 'black', 'cabecera': True}
+                ]
+            ]
+            # Asigna el nombre del archivo a descargar
+            nombre_archivo = 'PIB-Actividad_economica'
 
-        produccion = [
-            {'tag': str(PIBProduccion._meta.get_field('valor_agregado').verbose_name), 'cabecera': True},
-            {'tag': str(PIBProduccion._meta.get_field('impuesto_producto').verbose_name), 'cabecera': True},
-            {'tag': str(PIBProduccion._meta.get_field('subvencion_productos').verbose_name), 'cabecera': True}
-        ]
+        ## Sección para la selección de los datos del dominio Actividad Económica
+        if any('pibsector' in index for index in kwargs):
+            fields = [
+                [
+                    {'tag': '', 'cabecera': True},
+                    {'tag': '', 'cabecera': True},
+                    {'tag': str(PIBInstitucion._meta.verbose_name), 'color': 'orange', 'text_color': 'white', 'combine': 2, 'cabecera': True}
+                ],
+                [
+                    {'tag': str(_('Año')), 'cabecera': True},                    
+                    {'tag': str(PIBInstitucion._meta.get_field('publico').verbose_name), 'color': 'indigo', 'text_color': 'white', 'cabecera': True},
+                    {'tag': str(PIBInstitucion._meta.get_field('privado').verbose_name), 'color': 'green', 'text_color': 'white', 'cabecera': True},
+                ]
+            ]
+            # Asigna el nombre del archivo a descargar
+            nombre_archivo = 'PIB-Institucional'
 
-        if any('pibdemanda' in index for index in kwargs):
-            kwargs['pibdemanda__isnull'] = False
-            kwargs['pibproduccion__isnull'] = True
-            fields[1].extend(demanda)
-            is_produccion = False
-        elif any('pibproduccion' in index for index in kwargs):
-            kwargs['pibdemanda__isnull'] = True
-            kwargs['pibproduccion__isnull'] = False
-            fields[1].extend(produccion)
-            is_demanda = False
+        """!
+        Verifica si se deben cargar los registros de trimestre, de ser afirmativo:
+            Carga la cabecera de la columna
+            Carga cada uno de los valores de las columnas año y trimestre en base 
+            a los parámetros del formulario
+        En caso contrario
+            Carga cada uno de los valores de la columna año
+        """
+        diff_anhos = int(kwargs['anho__lte']) - int(kwargs['anho__gte']) + 1        
+        if any('trimestre' in index for index in kwargs):
+            fields[1].insert(1, {'tag': str(PIBActividad._meta.get_field('trimestre').verbose_name), 'cabecera': True})
+            # Almacena los datos de año y trimestre inicial provenientes del formulario
+            anho_ini = int(kwargs['anho__gte'])
+            trimestre_ini = int(kwargs['trimestre__gte'])
+
+            # Genera los años y trimestres correspondientes a los parámetros del formulario
+            registros = []
+            while True:
+                registros = [({'tag': anho_ini})]
+                registros.append({'tag': trimestre_ini})
+                # Agrega los datos a la nueva fila del archivo a generar
+                fields.append(registros)
+                if (anho_ini == int(kwargs['anho__lte']) and trimestre_ini == int(kwargs['trimestre__lte'])):
+                    break
+                if (trimestre_ini == 4):
+                    trimestre_ini = 0
+                    anho_ini += 1
+                trimestre_ini += 1
         else:
-            fields[1].extend(demanda)
-            fields[1].extend(produccion)
-
-        if 'anho_base' in kwargs:
-            pib_base = {'anho_base': kwargs['anho_base']}
-            kwargs.pop('anho_base')
-        else:
-            pib_base = {}
-
-        for pib in PIB.objects.filter(Q(**kwargs) | Q(**pib_base)).order_by('anho'):
-            # Registros por año
-            registros = [{'tag': pib.anho}]
-
-            if is_nominal:
-                registros.append({'tag': str(pib.nominal) if pib.nominal else str(0.0)})
-
-            if is_demanda and pib.pibdemanda_set.all():
-                # Asigna los índices por demanda
-                dem = pib.pibdemanda_set.get()
-                for d in dem._meta.get_fields():
-                    if not d.attname in exclude_fields:
-                        registros.append({'tag': str(dem.__getattribute__(d.attname))})
-
-            if is_produccion and pib.pibproduccion_set.all():
-                # Asigna los índices por oferta
-                prod = pib.pibproduccion_set.get()
-                for p in prod._meta.get_fields():
-                    if not p.attname in exclude_fields:
-                        registros.append({'tag': str(prod.__getattribute__(p.attname))})
-
-            # Agrega los datos a la nueva fila del archivo a generar
-            fields.append(registros)
-
-        return {'fields': fields, 'output': 'pib'}
+            # Almacena los años de los registros a descargar
+            for i in range(diff_anhos):
+                registros = [({'tag': int(kwargs['anho__gte']) + i})]
+                # Agrega los datos a la nueva fila del archivo a generar
+                fields.append(registros)
+        ## Devuelve los datos correspondientes al archivo a descargar y el nombre de ese archivo
+        return {'fields': fields, 'output': nombre_archivo}
 
     def gestion_process(self, file, user, *args, **kwargs):
+        """!
+        Método que permite cargar y gestionar datos
+
+        @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+        @author Edgar A. Linares (elinares at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 05-12-2016
+        @date 20-04-2017
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param file <b>{string}</b> Ruta y nombre del archivo a gestionar
+        @param user <b>{object}</b> Objeto que contiene los datos del usuario que realiza la acción
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve el resultado de la acción con su correspondiente mensaje
+        """
+
         load_file = pyexcel.get_sheet(file_name=file)
-        anho_base, i, col_ini, errors, result, message, is_nominal = '', 0, 2, '', True, '', False
-        is_demanda, is_produccion = True, True
+        anho_base, i, col_ini, errors, result, message, is_nominal = '', 0, 2, '', False, '', False
+        is_demanda, is_produccion, is_actividad, is_sector = False, False, False, False
         load_data_msg = str(_("Datos Cargados"))
 
+        """!
+        Verifica cuál es el archivo que se está cargando en base a los parámetros provenientes
+        del template economico.pib.html
+        """
         if any('nominal' in index for index in kwargs):
             is_nominal = True
-            if load_file.row[1][1] != str(_("PIB Nominal")):
-                result = False
-
         if any('pibdemanda' in index for index in kwargs):
-            is_produccion =  False
-        if any('pibproduccion' in index for index in kwargs):
-            is_demanda = False
+            is_demanda = True
+        elif any('pibproduccion' in index for index in kwargs):
+            is_produccion = True
+        elif any('pibactividad' in index for index in kwargs):
+            is_actividad = True
+        elif any('pibsector' in index for index in kwargs):
+            is_sector = True
 
+        ## Valida que el archivo corresponde a lo indicado en los parámetros del formulario
+        if is_demanda:
+            if is_nominal and (load_file.row[1][1] == str(_("PIB Nominal"))):
+                result = True
+            elif load_file.row[1][1] == str(PIBDemanda._meta.get_field('gasto_consumo').verbose_name):
+                result = True
+        elif is_produccion:
+            if load_file.row[1][1] == str(PIBProduccion._meta.get_field('valor_agregado').verbose_name):
+                    result = True
+        elif is_actividad:
+            if load_file.row[1][2] == str(PIBActividad._meta.get_field('total_consolidado').verbose_name):
+                result = True
+        elif is_sector:
+            if load_file.row[1][2] == str(PIBInstitucion._meta.get_field('publico').verbose_name):
+                result = True
+        ## Si el archivo no pasa las validaciones, devuelve False y un mensaje indicando el problema
         if not result:
             return {
                 'result': False,
                 'message': str(_("El documento a cargar no es válido o no corresponde a los parámetros seleccionados"))
             }
 
+        
+        ## En base al archivo cargado, se validan y cargan a la base de datos los valores contenidos en el archivo
         for row in load_file.row[2:]:
             try:
                 # Asigna el año base del registro
-                anho_b = anho_base = row[0] if i == 0 else anho_base
+                anho_b = int(kwargs['anho_base'])
 
                 # Posición inicial desde la cual se van a comenzar a registrar los datos en los modelos asociados
                 anho = row[0]
@@ -681,44 +806,60 @@ class PIB(models.Model):
                 # Condición que indica si el registro corresponde al año base
                 base = True if i == 0 else False
 
-                nominal = row[1] if is_nominal else None
+                # Almacena el valor en caso de tratarse del archivo PIB-Nominal_demanda o False en caso contrario
+                nominal = row[1] if (is_nominal and is_demanda) else None
 
                 # Gestión para los datos básicos de pib
                 real_pib, created = PIB.objects.update_or_create(anho=anho, anho_base=anho_b, nominal=nominal)
 
-                defaults_demanda = {
-                    'base': base,
-                    'gasto_consumo': check_val_data(row[2] if is_nominal else row[1]),
-                    'formacion_capital': check_val_data(row[3] if is_nominal else row[2]),
-                    'exportacion_bienes': check_val_data(row[4] if is_nominal else row[3]),
-                    'importacion_bienes': check_val_data(row[5] if is_nominal else row[4])
-                }
-
                 if is_demanda:
                     # Gestión de datos para el Índice por Demanda
-                    PIBDemanda.objects.update_or_create(pib=real_pib, defaults=defaults_demanda)
-                else:
+                    PIBDemanda.objects.update_or_create(pib=real_pib, defaults={
+                        'base': base,
+                        'gasto_consumo': check_val_data(row[2] if is_nominal else row[1]),
+                        'formacion_capital': check_val_data(row[3] if is_nominal else row[2]),
+                        'exportacion_bienes': check_val_data(row[4] if is_nominal else row[3]),
+                        'importacion_bienes': check_val_data(row[5] if is_nominal else row[4])
+                    })
+                elif is_produccion:
                     # Gestión de datos para el Índice por Producción
                     PIBProduccion.objects.update_or_create(pib=real_pib, defaults={
                         'base': base,
-                        'valor_agregado': check_val_data(row[2] if is_nominal else row[1]),
-                        'impuesto_producto': check_val_data(row[3] if is_nominal else row[2]),
-                        'subvencion_productos': check_val_data(row[4] if is_nominal else row[3]),
+                        'valor_agregado': check_val_data(row[1]),
+                        'impuesto_producto': check_val_data(row[2]),
+                        'subvencion_productos': check_val_data(row[3]),
                     })
-                    continue
-
-                if is_produccion:
-                    # Gestión de datos para el Índice por Producción
-                    PIBProduccion.objects.update_or_create(pib=real_pib, defaults={
+                elif is_actividad:
+                    # Gestión de datos para el ïndice por Actividad Económica
+                    PIBActividad.objects.update_or_create(pib=real_pib, defaults={
                         'base': base,
-                        'valor_agregado': check_val_data(row[6] if is_nominal else row[5]),
-                        'impuesto_producto': check_val_data(row[7] if is_nominal else row[6]),
-                        'subvencion_productos': check_val_data(row[8] if is_nominal else row[7]),
+                        'trimestre': check_val_data(row[1]),
+                        'total_consolidado': check_val_data(row[2]),
+                        'total_petrolera': check_val_data(row[3]),
+                        'total_no_petrolera': check_val_data(row[4]),
+                        'mineria': check_val_data(row[5]),
+                        'manufactura': check_val_data(row[6]),
+                        'electricidad_agua': check_val_data(row[7]),
+                        'construccion': check_val_data(row[8]),
+                        'comercio_servicios': check_val_data(row[9]),
+                        'transporte_almacenamiento': check_val_data(row[10]),
+                        'comunicaciones': check_val_data(row[11]),
+                        'instituciones_seguros': check_val_data(row[12]),
+                        'servicios_alquiler': check_val_data(row[13]),
+                        'servicios_comunitarios': check_val_data(row[14]),
+                        'produccion_servicios': check_val_data(row[15]),
+                        'resto': check_val_data(row[16]),
+                        'sifmi': check_val_data(row[17]),
+                        'neto_producto': check_val_data(row[18])
                     })
-                else:
-                    # Gestión de datos para el Índice por Demanda
-                    PIBDemanda.objects.update_or_create(pib=real_pib, defaults=defaults_demanda)
-                    continue
+                elif is_sector:
+                    # Gestión de datos para el Índice por Sector Institucional
+                    PIBInstitucion.objects.update_or_create(pib=real_pib, defaults={
+                        'base': base,
+                        'trimestre': check_val_data(row[1]),
+                        'publico': check_val_data(row[2]),
+                        'privado': check_val_data(row[3])
+                        })
 
             except Exception as e:
                 errors += "- %s\n" % str(e)
@@ -739,6 +880,18 @@ class PIB(models.Model):
 
 @python_2_unicode_compatible
 class PIBDemanda(models.Model):
+    """!
+    Clase que contiene los registros del PIB correspondientes al dominio Enfoque Demanda tanto 
+    del tipo Real como Nominal
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @author Edgar A. Linares (elinares at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 05-12-2016
+    @date 05-04-2017
+    @version 1.0.0
+    """
+
     gasto_consumo = models.DecimalField(
         max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Gasto de consumo final")
     )
@@ -765,6 +918,18 @@ class PIBDemanda(models.Model):
 
 @python_2_unicode_compatible
 class PIBProduccion(models.Model):
+    """!
+    Clase que contiene los registros del PIB correspondientes al dominio Enfoque Oferta tanto 
+    del tipo Real como Nominal
+    
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @author Edgar A. Linares (elinares at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 05-12-2016
+    @date 05-04-2017
+    @version 1.0.0
+    """
+
     valor_agregado = models.DecimalField(
         max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Valor agregado a precios básicos")
     )
@@ -787,6 +952,17 @@ class PIBProduccion(models.Model):
 
 @python_2_unicode_compatible
 class PIBActividad(models.Model):
+    """!
+    Clase que contiene los registros del PIB correspondientes al dominio Actividad Económica
+    
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @author Edgar A. Linares (elinares at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 05-12-2016
+    @date 05-04-2017
+    @version 1.0.0
+    """
+
     trimestre = models.CharField(max_length=1, null=True, blank=True, verbose_name=_('Trimestre'))
 
     total_consolidado = models.DecimalField(
@@ -874,6 +1050,35 @@ class PIBActividad(models.Model):
         self.total_consolidado = self.total_petrolera + self.total_no_petrolera
         super(PIBActividad, self).save(*args, **kwargs)
 
+@python_2_unicode_compatible
+class PIBInstitucion(models.Model):
+    """!
+    Clase que contiene los registros del PIB correspondientes al dominio Sector Institucional
+    
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @author Edgar A. Linares (elinares at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 05-12-2016
+    @date 05-04-2017
+    @version 1.0.0
+    """
+    
+    trimestre = models.CharField(max_length=1, null=True, blank=True, verbose_name=_('Trimestre'))
+
+    publico = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Publico")
+    )
+
+    privado = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Privado")
+    )
+
+    base = models.BooleanField(default=False, verbose_name=_("Indicador base"))
+
+    pib = models.ForeignKey(PIB, verbose_name=_('Producto Interno Bruto'))
+
+    class Meta:
+        verbose_name = _('PIB sobre las Instituciones')
 
 #-----------------------------Económico Real - Demanda Global
 

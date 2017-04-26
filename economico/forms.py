@@ -24,13 +24,8 @@ from django.forms import (
 )
 
 from base.constant import (
-<<<<<<< HEAD
     DOMINIO_PRECIOS, DOMINIO_PIB, DOMINIO_AGREGADO_MONETARIO, TIPO_PIB, TIPO_DEMANDA_GLOBAL, TIPO_OFERTA_GLOBAL, TRIMESTRES, MESES,
-    DOMINIO_COMERCIAL, DOMINIO_CAMBIO
-=======
-    DOMINIO_PRECIOS, DOMINIO_PIB, DOMINIO_AGREGADO_MONETARIO, TIPO_PIB, TIPO_DEMANDA_GLOBAL, TRIMESTRES, MESES,
     DOMINIO_COMERCIAL, DOMINIO_CAMBIO, DOMINIO_CUENTA_CAPITAL
->>>>>>> 8ec1e940e97a174e635684a32f42258a345e81c7
 )
 from base.functions import cargar_anho_base
 
@@ -332,18 +327,20 @@ class RealPreciosForm(AnhoBaseForm, DominioForm, MesIniForm, MesFinForm, AnhoIni
 
 
 @python_2_unicode_compatible
-class RealPIBForm(TipoForm, AnhoBaseForm, DominioForm, AnhoIniForm, AnhoFinForm):
+class PIBForm(TipoForm, AnhoBaseForm, DominioForm, AnhoIniForm, AnhoFinForm, TrimestreIniForm, TrimestreFinForm):
     """!
-    Clase que contiene el formulario para la carga de datos de precios
+    Clase que contiene el formulario para la carga de datos de PIB
 
     @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @author Edgar A. Linares (elinares at cenditel.gob.ve)
     @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
     @date 19-09-2016
+    @date 05-04-2017
     @version 1.0.0
     """
 
     def __init__(self, *args, **kwargs):
-        super(RealPIBForm, self).__init__(*args, **kwargs)
+        super(PIBForm, self).__init__(*args, **kwargs)
         self.fields['dominio'].choices = DOMINIO_PIB
         self.fields['tipo'].choices = TIPO_PIB
 

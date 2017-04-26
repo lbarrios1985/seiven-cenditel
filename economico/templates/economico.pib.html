@@ -42,43 +42,82 @@
                     {{ form.anho_base }}
                 </div>
             </div>
-            <div class="row separador-row">
-            	<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2">
-                    <label class="control-label">{% trans 'Período' %}</label>
-            	</div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
-                    <label for="{{ form.periodo_anho_ini.auto_id }}" class="control-label">{{ form.periodo_anho_ini.label }}</label>
-            	</div>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                    {{ form.periodo_anho_ini }}
-            	</div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
-                    <label for="{{ form.periodo_anho_fin.auto_id }}" class="control-label">{{ form.periodo_anho_fin.label }}</label>
-            	</div>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                    {{ form.periodo_anho_fin }}
-            	</div>
+            <!--Modificado el 05-04-2017 Edgar Linares -->
+            <hr>
+            <div id ="periodos" style='display:none;'>
+                <div class="row separador-row">
+                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-4 col-sm-offset-4 col-md-offset-4 col-lg-offset-4">                        
+                    </div>
+                    <div id ="trimestral1" style='display:none;' class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                        <label class="control-label">{% trans 'Trimestral' %}</label>
+                    </div>
+                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                        <label class="control-label">{% trans 'Año' %}</label>
+                    </div>
+                </div>
+                <div class="row separador-row">
+                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2">
+                        <label class="control-label">{% trans 'Período' %}</label>
+                    </div>
+                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                        <label class="control-label">{{ form.periodo_trimestre_ini.label }}</label>
+                    </div>
+                    <div id ="trimestral2" style='display:none;' class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.periodo_trimestre_ini }}</div>
+                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.periodo_anho_ini }}</div>
+                </div>
+                <div class="row separador-row">
+                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-4 col-sm-offset-4 col-md-offset-4 col-lg-offset-4">
+                        <label class="control-label">{{ form.periodo_trimestre_fin.label }}</label>
+                    </div>
+                    <div id ="trimestral3" style='display:none;' class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.periodo_trimestre_fin }}</div>
+                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.periodo_anho_fin }}</div>
+                </div>
             </div>
-            {% include 'base.down.up.files.html' with app='economico' mod='PIB' %}
+            <!-- -->
+            <div id="enlaces" style='display:none;'>
+                {% include 'base.down.up.files.html' with app='economico' mod='PIB' %}
+            </div>
         </div>
     </div>
 {% endblock %}
 {% block extra_footer %}
-    <script>
-        var tipo = $("#{{ form.tipo.auto_id }}"), dominio = $("#{{ form.dominio.auto_id }}"),
-            anho_base = $("#{{ form.anho_base.auto_id }}"), anho_ini = $("#{{ form.periodo_anho_ini.auto_id }}"),
-            anho_fin = $("#{{ form.periodo_anho_fin.auto_id }}");
-
+    <script>        
+        var tipo = $("#{{ form.tipo.auto_id }}");
+        var dominio = $("#{{ form.dominio.auto_id }}");
+        var anho_base = $("#{{ form.anho_base.auto_id }}");
+        var anho_ini = $("#{{ form.periodo_anho_ini.auto_id }}");
+        var anho_fin = $("#{{ form.periodo_anho_fin.auto_id }}");
+        var trimestre_ini = $("#{{ form.periodo_trimestre_ini.auto_id }}");
+        var trimestre_fin = $("#{{ form.periodo_trimestre_fin.auto_id }}");
+        var select_dominio = $('#id_dominio');
+        var options_dominio = select_dominio.html();
+        var tipo_ant = "";
 
         function set_filters() {
+            /**
+            * @brief Realiza cambios en la vista ocasionados por modificaciones
+            * en los formularios. Almacena los valores de los parámetros que serán usados
+            * en el modelo
+            *
+            * @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+            * @author Edgar A. Linares (elinares at cenditel.gob.ve)
+            * @copyright GNU/GPLv2
+            * @date 05-04-2017
+            */ 
             var filters = $("#filters"), json_filter = '';
 
-            if (tipo.val()) {
+            if (tipo.val()) {                
                 if (tipo.val() == 'R') {
-                    json_filter += "\"nominal__isnull\": \"true\",";
+                    json_filter += "\"real__isnull\": \"false\",";
+                    if (tipo_ant != tipo.val())
+                        select_dominio.html(options_dominio);
                 }
                 else {
                     json_filter += "\"nominal__isnull\": \"false\",";
+                    if (tipo_ant != tipo.val()){
+                        $("#id_dominio option[value='AE']").remove();
+                        $("#id_dominio option[value='SI']").remove();
+                    }
                 }
             }
             if (dominio.val()) {
@@ -88,6 +127,51 @@
                 else if (dominio.val() == 'EO') {
                     json_filter += "\"pibproduccion__isnull\": \"false\",";
                 }
+                // Modificado el 06-04-2017 por Edgar A. Linares
+                else if (dominio.val() == 'AE') {
+                    json_filter += "\"pibactividad__isnull\": \"false\","; 
+                }
+                else if (dominio.val() == 'SI') {
+                    json_filter += "\"pibsector__isnull\": \"false\",";
+                }
+            }
+            if (tipo.val() == 'R' && (dominio.val() == 'AE' || dominio.val() == 'SI')) {
+                document.getElementById("periodos").style.display = 'block';
+                document.getElementById("trimestral1").style.display = 'block';
+                document.getElementById("trimestral2").style.display = 'block';
+                document.getElementById("trimestral3").style.display = 'block';
+            }
+            else if (tipo.val() && dominio.val()) {
+                document.getElementById("periodos").style.display = 'block';
+                document.getElementById("trimestral1").style.display = 'none';
+                document.getElementById("trimestral2").style.display = 'none';
+                document.getElementById("trimestral3").style.display = 'none';
+            }
+            else {
+                document.getElementById("periodos").style.display = 'none';
+                document.getElementById("trimestral1").style.display = 'none';
+                document.getElementById("trimestral2").style.display = 'none';
+                document.getElementById("trimestral3").style.display = 'none';
+            }
+            if (dominio.val() && anho_ini.val() && anho_fin.val()){
+                if ( (dominio.val() == 'ED' || dominio.val() == 'EO') &&
+                     anho_fin.val() >= anho_ini.val() ) {
+                    document.getElementById("enlaces").style.display = 'block';
+                }
+                else if ( (dominio.val() == 'AE' || dominio.val() == 'SI') &&
+                        (anho_fin.val() >= anho_ini.val()) &&
+                        trimestre_ini.val() && trimestre_fin.val() ) {
+                    if ( (anho_fin.val() == anho_ini.val()) && 
+                        (trimestre_fin.val() >= trimestre_ini.val()) )
+                        document.getElementById("enlaces").style.display = 'block';
+                    else if (anho_fin.val() > anho_ini.val())
+                        document.getElementById("enlaces").style.display = 'block';
+                    else
+                        document.getElementById("enlaces").style.display = 'none';
+                }
+                else {
+                    document.getElementById("enlaces").style.display = 'none';
+               }
             }
             if (anho_base.val()) {
                 json_filter += "\"anho_base\": \"" + anho_base.val() + "\",";
@@ -98,7 +182,13 @@
             if (anho_fin.val()) {
                 json_filter += "\"anho__lte\": \"" + anho_fin.val() + "\",";
             }
-
+            if (trimestre_ini.val()) {
+                json_filter += "\"trimestre__gte\": \"" + trimestre_ini.val() + "\",";
+            }
+            if (trimestre_fin.val()) {
+                json_filter += "\"trimestre__lte\": \"" + trimestre_fin.val() + "\",";
+            }
+            tipo_ant = tipo.val();
             if (json_filter) {
                 json_filter = json_filter.slice(0, -1);
                 filters.val(json_filter);
@@ -111,6 +201,8 @@
             anho_base.on('change', function() { set_filters() });
             anho_ini.on('change', function() { set_filters() });
             anho_fin.on('change', function() { set_filters() });
+            trimestre_ini.on('change', function() { set_filters() });
+            trimestre_fin.on('change', function() { set_filters() });
         });
     </script>
 {% endblock %}

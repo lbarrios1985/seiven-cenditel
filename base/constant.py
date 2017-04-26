@@ -102,6 +102,8 @@ DOMINIO_PRECIOS = (
 ## Selección de Dominio de PIB
 DOMINIO_PIB = (
     ("", _("Seleccione...")),
+    ('AE', _('Actividad Económica')),
+    ('SI', _('Sector Institucional')),
     ('ED', _('Enfoque Demanda')),
     ('EO', _('Enfoque Oferta'))
 )
