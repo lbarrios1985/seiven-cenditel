@@ -22,7 +22,8 @@ from datetime import datetime
 from itertools import islice , cycle
 
 from base.constant import (
-    DOMINIO, PERIOCIDAD, TRIMESTRES, MESES, ECONOMICO_SUB_AREA, CONVERT_MES, EMAIL_SUBJECT_LOAD_DATA
+    DOMINIO, PERIOCIDAD, TRIMESTRES, MESES, ECONOMICO_SUB_AREA, CONVERT_MES, EMAIL_SUBJECT_LOAD_DATA,
+    TIPO_BALANZA_COMERCIAL, DOMINIO_BALANZA_COMERCIAL, BALANZA_DATOS
 )
 from base.functions import enviar_correo, check_val_data
 
@@ -1369,3 +1370,506 @@ class OfertaExterna(models.Model):
 
     class Meta:
         verbose_name = _('Oferta Externa')
+        
+        
+# ------------ Económico Externo - Balanza Comercial  --------------------
+        
+@python_2_unicode_compatible
+class BalanzaComercialBase(models.Model):
+    """!
+    Clase que contiene los registros base de la Balanza Comercial
+    
+    @author Rodrigo Boet (rboet at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 02-05-2017
+    @version 1.0.0
+    """
+    
+    ## Año base del registro
+    anho_base = models.CharField(max_length=4, null=True)
+
+    ## Año al que pertenece el(los) registro(s)
+    anho = models.CharField(max_length=4, verbose_name=_("Año"))
+
+    ## Trimestre del registro
+    trimestre = models.CharField(max_length=2, choices=TRIMESTRES[1:], verbose_name=_("Trimestre"))
+    
+    ## Tipo del registro
+    tipo = models.CharField(max_length=2, choices=TIPO_BALANZA_COMERCIAL[1:])
+    
+    ## Dominio del registro
+    dominio = models.CharField(max_length=2, choices=DOMINIO_BALANZA_COMERCIAL[1:])
+    
+    def gestion_init(self, *args, **kwargs):
+        """!
+        Método que permite descargar un archivo con los datos a gestionar
+
+        @author Rodrigo Boet (rboet at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 02-05-2017
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve los datos a incluír en el archivo
+        """
+        nombre_archivo = 'balanza_comercial'
+        fields = []
+        ## Cabecera para precios corrientes en bs y precios constantes
+        if(kwargs['dominio']!='BD' and kwargs['tipo']!='PI'):
+            header = [
+                {'tag': '', 'cabecera': True},
+                {'tag': '', 'cabecera': True},
+                {'tag': str(_("Exportaciones de bienes FOB")), 'color': 'ocean_blue', 'text_color': 'white', 'combine': 4, 'cabecera': True},
+                {'tag': '', 'color': 'gray25', 'cabecera': True},
+                {'tag': str(_("Importaciones de Bienes CIF")), 'color': 'aqua', 'text_color': 'white', 'combine': 4, 'cabecera': True},
+                {'tag': '', 'color': 'gray25', 'cabecera': True},
+            ]
+            sub_header = [
+                {'tag': str(_("Trimestre")), 'color': 'white', 'text_color': 'black','cabecera': True},
+                {'tag': str(_("Año")), 'color': 'white', 'text_color': 'black', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialDatos._meta.get_field('publico_petroleo').verbose_name)), 'color': 'ocean_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialDatos._meta.get_field('publico_no_petroleo').verbose_name)), 'color': 'ocean_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialDatos._meta.get_field('privado_petroleo').verbose_name)), 'color': 'ocean_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialDatos._meta.get_field('privado_no_petroleo').verbose_name)), 'color': 'ocean_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialServicios._meta.get_field('exportacion_servicio').verbose_name)), 'color': 'gray25', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialDatos._meta.get_field('publico_petroleo').verbose_name)), 'color': 'aqua', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialDatos._meta.get_field('publico_no_petroleo').verbose_name)), 'color': 'aqua', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialDatos._meta.get_field('privado_petroleo').verbose_name)), 'color': 'aqua', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialDatos._meta.get_field('privado_no_petroleo').verbose_name)), 'color': 'aqua', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialServicios._meta.get_field('importacion_servicio').verbose_name)), 'color': 'gray25', 'cabecera': True},
+            ]
+        ## Cabecera para el índice de precios implícitos
+        elif(kwargs['tipo']=='PI'):
+            header = [
+                {'tag': '', 'cabecera': True},
+                {'tag': '', 'cabecera': True},
+                {'tag': str(_("Exportaciones de bienes FOB")), 'color': 'ocean_blue', 'text_color': 'white', 'combine': 7, 'cabecera': True},
+                {'tag': '', 'color': 'gray25', 'cabecera': True},
+                {'tag': str(_("Importaciones de Bienes CIF")), 'color': 'aqua', 'text_color': 'white', 'combine': 7, 'cabecera': True},
+                {'tag': '', 'color': 'gray25', 'cabecera': True},
+            ]
+            sub_header = [
+                {'tag': str(_("Trimestre")), 'color': 'white', 'text_color': 'black','cabecera': True},
+                {'tag': str(_("Año")), 'color': 'white', 'text_color': 'black', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialPrecioImplicito._meta.get_field('exportacion_bien').verbose_name)), 'color': 'ocean_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialPrecioImplicito._meta.get_field('exportacion_publica').verbose_name)), 'color': 'ocean_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialDatos._meta.get_field('publico_petroleo').verbose_name)), 'color': 'ocean_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialDatos._meta.get_field('publico_no_petroleo').verbose_name)), 'color': 'ocean_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialPrecioImplicito._meta.get_field('exportacion_privada').verbose_name)), 'color': 'ocean_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialDatos._meta.get_field('privado_petroleo').verbose_name)), 'color': 'ocean_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialDatos._meta.get_field('privado_no_petroleo').verbose_name)), 'color': 'ocean_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialServicios._meta.get_field('exportacion_servicio').verbose_name)), 'color': 'gray25', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialPrecioImplicito._meta.get_field('importacion_bien').verbose_name)), 'color': 'aqua', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialPrecioImplicito._meta.get_field('importacion_publica').verbose_name)), 'color': 'aqua', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialDatos._meta.get_field('publico_petroleo').verbose_name)), 'color': 'aqua', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialDatos._meta.get_field('publico_no_petroleo').verbose_name)), 'color': 'aqua', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialPrecioImplicito._meta.get_field('importacion_privada').verbose_name)), 'color': 'aqua', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialDatos._meta.get_field('privado_petroleo').verbose_name)), 'color': 'aqua', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialDatos._meta.get_field('privado_no_petroleo').verbose_name)), 'color': 'aqua', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(BalanzaComercialServicios._meta.get_field('importacion_servicio').verbose_name)), 'color': 'gray25', 'cabecera': True},
+            ]
+        ## Cabecera para precios corrientes en usd
+        else:
+            header = [
+                {'tag': '', 'color': 'white', 'text_color': 'black','cabecera': True},
+                {'tag': '', 'color': 'white', 'text_color': 'black','cabecera': True},
+                {'tag': str(_("Exportaciones de bienes FOB")), 'color': 'ocean_blue', 'text_color': 'white', 'combine': 4, 'cabecera': True},
+                {'tag': str(_("Exportaciones de Servicios")), 'color': 'orange', 'text_color': 'white', 'combine': 4, 'cabecera': True},
+                {'tag': str(_("Importaciones de Bienes CIF")), 'color': 'indigo', 'text_color': 'white', 'combine': 4, 'cabecera': True},
+                {'tag': str(_("Fletes y Seguros")), 'color': 'green', 'text_color': 'white', 'combine': 4, 'cabecera': True},
+                {'tag': str(_("Importaciones de Servicios")), 'color': 'aqua', 'text_color': 'white', 'combine': 4, 'cabecera': True},
+            ]
+            sub_header = [
+                {'tag': str(_("Trimestre")), 'cabecera': True},
+                {'tag': str(_("Año")), 'cabecera': True},
+            ]
+            colors = ['ocean_blue','orange','indigo','green','aqua']
+            for item in colors:
+                sub_header.append({'tag': str(_(BalanzaComercialDatos._meta.get_field('publico_petroleo').verbose_name)), 'color': item, 'text_color': 'white', 'cabecera': True})
+                sub_header.append({'tag': str(_(BalanzaComercialDatos._meta.get_field('publico_no_petroleo').verbose_name)), 'color': item, 'text_color': 'white', 'cabecera': True})
+                sub_header.append({'tag': str(_(BalanzaComercialDatos._meta.get_field('privado_petroleo').verbose_name)), 'color': item, 'text_color': 'white', 'cabecera': True})
+                sub_header.append({'tag': str(_(BalanzaComercialDatos._meta.get_field('privado_no_petroleo').verbose_name)), 'color': item, 'text_color': 'white', 'cabecera': True})
+        ## Se añade la cabecera
+        fields.append(header);
+        ## Se añade la subcabecera
+        fields.append(sub_header);
+        
+        ## Se asigna el año base (si existe)
+        anho_base = kwargs['anho_base'] if 'anho_base' in kwargs else ''
+        
+        # Almacena los datos de año y trimestre inicial provenientes del formulario
+        anho_ini = int(kwargs['anho__gte'])
+        trimestre_ini = int(kwargs['trimestre__gte'])
+
+        # Genera los años y trimestres correspondientes a los parámetros del formulario
+        registros = []
+        while True:
+            registros = [({'tag': trimestre_ini})]
+            registros.append({'tag': anho_ini})
+            ## Se intenta búscar el registro base
+            balanza_base = BalanzaComercialBase.objects.filter(
+                    anho_base=anho_base,
+                    anho=anho_ini,
+                    trimestre=trimestre_ini,
+                    tipo=kwargs['tipo'],
+                    dominio=kwargs['dominio']
+                )
+            ## Si el registro existe se obtiene
+            if(balanza_base):
+                balanza_base = balanza_base.get()
+                ## Si el registro base corresponde a balanza comercial corriente (bs) o constante
+                if balanza_base.dominio!='BD' and balanza_base.tipo!='PI':
+                    ## Se busca el registro para Exportaciones de bienes FOB
+                    balanza_datos_eb = BalanzaComercialDatos.objects.filter(
+                        balanza_id=balanza_base.id,
+                        tipo="EB"
+                    ).get()
+                    ## Se busca el registro para Importaciones de Bienes CIF
+                    balanza_datos_ib = BalanzaComercialDatos.objects.filter(
+                        balanza_id=balanza_base.id,
+                        tipo="IB"
+                    ).get()
+                    ## Se busca el registro de las exportaciones/importaciones de servicios
+                    balanza_servicios = BalanzaComercialServicios.objects.filter(balanza_id=balanza_base.id,).get()
+                    ## Se añaden los registros a la lista
+                    registros.append({'tag':balanza_datos_eb.publico_petroleo})
+                    registros.append({'tag':balanza_datos_eb.publico_no_petroleo})
+                    registros.append({'tag':balanza_datos_eb.privado_petroleo})
+                    registros.append({'tag':balanza_datos_eb.privado_no_petroleo})
+                    registros.append({'tag':balanza_servicios.exportacion_servicio})
+                    registros.append({'tag':balanza_datos_ib.publico_petroleo})
+                    registros.append({'tag':balanza_datos_ib.publico_no_petroleo})
+                    registros.append({'tag':balanza_datos_ib.privado_petroleo})
+                    registros.append({'tag':balanza_datos_ib.privado_no_petroleo})
+                    registros.append({'tag':balanza_servicios.importacion_servicio})
+                ## Si el registro corresponde a balanza comercial índice de precios implícitos
+                elif(kwargs['tipo']=='PI'):
+                    ## Se busca el registro para Exportaciones de bienes FOB
+                    balanza_datos_eb = BalanzaComercialDatos.objects.filter(
+                        balanza_id=balanza_base.id,
+                        tipo="EB"
+                    ).get()
+                    ## Se busca el registro para Importaciones de Bienes CIF
+                    balanza_datos_ib = BalanzaComercialDatos.objects.filter(
+                        balanza_id=balanza_base.id,
+                        tipo="IB"
+                    ).get()
+                    ## Se busca el registro de las exportaciones/importaciones de servicios
+                    balanza_servicios = BalanzaComercialServicios.objects.filter(balanza_id=balanza_base.id,).get()
+                    ## Se buscar el registro para los precios implícitos
+                    balanza_implicito = BalanzaComercialPrecioImplicito.objects.filter(balanza = balanza_base.id).get()
+                    ## Se añaden los registros a la lista
+                    registros.append({'tag':balanza_implicito.exportacion_bien})
+                    registros.append({'tag':balanza_implicito.exportacion_publica})
+                    registros.append({'tag':balanza_datos_eb.publico_petroleo})
+                    registros.append({'tag':balanza_datos_eb.publico_no_petroleo})
+                    registros.append({'tag':balanza_implicito.exportacion_privada})
+                    registros.append({'tag':balanza_datos_eb.privado_petroleo})
+                    registros.append({'tag':balanza_datos_eb.privado_no_petroleo})
+                    registros.append({'tag':balanza_servicios.exportacion_servicio})
+                    registros.append({'tag':balanza_implicito.importacion_bien})
+                    registros.append({'tag':balanza_implicito.importacion_publica})
+                    registros.append({'tag':balanza_datos_ib.publico_petroleo})
+                    registros.append({'tag':balanza_datos_ib.publico_no_petroleo})
+                    registros.append({'tag':balanza_implicito.importacion_privada})
+                    registros.append({'tag':balanza_datos_ib.privado_petroleo})
+                    registros.append({'tag':balanza_datos_ib.privado_no_petroleo})
+                    registros.append({'tag':balanza_servicios.importacion_servicio})
+                ## Si el registro corresponde a precios corrientes (usd)
+                else:
+                    ## Se busca el registro para Exportaciones de bienes FOB
+                    balanza_datos_eb = BalanzaComercialDatos.objects.filter(balanza = balanza_base, tipo="EB").get()
+                    ## Se busca el registro para Exportaciones de Servicios
+                    balanza_datos_es = BalanzaComercialDatos.objects.filter(balanza = balanza_base, tipo="ES").get()
+                    ## Se busca el registro para Importaciones de Bienes CIF
+                    balanza_datos_ib = BalanzaComercialDatos.objects.filter(balanza = balanza_base, tipo="IB").get()
+                    ## Se busca el registro para Fletes y Seguros
+                    balanza_datos_fs = BalanzaComercialDatos.objects.filter(balanza = balanza_base, tipo="FS").get()
+                    ## Se busca el registro para Importaciones de Servicios
+                    balanza_datos_is = BalanzaComercialDatos.objects.filter(balanza = balanza_base, tipo="IS").get()
+                    ## Se añaden los registros a la lista
+                    registros.append({'tag':balanza_datos_eb.publico_petroleo})
+                    registros.append({'tag':balanza_datos_eb.publico_no_petroleo})
+                    registros.append({'tag':balanza_datos_eb.privado_petroleo})
+                    registros.append({'tag':balanza_datos_eb.privado_no_petroleo})
+                    registros.append({'tag':balanza_datos_es.publico_petroleo})
+                    registros.append({'tag':balanza_datos_es.publico_no_petroleo})
+                    registros.append({'tag':balanza_datos_es.privado_petroleo})
+                    registros.append({'tag':balanza_datos_es.privado_no_petroleo})
+                    registros.append({'tag':balanza_datos_ib.publico_petroleo})
+                    registros.append({'tag':balanza_datos_ib.publico_no_petroleo})
+                    registros.append({'tag':balanza_datos_ib.privado_petroleo})
+                    registros.append({'tag':balanza_datos_ib.privado_no_petroleo})
+                    registros.append({'tag':balanza_datos_fs.publico_petroleo})
+                    registros.append({'tag':balanza_datos_fs.publico_no_petroleo})
+                    registros.append({'tag':balanza_datos_fs.privado_petroleo})
+                    registros.append({'tag':balanza_datos_fs.privado_no_petroleo})
+                    registros.append({'tag':balanza_datos_is.publico_petroleo})
+                    registros.append({'tag':balanza_datos_is.publico_no_petroleo})
+                    registros.append({'tag':balanza_datos_is.privado_petroleo})
+                    registros.append({'tag':balanza_datos_is.privado_no_petroleo})
+            # Agrega los datos a la nueva fila del archivo a generar
+            fields.append(registros)
+            if (anho_ini == int(kwargs['anho__lte']) and trimestre_ini == int(kwargs['trimestre__lte'])):
+                break
+            if (trimestre_ini == 4):
+                trimestre_ini = 0
+                anho_ini += 1
+            trimestre_ini += 1
+        
+        if(kwargs['tipo']=='PR' and kwargs['dominio']=='BB'):
+            nombre_archivo+= '_bolivares_corriente'
+        elif(kwargs['tipo']=='PR' and kwargs['dominio']=='BD'):
+            nombre_archivo+= '_dolares'
+        elif(kwargs['tipo']=='PC'):
+            nombre_archivo+= '_bolivares_constante'
+        elif(kwargs['tipo']=='PI'):
+            nombre_archivo+= '_bolivales_preciosimplicitos'
+        ## Devuelve los datos correspondientes al archivo a descargar y el nombre de ese archivo
+        return {'fields': fields, 'output': nombre_archivo}
+    
+    def gestion_process(self, file, user, *args, **kwargs):
+        """!
+        Método que permite cargar y gestionar datos
+
+        @author Rodrigo boet (rboet at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 02-05-2017
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param file <b>{string}</b> Ruta y nombre del archivo a gestionar
+        @param user <b>{object}</b> Objeto que contiene los datos del usuario que realiza la acción
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve el resultado de la acción con su correspondiente mensaje
+        """
+        
+        load_file = pyexcel.get_sheet(file_name=file)
+        anho_base, errors, result, message = '', '', True, ''
+        load_data_msg = str(_("Datos Cargados"))
+
+        ## Se asigna un valor al año base
+        anho_base = kwargs['anho_base'] if 'anho_base' in kwargs else ''
+        
+        for row in load_file.row[2:]:
+            try:
+                ## Se crea el registro base
+                balanza_base, created = BalanzaComercialBase.objects.update_or_create(
+                    anho_base=anho_base,
+                    anho=row[1],
+                    trimestre=row[0],
+                    tipo=kwargs['tipo'],
+                    dominio=kwargs['dominio'])
+                
+                ## Se crean las balanzas para precios corrientes (bs) y precios constantes
+                if(kwargs['dominio']!='BD' and kwargs['tipo']!='PI'):
+                    ## Se crea el registro para Exportaciones de bienes FOB
+                    BalanzaComercialDatos.objects.update_or_create(balanza = balanza_base, tipo="EB", defaults={
+                        'publico_petroleo':check_val_data(row[2]),
+                        'publico_no_petroleo':check_val_data(row[3]),
+                        'privado_petroleo':check_val_data(row[4]),
+                        'privado_no_petroleo':check_val_data(row[5]),
+                    })
+                    
+                    ## Se crea el registro para Importaciones de Bienes CIF
+                    BalanzaComercialDatos.objects.update_or_create(balanza = balanza_base, tipo="IB", defaults={
+                        'publico_petroleo':check_val_data(row[7]),
+                        'publico_no_petroleo':check_val_data(row[8]),
+                        'privado_petroleo':check_val_data(row[9]),
+                        'privado_no_petroleo':check_val_data(row[10]),
+                    })
+                    
+                    ## Se crea el registro de las exportaciones/importaciones de servicios
+                    BalanzaComercialServicios.objects.update_or_create(balanza = balanza_base, defaults={
+                        'exportacion_servicio': check_val_data(row[6]),
+                        'importacion_servicio': check_val_data(row[11]),
+                    })
+                ## Se crea la balanza para el índice de precios implícitos
+                elif(kwargs['tipo']=='PI'):
+                    ## Se crea el registro para los precios implícitos
+                    BalanzaComercialPrecioImplicito.objects.update_or_create(balanza = balanza_base, defaults={
+                        'importacion_publica':check_val_data(row[11]),
+                        'importacion_privada':check_val_data(row[14]),
+                        'exportacion_publica':check_val_data(row[3]),
+                        'exportacion_privada':check_val_data(row[6]),
+                        'importacion_bien':check_val_data(row[10]),
+                        'exportacion_bien':check_val_data(row[2]),
+                    })
+                    
+                    ## Se crea el registro para Exportaciones de bienes FOB
+                    BalanzaComercialDatos.objects.update_or_create(balanza = balanza_base, tipo="EB", defaults={
+                        'publico_petroleo':check_val_data(row[4]),
+                        'publico_no_petroleo':check_val_data(row[5]),
+                        'privado_petroleo':check_val_data(row[7]),
+                        'privado_no_petroleo':check_val_data(row[8]),
+                    })
+                    
+                    ## Se crea el registro para Importaciones de Bienes CIF
+                    BalanzaComercialDatos.objects.update_or_create(balanza = balanza_base, tipo="IB", defaults={
+                        'publico_petroleo':check_val_data(row[12]),
+                        'publico_no_petroleo':check_val_data(row[13]),
+                        'privado_petroleo':check_val_data(row[15]),
+                        'privado_no_petroleo':check_val_data(row[16]),
+                    })
+                    
+                    ## Se crea el registro de las exportaciones/importaciones de servicios
+                    BalanzaComercialServicios.objects.update_or_create(balanza = balanza_base, defaults={
+                        'exportacion_servicio': check_val_data(row[9]),
+                        'importacion_servicio': check_val_data(row[17]),
+                    })
+                ## Se crea la balanza para precios corrientes (usd)
+                else:
+                    ## Se crea el registro para Exportaciones de bienes FOB
+                    BalanzaComercialDatos.objects.update_or_create(balanza = balanza_base, tipo="EB", defaults={
+                        'publico_petroleo':check_val_data(row[2]),
+                        'publico_no_petroleo':check_val_data(row[3]),
+                        'privado_petroleo':check_val_data(row[4]),
+                        'privado_no_petroleo':check_val_data(row[5]),
+                    })
+                    ## Se crea el registro para Exportaciones de Servicios
+                    BalanzaComercialDatos.objects.update_or_create(balanza = balanza_base, tipo="ES", defaults={
+                        'publico_petroleo':check_val_data(row[6]),
+                        'publico_no_petroleo':check_val_data(row[7]),
+                        'privado_petroleo':check_val_data(row[8]),
+                        'privado_no_petroleo':check_val_data(row[9]),
+                    })
+                    ## Se crea el registro para Importaciones de Bienes CIF
+                    BalanzaComercialDatos.objects.update_or_create(balanza = balanza_base, tipo="IB", defaults={
+                        'publico_petroleo':check_val_data(row[10]),
+                        'publico_no_petroleo':check_val_data(row[11]),
+                        'privado_petroleo':check_val_data(row[12]),
+                        'privado_no_petroleo':check_val_data(row[13]),
+                    })
+                    ## Se crea el registro para Fletes y Seguros
+                    BalanzaComercialDatos.objects.update_or_create(balanza = balanza_base, tipo="FS", defaults={
+                        'publico_petroleo':check_val_data(row[14]),
+                        'publico_no_petroleo':check_val_data(row[15]),
+                        'privado_petroleo':check_val_data(row[16]),
+                        'privado_no_petroleo':check_val_data(row[17]),
+                    })
+                    ## Se crea el registro para Importaciones de Servicios
+                    BalanzaComercialDatos.objects.update_or_create(balanza = balanza_base, tipo="IS", defaults={
+                        'publico_petroleo':check_val_data(row[18]),
+                        'publico_no_petroleo':check_val_data(row[19]),
+                        'privado_petroleo':check_val_data(row[20]),
+                        'privado_no_petroleo':check_val_data(row[21]),
+                    })
+               
+            except Exception as e:
+                errors += "- %s\n" % str(e)
+
+        if errors:
+            message = str(_("Error procesando datos. Verifique su correo para detalles del error"))
+            load_data_msg = str(_("Error al procesar datos del área Económica - Externo"))
+
+
+        # Envia correo electronico al usuario indicando el estatus de la carga de datos
+        enviar_correo(user.email, 'gestion.informacion.load.mail', EMAIL_SUBJECT_LOAD_DATA, {
+            'load_data_msg': load_data_msg, 'administrador': administrador, 'admin_email': admin_email,
+            'errors': errors
+        })
+        
+        return {'result': result, 'message': message}
+
+@python_2_unicode_compatible
+class BalanzaComercialDatos(models.Model):
+    """!
+    Clase que contiene los registros de datos de la Balanza Comercial
+    
+    @author Rodrigo Boet (rboet at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 02-05-2017
+    @version 1.0.0
+    """
+    
+    ## Valor público del petróleo
+    publico_petroleo = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Pública Petrólera")
+    )
+    
+    ## Valor no público del petróleo
+    publico_no_petroleo = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Pública No Petrólera")
+    )
+    
+    ## Valor privado del petróleo
+    privado_petroleo = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Privado Petrólero")
+    )
+    
+    ## Valor no privado del petróleo
+    privado_no_petroleo = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Privado No Petrólero")
+    )
+    
+    ## Tipo de dato de la balanza
+    tipo = models.CharField(max_length=2, choices=BALANZA_DATOS)
+    
+    ## Relación con la balanza base
+    balanza = models.ForeignKey(BalanzaComercialBase)
+    
+@python_2_unicode_compatible
+class BalanzaComercialServicios(models.Model):
+    """!
+    Clase que contiene los registros de datos de la Balanza Comercial
+    
+    @author Rodrigo Boet (rboet at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 02-05-2017
+    @version 1.0.0
+    """
+    
+    ## Valor de importacion del servicio
+    exportacion_servicio = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Exportaciones de Servicios")
+    )
+    
+    ## Valor de exportación del servicio
+    importacion_servicio = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Importaciones de Servicios")
+    )
+    
+    ## Relación con la balanza base
+    balanza = models.ForeignKey(BalanzaComercialBase)
+    
+@python_2_unicode_compatible
+class BalanzaComercialPrecioImplicito(models.Model):
+    """!
+    Clase que contiene los registros de datos de Precios Implicitos de la Balanza Comercial
+    
+    @author Rodrigo Boet (rboet at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 03-05-2017
+    @version 1.0.0
+    """
+    ## Valor público de la importación
+    importacion_publica = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Importaciones Públicas")
+    )
+    
+    ## Valor privado de la importación
+    importacion_privada = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Importaciones Privadas")
+    )
+    
+    ## Valor público de la exportación
+    exportacion_publica = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Exportaciones Públicas")
+    )
+    
+    ## Valor privado de la exportación
+    exportacion_privada = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Exportaciones Privadas")
+    )
+    
+    ## Valor de importación de los bienes
+    importacion_bien = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Importaciones de Bienes CIF")
+    )
+    
+    ## Valor de exportación de los bienes
+    exportacion_bien = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Exportaciones de Bienes FOB")
+    )
+    
+    ## Relación con la balanza base
+    balanza = models.ForeignKey(BalanzaComercialBase)

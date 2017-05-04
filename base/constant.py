@@ -131,7 +131,14 @@ DOMINIO_CAMBIO = (
     ('RI', _('Reservas Internacionales'))
 )
 
-## Selección de dominio de cuenta capital
+## Selección del dominio de la Balanza Comercial
+DOMINIO_BALANZA_COMERCIAL = (
+    ('', _('Seleccione...')),
+    ('BB', _('Balanza Comercial Bolívares')),
+    ('BD', _('Balanza Comercial Dólares'))
+)
+
+## Selección de dominio de Cuenta Capital
 DOMINIO_CUENTA_CAPITAL = (
     ("", _("Seleccione...")),
     ('BP', _('Balanza de Pagos')),
@@ -155,6 +162,14 @@ TIPO_DEMANDA_GLOBAL = (
 TIPO_OFERTA_GLOBAL = (
     ('', _('Seleccione...')),
     ('OG', _('Oferta Global'))
+)
+
+## Selección del tipo de Balanza Comercial
+TIPO_BALANZA_COMERCIAL = (
+    ('', _('Seleccione...')),
+    ('PR',_('Precios Corrientes')),
+    ('PC',_('Precios Constantes')),
+    ('PI',_('Índice de Precios Implícitos'))
 )
 
 ## Selección de Trimestres
@@ -206,3 +221,12 @@ CONVERT_MES = {
     _('Julio') : '07', _('Agosto') : '08', _('Septiembre') : '09', _('Octubre') : '10', _('Noviembre') : '11',
     _('Diciembre') : '12',
 }
+
+## Tipos de registro de balanza_datos
+BALANZA_DATOS = (
+    ("EB",_("Exportaciones de bienes FOB")),
+    ("IB",_("Importaciones de Bienes CIF")),
+    ("ES",_("Exportaciones de Servicios")),
+    ("FS",_("Fletes y Seguros")),
+    ("IS",_("Importaciones de Servicios")),
+)

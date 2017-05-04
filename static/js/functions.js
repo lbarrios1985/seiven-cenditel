@@ -46,3 +46,81 @@ function show_hide(element_id) {
         element.show();
     }
 }
+
+/**
+ * @brief Funcion que permite mostrar los dominios indicados en
+ * Balanza comercial
+ * @param value Cadena de texto con el valor del select padre
+ * @param element_id Cadena de texto con el id del elemento a modificar
+ */
+function edit_dom_bc(value,element_id) {
+    if (value=='PR') {
+        $('#'+element_id).html($('#balanza-comercial_completa').html());
+        disable(element_id,false);
+        disable('id_anho_base');
+    }
+    else if (value=='PC' || value =='PI') {
+        $('#'+element_id).html($('#balanza-comercial_bs').html());
+        disable(element_id,false);
+        disable('id_anho_base',false);
+    }
+    else{
+        disable(element_id);
+        disable('id_anho_base');
+    }
+}
+
+/**
+ * @brief Funcion que permite mostrar los dominios indicados en
+ * Balanza comercial
+ * @param value Booleano para activar/desactivar el periodo
+ */
+function enable_periodo_bc(value) {
+    if (value) {
+        disable('id_periodo_trimestre_ini',false);
+        disable('id_periodo_trimestre_fin',false);
+        disable('id_periodo_anho_ini',false);
+        disable('id_periodo_anho_fin',false);
+    }
+    else{
+        disable('id_periodo_trimestre_ini');
+        disable('id_periodo_trimestre_fin');
+        disable('id_periodo_anho_ini');
+        disable('id_periodo_anho_fin');
+    }
+}
+
+/**
+ * @brief Funcion que permite habilitar/deshabilitar elementos con su id
+ * @param element_id Cadena de texto con el id del elemento a mostrar u ocultar
+ * @param condicion Booleano que indica si el campo se debe deshabilitar o no
+ */
+function disable(element_id,condicion=true) {
+    var element = $("#" + element_id);
+    if (condicion) {
+        element.attr('disabled',true);
+    }
+    else {
+        element.removeAttr('disabled');
+    }
+}
+
+/**
+ * @brief Funcion para validar los años y trimestres
+ */
+function validar_anho_trimestre() {
+    trimestre_ini = $('#id_periodo_trimestre_ini').val();
+    trimestre_fin = $('#id_periodo_trimestre_fin').val();
+    anho_ini = $('#id_periodo_anho_ini').val();
+    anho_fin = $('#id_periodo_anho_fin').val();
+    if (trimestre_ini!='' &&  trimestre_fin!='' &&
+        anho_ini!='' && anho_fin!='') {
+        if (anho_fin<anho_ini) {
+            return false
+        }
+        else if (anho_ini==anho_fin && trimestre_fin<=trimestre_ini) {
+            return false
+        }
+        return true;
+    }
+}

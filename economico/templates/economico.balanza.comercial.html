@@ -23,18 +23,18 @@
                 </div>
             </div>
             <div class="row separador-row">
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xs-offset-3 col-sm-offset-3 col-md-offset-3 col-lg-offset-3">
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2">
                     <label for="{{ form.tipo.auto_id }}" class="control-label">
                         {{ form.tipo.label }}
                     </label>
                 </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{ form.tipo }}</div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.tipo }}</div>
                 <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
                     <label for="{{ form.dominio.auto_id }}" class="control-label">
                         {{ form.dominio.label }}
                     </label>
                 </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{ form.dominio }}</div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.dominio }}</div>
                 <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
                     <label for="{{ form.anho_base.auto_id }}" class="control-label">
                         {{ form.anho_base.label }}
@@ -42,36 +42,127 @@
                 </div>
                 <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{ form.anho_base }}</div>
             </div>
-            <div class="row separador-row">
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xs-offset-6 col-sm-offset-6 col-md-offset-6 col-lg-offset-6 text-center">
-                    <label class="control-label">{% trans 'Trimestral' %}</label>
-                </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 text-center">
-                    <label class="control-label">{% trans 'Año' %}</label>
-                </div>
-            </div>
-            <div class="row separador-row">
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xs-offset-4 col-sm-offset-4 col-md-offset-4 col-lg-offset-4">
-                    <label class="control-label">{% trans 'Período' %}</label>
-                </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
-                    <label for="{{ form.periodo_trimestre_ini.auto_id }}" class="control-label">
-                        {{ form.periodo_trimestre_ini.label }}
-                    </label>
-                </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{ form.periodo_trimestre_ini }}</div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{ form.periodo_anho_ini }}</div>
-            </div>
-            <div class="row separador-row">
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xs-offset-5 col-sm-offset-5 col-md-offset-5 col-lg-offset-5">
-                    <label for="{{ form.periodo_semana_fin.auto_id }}" class="control-label">
-                        {{ form.periodo_trimestre_fin.label }}
-                    </label>
-                </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{ form.periodo_trimestre_fin }}</div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{ form.periodo_anho_fin }}</div>
-            </div>
-            {% include 'base.down.up.files.html' %}
+			<div id="periodo" style="display: none;">
+				<div class="row separador-row">
+					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xs-offset-6 col-sm-offset-6 col-md-offset-6 col-lg-offset-6 text-center">
+						<label class="control-label">{% trans 'Trimestral' %}</label>
+					</div>
+					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 text-center">
+						<label class="control-label">{% trans 'Año' %}</label>
+					</div>
+				</div>
+				<div class="row separador-row">
+					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xs-offset-4 col-sm-offset-4 col-md-offset-4 col-lg-offset-4">
+						<label class="control-label">{% trans 'Período' %}</label>
+					</div>
+					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+						<label for="{{ form.periodo_trimestre_ini.auto_id }}" class="control-label">
+							{{ form.periodo_trimestre_ini.label }}
+						</label>
+					</div>
+					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{ form.periodo_trimestre_ini }}</div>
+					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{ form.periodo_anho_ini }}</div>
+				</div>
+				<div class="row separador-row">
+					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xs-offset-5 col-sm-offset-5 col-md-offset-5 col-lg-offset-5">
+						<label for="{{ form.periodo_semana_fin.auto_id }}" class="control-label">
+							{{ form.periodo_trimestre_fin.label }}
+						</label>
+					</div>
+					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{ form.periodo_trimestre_fin }}</div>
+					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{ form.periodo_anho_fin }}</div>
+				</div>
+			</div>
+			<div id="upload" style="display: none;">
+				{% include 'base.down.up.files.html' with url_down='/gestion-informacion/ajax/descargar_archivo' url_up='/gestion-informacion/ajax/cargar_archivo' app='economico' mod='BalanzaComercialBase' %}
+			</div>
         </div>
     </div>
+{% endblock %}
+
+{% block extra_footer %}
+    <script>
+		var tipo = $('#{{ form.tipo.auto_id }}');
+        var dominio = $('#{{ form.dominio.auto_id }}');
+        var anho_base = $("#{{ form.anho_base.auto_id }}");
+        var periodo_mes_ini = $("#{{ form.periodo_trimestre_ini.auto_id }}");
+        var periodo_mes_fin = $("#{{ form.periodo_trimestre_fin.auto_id }}");
+        var periodo_anho_ini = $("#{{ form.periodo_anho_ini.auto_id }}");
+        var periodo_anho_fin = $("#{{ form.periodo_anho_fin.auto_id }}");
+
+        /**
+         * Función que configura los filtros de acuerdo a la selección del usuario
+         */
+        function set_filters() {
+            var filters = $("#filters"), json_filter = '';
+			
+			if (tipo.val()) {
+                json_filter += "\"tipo\": \"" + tipo.val() + "\",";
+            }
+            if (dominio.val()) {
+                json_filter += "\"dominio\": \"" + dominio.val() + "\",";
+            }
+            if (anho_base.val()) {
+                json_filter += "\"anho_base\": \"" + anho_base.val() + "\",";
+            }
+            if (periodo_mes_ini.val()) {
+                json_filter += "\"trimestre__gte\": \"" + periodo_mes_ini.val() + "\",";
+            }
+            if (periodo_mes_fin.val()) {
+                json_filter += "\"trimestre__lte\": \"" + periodo_mes_fin.val() + "\",";
+            }
+            if (periodo_anho_ini.val()) {
+                json_filter += "\"anho__gte\": \"" + periodo_anho_ini.val() + "\",";
+            }
+            if (periodo_anho_fin.val()) {
+                json_filter += "\"anho__lte\": \"" + periodo_anho_fin.val() + "\",";
+            }
+
+            if (json_filter) {
+                json_filter = json_filter.slice(0, -1);
+                filters.val(json_filter);
+            }
+			
+			// Validación de los campos ocultos
+			var aprobado = false;
+			// Se valida mostrar y habilitar los períodos
+			if (tipo.val()=='PR' && (dominio.val()=='BB' || dominio.val()=='BD')) {
+                enable_periodo_bc(true);
+				$('#periodo').show();
+				aprobado = true;
+            }
+			else if ((tipo.val()=='PC' || tipo.val()=='PI') && anho_base.val()!='') {
+                enable_periodo_bc(true);
+				$('#periodo').show();
+				aprobado = true;
+            }
+			else{
+				enable_periodo_bc(false);
+				$('#periodo').hide();
+				aprobado = false;
+			}
+			// Se valida mostrar el formulario de descarga
+			if (periodo_mes_ini.val()!='' && periodo_mes_fin.val()!='' && periodo_anho_ini.val()!=''
+				&& periodo_anho_fin.val()!='') {
+				var anho_trimestre = validar_anho_trimestre();
+                if (aprobado && anho_trimestre) {
+					$('#upload').show();
+				}
+				else{
+					$('#upload').hide();
+				}
+            }
+			
+        }
+
+        $(document).ready(function() {
+			tipo.on('change', function() { set_filters() });
+            dominio.on('change', function() { set_filters() });
+            anho_base.on('change', function() { set_filters() });
+            periodo_mes_ini.on('change', function() { set_filters() });
+            periodo_mes_fin.on('change', function() { set_filters() });
+            periodo_anho_ini.on('change', function() { set_filters() });
+            periodo_anho_fin.on('change', function() { set_filters() });
+        });
+    </script>
 {% endblock %}
