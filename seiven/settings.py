@@ -65,6 +65,7 @@ PROJECT_APPS = [
     'base',
     'usuario',
     'economico',
+    'productivo',
     'gestion_informacion',
 ]
 
