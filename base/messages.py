@@ -28,6 +28,9 @@ MSG_NOT_UPLOAD_FILE = _("No ha proporcionado los datos para cargar la informaci�
 ## Mensaje que indica que los datos están siendo procesados
 MSG_UPLOAD_FILE_SUCCESS = _("Los datos están siendo procesados, será notificado por correo sobre el resultado de los mismos.")
 
+## Mensaje que indica si existen errores en la carga de datos
+MSG_SAVE_DATA_CM = _("Se encontraron errores al procesar el archivo, será notificado por correo electrónico con los detalles.")
+
 ## Mensaje que indica que el archivo fue generado correctamente
 MSG_CREATED_FILE_SUCCESS = _("El archivo fue generado correctamente")
 
