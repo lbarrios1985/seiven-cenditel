@@ -38,7 +38,16 @@ function passwordStrength(password) {
  * @param element_id Cadena de texto con el id del elemento a mostrar u ocultar
  */
 function show_hide(element_id) {
+    $('.smal-box').each(function() {
+        if (!$(this).is("#" + element_id)) {
+            $(this).hide();
+        }
+    });
     var element = $("#" + element_id);
+
+    //element.hide() ? element.is(":visible") : element.show();
+
+
     if (element.is(":visible")) {
         element.hide();
     }
@@ -95,7 +104,8 @@ function enable_periodo_bc(value) {
  * @param element_id Cadena de texto con el id del elemento a mostrar u ocultar
  * @param condicion Booleano que indica si el campo se debe deshabilitar o no
  */
-function disable(element_id,condicion=true) {
+function disable(element_id,condicion) {
+    condicion = (typeof condicion != "undefined");
     var element = $("#" + element_id);
     if (condicion) {
         element.attr('disabled',true);
