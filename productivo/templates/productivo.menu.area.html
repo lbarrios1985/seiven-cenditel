@@ -1,0 +1,68 @@
+{% extends 'base.template.html' %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% block content_header_title %}{% trans 'CONSULTAR DATOS' %}{% endblock %}
+{% block active_link %}{% trans 'Producción' %}{% endblock %}
+{% block content %}
+    <div class="panel panel-produccion menu">
+        <div class="panel-heading">
+            <h3 class="panel-title">{% trans 'Productivo' %}</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <img src="{% static 'img/area-productiva/unidad-economica.png' %}"
+                         alt="{% trans 'Unidad Económica' %}" class="img-area img-responsive" data-action="">
+                    <h2 class="text-center">Unidad Económica</h2>
+                </div>
+                <div class="col-md-3">
+                    <img src="{% static 'img/area-productiva/actividades-economicas.png' %}"
+                         alt="{% trans 'Actividades Economicas' %}" class="img-area img-responsive" data-action="">
+                    <h2 class="text-center">Actividades Económicas</h2>
+                </div>
+                <div class="col-md-3">
+                    <img src="{% static 'img/area-productiva/productos.png' %}"
+                         alt="{% trans 'Productos' %}" class="img-area img-responsive" data-list="list_productos">
+                    <h2 class="text-center">Productos</h2>
+                    <ul id="list_productos" style="display: none">
+                        <li>
+                            <a href="#">{% trans 'Por código arancelario' %}</a>
+                        </li>
+                        <li>
+                            <a href="#">{% trans 'Por Unidad Económica' %}</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <img src="{% static 'img/area-productiva/maquinaria-equipos.png' %}"
+                         alt="{% trans 'Maquinaria y Equipos' %}" class="img-area img-responsive"
+                         data-list="list_maquinaria_equipos">
+                    <h2 class="text-center">Maquinaria y Equipos</h2>
+                    <ul id="list_maquinaria_equipos" style="display: none">
+                        <li>
+                            <a href="#">{% trans 'Por actividad económica' %}</a>
+                        </li>
+                        <li>
+                            <a href="#">{% trans 'Por Unidad Económica' %}</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block extra_footer %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('img').on('click', function() {
+                $("ul").hide();
+                if (typeof $(this).data('list') != "undefined") {
+                    show_hide($(this).attr('data-list'));
+                }
+                else if (typeof $(this).data('action') != "undefined" && $(this).data('action')) {
+                    window.location = $(this).data('action');
+                }
+            });
+        });
+    </script>
+{% endblock %}

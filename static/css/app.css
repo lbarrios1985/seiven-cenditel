@@ -108,6 +108,42 @@ h1, h2, h3, h4, h5, h6 {
     background-color: #41B9B7;
     border-color: #41B9B7;
 }
+/** Panel producción **/
+.panel-produccion.menu {
+    margin: 25px 200px;
+    min-height: 500px;
+}
+.panel-produccion.menu ul {
+    margin: 30px auto 0 auto;
+}
+.panel-produccion.menu ul li {
+    font-size: 18px;
+    font-weight: bold;
+}
+.panel-produccion.menu ul li a {
+    color: #42535c;
+}
+.panel-produccion.menu ul li a:hover {
+    color: #5C737C;
+}
+
+.panel-produccion {
+    border-color: #C2031D;
+}
+.panel-produccion .panel-heading {
+    background-color: #C2031D;
+    border-color: #C2031D;
+    color: #FFFFFF;
+}
+.panel-produccion h2 {
+    color: #5C737C;
+}
+.panel-produccion.menu img {
+    min-height: 100px;
+    border: solid 1px #5C737C;
+    border-radius: 10%;
+}
+/** Fin panel producción **/
 .panel-resalt {
     border: solid 3px #2c3b41;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
