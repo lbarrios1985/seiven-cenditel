@@ -190,7 +190,8 @@ def balanza_comercial(request):
     """
     form = ExternoBalanzaComercialForm()
 
-    return render(request, 'economico.balanza.comercial.html', {'form': form})
+    return render(request, 'economico.balanza.comercial.html', {'form': form,
+                    'url_down': reverse('descargar_archivo'), 'url_up': reverse('cargar_archivo'),})
 
 
 @login_required
@@ -286,4 +287,6 @@ def capital(request):
     """
     form = CapitalForm()
 
-    return render(request, 'economico.cuenta.capital.html', {'form': form, 'title': _('Cuenta Capital')})
+    return render(request, 'economico.cuenta.capital.html', {'form': form,
+            'url_down': reverse('descargar_archivo'), 'url_up': reverse('cargar_archivo'),
+            'title': _('Cuenta Capital')})

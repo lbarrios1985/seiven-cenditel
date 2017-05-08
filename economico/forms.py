@@ -512,3 +512,10 @@ class CapitalForm(DominioForm, TrimestreIniForm, TrimestreFinForm, AnhoIniForm, 
     def __init__(self, *args, **kwargs):
         super(CapitalForm, self).__init__(*args, **kwargs)
         self.fields['dominio'].choices = DOMINIO_CUENTA_CAPITAL
+        ## Se deshabilitan los campos
+        self.fields['periodo_trimestre_ini'].widget.attrs.update({'disabled': True})
+        self.fields['periodo_trimestre_fin'].widget.attrs.update({'disabled': True})
+        self.fields['periodo_anho_ini'].widget.attrs.update({'disabled': True})
+        self.fields['periodo_anho_fin'].widget.attrs.update({'disabled': True})
+        ## Se agregan las funciones en javascript
+        self.fields['dominio'].widget.attrs.update({'onchange': 'edit_fields_cc($(this).val());'})

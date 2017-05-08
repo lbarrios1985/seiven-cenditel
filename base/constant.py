@@ -230,3 +230,13 @@ BALANZA_DATOS = (
     ("FS",_("Fletes y Seguros")),
     ("IS",_("Importaciones de Servicios")),
 )
+
+## ----------> Cuenta Capital
+
+## Tipos de inversión de cartera
+INVERSION_CARTERA = (
+    ("ASPu",_("Activos Sector Público")),
+    ("ASPr",_("Activos Sector Privado")),
+    ("PSPu",_("Pasivos Sector Público")),
+    ("PSPr",_("Pasivos Sector Privado")),
+)

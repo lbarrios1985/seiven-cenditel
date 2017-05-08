@@ -124,3 +124,19 @@ function validar_anho_trimestre() {
         return true;
     }
 }
+
+/**
+ * @brief Funcion que permite mostrar/ocultar y deshabilitar/habilitar
+ * los campos necesarios para la cuenta capital
+ * @param value Cadena de texto con el valor del select padre
+ */
+function edit_fields_cc(value) {
+    if (value!='') {
+        $('#periodo').show();
+        enable_periodo_bc(true);
+    }
+    else{
+        $('#periodo').hide();
+        enable_periodo_bc(false);
+    }
+}

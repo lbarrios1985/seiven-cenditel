@@ -23,7 +23,7 @@ from itertools import islice , cycle
 
 from base.constant import (
     DOMINIO, PERIOCIDAD, TRIMESTRES, MESES, ECONOMICO_SUB_AREA, CONVERT_MES, EMAIL_SUBJECT_LOAD_DATA,
-    TIPO_BALANZA_COMERCIAL, DOMINIO_BALANZA_COMERCIAL, BALANZA_DATOS
+    TIPO_BALANZA_COMERCIAL, DOMINIO_BALANZA_COMERCIAL, BALANZA_DATOS, INVERSION_CARTERA
 )
 from base.functions import enviar_correo, check_val_data
 
@@ -1873,3 +1873,204 @@ class BalanzaComercialPrecioImplicito(models.Model):
     
     ## Relación con la balanza base
     balanza = models.ForeignKey(BalanzaComercialBase)
+    
+# ------------ Económico Externo - Cuenta Capital  --------------------
+# ---------------------  Balanza de Pagos  ----------------------------
+@python_2_unicode_compatible
+class CuentaCapitalBalanzaBase(models.Model):
+    """!
+    Clase que contiene los registros base de la Cuenta Capital, en la parte de balanza de pagos
+    
+    @author Rodrigo Boet (rboet at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 08-05-2017
+    @version 1.0.0
+    """
+    ## Año al que pertenece el(los) registro(s)
+    anho = models.CharField(max_length=4, verbose_name=_("Año"))
+
+    ## Trimestre del registro
+    trimestre = models.CharField(max_length=2, choices=TRIMESTRES[1:], verbose_name=_("Trimestre"))
+    
+    class Meta:
+        unique_together = ("anho", "trimestre")
+        
+@python_2_unicode_compatible
+class CuentaCapitalSaldos(models.Model):
+    """!
+    Clase que contiene los registros base de la Cuenta Capital, en la parte de balanza de pagos (saldos)
+    
+    @author Rodrigo Boet (rboet at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 08-05-2017
+    @version 1.0.0
+    """
+    ## --------------> Saldo de Servicios
+    
+    ## Valor del transporte
+    transporte = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Transportes")
+    )
+    
+    ## Valor de los viajes
+    viajes = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Viajes")
+    )
+    
+    ## Valor de la comunicación
+    comunicacion = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Comunicaciones")
+    )
+    
+    ## Valor del seguro
+    seguro = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Seguros")
+    )
+    
+    ## Valor del gobierno
+    gobierno = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Gobierno n.i.o.p.")
+    )
+    
+    ## Otros valores
+    otros = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Otros")
+    )
+    
+    ## --------------> Saldo en Renta
+    
+    ## Valor de la remuneración del empleado
+    remuneracion_empleado = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Remuneración Empleados")
+    )
+    
+    ## Valor de la inversión directa
+    inversion_directa = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Inversión Directa")
+    )
+    
+    ## Valor de la inversión de cartera
+    inversion_cartera = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Inversión de Cartera")
+    )
+    
+    ## Valor de otras inversiones
+    otra_inversion = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Otra Inversión")
+    )
+    
+    ## Relación con el registro base de la cuenta capital
+    cuenta_capital = models.ForeignKey(CuentaCapitalBalanzaBase)
+    
+@python_2_unicode_compatible
+class CuentaCapitalOtros(models.Model):
+    """!
+    Clase que contiene los registros base de la Cuenta Capital, en la parte de balanza de pagos (otros)
+    
+    @author Rodrigo Boet (rboet at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 08-05-2017
+    @version 1.0.0
+    """   
+    ## Valor de la transferencias corrientes
+    transferencia_corriente = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Transferencias Corrientes")
+    )
+    
+    ## Valor de la cuenta capital
+    cuenta = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Cuenta Capital")
+    )
+    
+    ## Valor de los errores u omisiones
+    errores_omisiones = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Errores y Omisiones")
+    ) 
+    
+    ## Relación con el registro base de la cuenta capital
+    cuenta_capital = models.ForeignKey(CuentaCapitalBalanzaBase)
+    
+@python_2_unicode_compatible
+class CuentaCapitalInversionCartera(models.Model):
+    """!
+    Clase que contiene los registros base de la Cuenta Capital, en la parte de balanza de pagos (inversión cartera)
+    
+    @author Rodrigo Boet (rboet at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 08-05-2017
+    @version 1.0.0
+    """   
+    ## Valor del título de participacion capital
+    titulo_participacion_capital = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Títulos de participación en el capital")
+    )
+    
+    ## Valor del título de la deuda
+    titulo_deuda = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Títulos de deuda")
+    )
+    
+    ## Tipo de dato de la inversión de cartera
+    tipo = models.CharField(max_length=2, choices=INVERSION_CARTERA)
+       
+    ## Relación con el registro base de la cuenta capital
+    cuenta_capital = models.ForeignKey(CuentaCapitalBalanzaBase)
+    
+@python_2_unicode_compatible
+class CuentaCapitalInversionDirecta(models.Model):
+    """!
+    Clase que contiene los registros base de la Cuenta Capital, en la parte de balanza de pagos (inversión directa)
+    
+    @author Rodrigo Boet (rboet at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 08-05-2017
+    @version 1.0.0
+    """   
+    ## Valor de la inversión directa en el extranjero
+    extranjero = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Extranjero")
+    )
+    
+    ## Valor de la inversión directa en el país
+    pais = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("País")
+    )
+       
+    ## Relación con el registro base de la cuenta capital
+    cuenta_capital = models.ForeignKey(CuentaCapitalBalanzaBase)
+    
+@python_2_unicode_compatible
+class CuentaCapitalOtraInversion(models.Model):
+    """!
+    Clase que contiene los registros base de la Cuenta Capital, en la parte de balanza de pagos (otras inversiones)
+    
+    @author Rodrigo Boet (rboet at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 08-05-2017
+    @version 1.0.0
+    """   
+    ## Valor del crédito comercial
+    credito_comercial = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Créditos Comerciales")
+    )
+    
+    ## Valores del préstamo
+    prestamo = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Préstamos")
+    )
+    
+    ## Valores de monedas y depósitos
+    moneda_deposito = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Monedas y depósitos")
+    )
+    
+    ## Otros valores
+    otros = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Otros")
+    )
+    
+    ## Tipo de dato de la inversión de cartera
+    tipo = models.CharField(max_length=2, choices=INVERSION_CARTERA)
+       
+    ## Relación con el registro base de la cuenta capital
+    cuenta_capital = models.ForeignKey(CuentaCapitalBalanzaBase)
