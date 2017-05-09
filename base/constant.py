@@ -14,6 +14,7 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
+from datetime import datetime
 
 
 ## Tipo de documento de identificación
@@ -230,3 +231,7 @@ BALANZA_DATOS = (
     ("FS",_("Fletes y Seguros")),
     ("IS",_("Importaciones de Servicios")),
 )
+
+## Años de consulta
+ANHOS_CONSULTA = [(str(y), str(y)) for y in range(2009, datetime.now().year + 1)]
+ANHOS_CONSULTA.insert(0, ('', "Seleccione"))

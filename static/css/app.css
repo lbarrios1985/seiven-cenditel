@@ -297,8 +297,8 @@ table thead th:not(:first-child) {
 }
 
 
-.select2-container {
-    min-width: 85px;
+.select-anho {
+    min-width: 120px;
 }
 
 

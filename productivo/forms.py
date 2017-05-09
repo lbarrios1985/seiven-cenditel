@@ -12,10 +12,13 @@ Copyleft (@) 2015 CENDITEL nodo Mérida - https://mpv.cenditel.gob.ve/seiven
 # @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
 from __future__ import unicode_literals
 
-from django.forms import ChoiceField, CharField, Select, TextInput
+from django.forms import ChoiceField, CharField, Select, TextInput, ModelChoiceField
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django import forms
+
+from base.constant import ANHOS_CONSULTA
+from base.models import Estado
 
 
 @python_2_unicode_compatible
@@ -31,9 +34,9 @@ class UnidadEconomicaForm(forms.Form):
 
     ## Año de consulta
     anho = ChoiceField(
-        label=_(u"Año"), choices=(('2017', '2017'),),
+        label=_(u"Año"), choices=ANHOS_CONSULTA,
         widget=Select(attrs={
-            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
+            'class': 'select2 select2-offscreen form-control select-anho', 'data-toggle': 'tooltip',
             'title': _(u"Seleccione el año de consulta")
         })
     )
@@ -46,8 +49,8 @@ class UnidadEconomicaForm(forms.Form):
         'class': 'form-control', 'data-toggle': 'tooltip', 'title': _(u"Indique el R.I.F. de la Unidad Económica")
     }), required=False)
 
-    estado = ChoiceField(
-        label=_(u"Estado"), choices=(),
+    estado = ModelChoiceField(
+        label=_(u"Estado"), queryset=Estado.objects.all(), empty_label=_("Seleccione"),
         widget=Select(attrs={
             'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
             'title': _(u"Seleccione el Estado a consultar")

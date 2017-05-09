@@ -73,10 +73,10 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6 text-center">
-                        <button type="button" class="btn btn-warning">{% trans 'Consultar' %}</button>
+                    <div class="col-md-6 col-xs-6 text-center">
+                        <button type="button" class="btn btn-warning">{% trans 'Buscar' %}</button>
                     </div>
-                    <div class="col-md-6 text-center">
+                    <div class="col-md-6 col-sx-6 text-center">
                         <button type="reset" class="btn btn-warning">{% trans 'Limpiar' %}</button>
                     </div>
                 </div>
@@ -101,7 +101,8 @@
                                 <thead>
                                     <tr>
                                         <th class="col-md-1">
-                                            <input type="checkbox" id="check_all" role="button">
+                                            <input type="checkbox" id="check_all" role="button" data-toggle="tooltip"
+                                                   title="{% trans 'Marque para seleccionar todos los registros' %}">
                                         </th>
                                         <th class="col-md-4">{% trans 'Nombre' %}</th>
                                         <th class="col-md-3">{% trans 'R.I.F.' %}</th>
@@ -110,6 +111,11 @@
                                 </thead>
                                 <tbody></tbody>
                             </table>
+                        </div>
+                    </div>
+                    <div class="row separador-row">
+                        <div class="col-md-12 text-right">
+                            <button type="button" class="btn btn-warning">{% trans 'Siguiente' %}</button>
                         </div>
                     </div>
                 </div>
