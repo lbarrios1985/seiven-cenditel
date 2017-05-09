@@ -128,6 +128,9 @@ TEMPLATES = [
                 'django.template.context_processors.i18n',
                 "django.template.context_processors.tz",
             ],
+            'libraries': { # Carga los paquetes de bibliotecas para los templatetags, etc...
+                'productivo_filtros': 'productivo.templatetags.productivo_filtros',
+            },
         },
     },
 ]
