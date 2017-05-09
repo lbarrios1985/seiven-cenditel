@@ -13,13 +13,15 @@ Copyleft (@) 2015 CENDITEL nodo Mérida - https://mpv.cenditel.gob.ve/seiven
 from __future__ import unicode_literals
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
-from .views import consultar_datos, UnidadEconomicaView
+from .views import consultar_datos, UnidadEconomicaView, ActividadEconomicaView
 
 
 urlpatterns = [
     url(r'^consultar-datos/?$', consultar_datos, name='productivo-consultar-datos'),
     url(r'^consultar-datos/unidad-economica/$', login_required(UnidadEconomicaView.as_view()),
         name="consultar_unidad_economica"),
+    url(r'^consultar-datos/actividad-economica/$', login_required(ActividadEconomicaView.as_view()),
+        name="consultar_actividad_economica"),
 ]
 
 ## URLs de peticiones AJAX

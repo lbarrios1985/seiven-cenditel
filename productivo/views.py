@@ -17,7 +17,7 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import FormView
 
-from .forms import UnidadEconomicaForm
+from .forms import UnidadEconomicaForm, ActividadEconomicaForm
 
 
 @login_required
@@ -38,3 +38,9 @@ class UnidadEconomicaView(FormView):
     template_name = 'productivo.unidad.economica.html'
     form_class = UnidadEconomicaForm
     success_url = reverse_lazy('consultar_unidad_economica')
+
+
+class ActividadEconomicaView(FormView):
+    template_name = 'productivo.actividad.economica.html'
+    form_class = ActividadEconomicaForm
+    success_url = reverse_lazy('consultar_actividad_economica')

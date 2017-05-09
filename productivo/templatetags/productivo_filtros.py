@@ -72,6 +72,20 @@ opciones = {
         'ae02': str(_("Utiliza servicio de maquila")),
         'ae03': str(_("Numero de productos asociados")),
         'ae04': str(_("Exportadora")),
+    },
+    'unidad_economica_ae': {
+        'ue01': str(_("Razón Social")),
+        'ue02': str(_("Estado")),
+        'ue03': str(_("Municipio")),
+        'ue04': str(_("Parroquia")),
+        'ue05': str(_("Naturaleza Juridica")),
+        'ue06': str(_("Capital Suscrito")),
+        'ue07': str(_("Capital Pagado")),
+        'ue08': str(_("Distribucion de Capital Suscrito")),
+        'ue09': str(_("Numero de trabajadores de la unidad economica")),
+        'ue10': str(_("Numero de comercializadoras")),
+        'ue11': str(_("Numero de plantas productivas")),
+        'ue12': str(_("Numero de sedes administrativas")),
     }
 }
 
