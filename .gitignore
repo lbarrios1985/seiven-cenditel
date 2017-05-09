@@ -9,7 +9,6 @@ static/files/*.*
 tmp/*.png
 database_config.py
 migrations
-fixtures
 *.sql
 *.log
 venv/
