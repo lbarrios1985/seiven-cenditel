@@ -134,3 +134,21 @@ function validar_anho_trimestre() {
         return true;
     }
 }
+
+/**
+ * @brief Función que muestra u oculta elementos de filtros de consulta
+ * @param filtros Cadena de texto con el tipo de filtro a utilizar
+ * @param element Objeto que contiene el elemento que realiza la acción para ocultar o mostrar filtros de consulta
+ */
+function show_hide_filters(filtros, element) {
+    if ($("#opciones-" + filtros).is(':visible')) {
+        $("#opciones-" + filtros).hide();
+        element.removeClass("fa-minus-circle");
+        element.addClass("fa-plus-circle");
+    }
+    else {
+        $("#opciones-" + filtros).show();
+        element.removeClass("fa-plus-circle");
+        element.addClass("fa-minus-circle");
+    }
+}

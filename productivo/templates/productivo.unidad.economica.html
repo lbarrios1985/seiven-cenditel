@@ -88,19 +88,3 @@
         </div>
     </div>
 {% endblock %}
-{% block extra_footer %}
-    <script type="text/javascript">
-        function show_hide_filters(filtros, element) {
-            if ($("#opciones-" + filtros).is(':visible')) {
-                $("#opciones-" + filtros).hide();
-                element.removeClass("fa-minus-circle");
-                element.addClass("fa-plus-circle");
-            }
-            else {
-                $("#opciones-" + filtros).show();
-                element.removeClass("fa-plus-circle");
-                element.addClass("fa-minus-circle");
-            }
-        }
-    </script>
-{% endblock %}
