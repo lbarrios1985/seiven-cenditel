@@ -12,11 +12,14 @@ Copyleft (@) 2015 CENDITEL nodo Mérida - https://mpv.cenditel.gob.ve/seiven
 # @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
 from __future__ import unicode_literals
 from django.conf.urls import url
-from . import views as productivo_views
+from django.contrib.auth.decorators import login_required
+from .views import consultar_datos, UnidadEconomicaView
 
 
 urlpatterns = [
-    url(r'^consultar-datos/?$', productivo_views.consultar_datos, name='productivo-consultar-datos'),
+    url(r'^consultar-datos/?$', consultar_datos, name='productivo-consultar-datos'),
+    url(r'^consultar-datos/unidad-economica/$', login_required(UnidadEconomicaView.as_view()),
+        name="consultar_unidad_economica"),
 ]
 
 ## URLs de peticiones AJAX

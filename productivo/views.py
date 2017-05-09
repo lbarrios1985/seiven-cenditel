@@ -14,6 +14,10 @@ from __future__ import unicode_literals
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.views.generic import FormView
+
+from .forms import UnidadEconomicaForm
 
 
 @login_required
@@ -28,3 +32,9 @@ def consultar_datos(request):
     @return Devuelve el response con la página del sub-menu de consulta del área productiva
     """
     return render(request, 'productivo.menu.area.html', {})
+
+
+class UnidadEconomicaView(FormView):
+    template_name = 'productivo.unidad.economica.html'
+    form_class = UnidadEconomicaForm
+    success_url = reverse_lazy('consultar_unidad_economica')

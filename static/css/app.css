@@ -135,13 +135,21 @@ h1, h2, h3, h4, h5, h6 {
     border-color: #C2031D;
     color: #FFFFFF;
 }
-.panel-produccion h2 {
+.panel-produccion .panel-footer {
+    background: transparent;
+    border-top: 0;
+}
+.panel-produccion.menu .panel-body h2 {
     color: #5C737C;
 }
 .panel-produccion.menu img {
     min-height: 100px;
     border: solid 1px #5C737C;
     border-radius: 10%;
+}
+.panel-produccion .btn-warning {
+    background-color: #E5491E;
+    border: solid 1px #E5491E;
 }
 /** Fin panel producción **/
 .panel-resalt {
@@ -274,7 +282,24 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: bold;
 }
 
+/** Tablas **/
+.dataTables_wrapper {
+    border: 1px solid #5C737C;
+    border-radius: 5px;
+    padding: 10px;
+    margin-top: 20px;
+}
+table thead th:not(:first-child) {
+    text-align: center;
+}
+#datos-consultados {
+    display: none;
+}
 
+
+.select2-container {
+    min-width: 85px;
+}
 
 
 /**

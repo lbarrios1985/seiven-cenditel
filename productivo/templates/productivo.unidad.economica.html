@@ -1,0 +1,119 @@
+{% extends 'base.template.html' %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% block content_header_title %}{% trans 'CONSULTAR DATOS' %}{% endblock %}
+{% block content_header_roadmap %}
+    <li><a href="{% url 'productivo-consultar-datos' %}">{% trans 'Producción - Consultar Datos' %}</a></li>
+    <li class="active">{% block active_link %}{% trans 'Unidad Económica' %}{% endblock %}</li>
+{% endblock %}
+{% block content %}
+    <div class="panel panel-produccion">
+        <div class="panel-heading">
+            <h2 class="panel-title">{% trans 'Productivo' %} - {% trans 'Unidad Económica' %}</h2>
+        </div>
+        <div class="panel-body">
+            <form action="" class="form form-horizontal" method="post" autocomplete="off">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group {% if form.anho.errors %}has-error{% endif %}">
+                            <label class="col-md-1 control-label" for="{{ form.anho.auto_id }}">
+                                {{ form.anho.label }}
+                            </label>
+                            <div class="col-md-10">
+                                <div class="form-inline">
+                                    {{ form.anho }}
+                                    {% include 'base.form.errors.html' with form_errors=form.anho.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <h4>{% trans 'Realice la búsqueda por una de las tres categorías' %}</h4>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group {% if form.nombre.errors %}has-error{% endif %}">
+                            <label class="col-md-4 control-label" for="{{ form.nombre.auto_id }}">
+                                {{ form.nombre.label }}
+                            </label>
+                            <div class="col-md-8">
+                                <div class="form-inline">
+                                    {{ form.nombre }}
+                                    {% include 'base.form.errors.html' with form_errors=form.nombre.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group {% if form.rif.errors %}has-error{% endif %}">
+                            <label class="col-md-4 control-label" for="{{ form.rif.auto_id }}">
+                                {{ form.rif.label }}
+                            </label>
+                            <div class="col-md-8">
+                                <div class="form-inline">
+                                    {{ form.rif }}
+                                    {% include 'base.form.errors.html' with form_errors=form.rif.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group {% if form.estado.errors %}has-error{% endif %}">
+                            <label class="col-md-4 control-label" for="{{ form.estado.auto_id }}">
+                                {{ form.estado.label }}
+                            </label>
+                            <div class="col-md-8">
+                                <div class="form-inline">
+                                    {{ form.estado }}
+                                    {% include 'base.form.errors.html' with form_errors=form.estado.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 text-center">
+                        <button type="button" class="btn btn-warning">{% trans 'Consultar' %}</button>
+                    </div>
+                    <div class="col-md-6 text-center">
+                        <button type="reset" class="btn btn-warning">{% trans 'Limpiar' %}</button>
+                    </div>
+                </div>
+                <div id="datos-consultados">
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12 text-right">
+                            <img src="{% static 'img/botones/descargar-pdf.png' %}" role="button" data-toggle="tooltip"
+                                 alt="{% trans 'Descargar PDF' %}" title="{% trans 'Descargar PDF' %}"
+                                 class="img-responsive inline">
+                            <img src="{% static 'img/botones/descargar-ods.png' %}" role="button" data-toggle="tooltip"
+                                 alt="{% trans 'Descargar ODS' %}" title="{% trans 'Descargar ODF' %}"
+                                 class="img-responsive inline">
+                            <img src="{% static 'img/botones/descargar-csv.png' %}" role="button" data-toggle="tooltip"
+                                 alt="{% trans 'Descargar CSV' %}" title="{% trans 'Descargar CSV' %}"
+                                 class="img-responsive inline">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table table-striped table-hover display dataTable responsive" width="100%" id="result-consult">
+                                <thead>
+                                    <tr>
+                                        <th class="col-md-1">
+                                            <input type="checkbox" id="check_all" role="button">
+                                        </th>
+                                        <th class="col-md-4">{% trans 'Nombre' %}</th>
+                                        <th class="col-md-3">{% trans 'R.I.F.' %}</th>
+                                        <th class="col-md-4">{% trans 'Razon Social' %}</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
