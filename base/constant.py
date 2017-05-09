@@ -235,3 +235,15 @@ BALANZA_DATOS = (
 ## Años de consulta
 ANHOS_CONSULTA = [(str(y), str(y)) for y in range(2009, datetime.now().year + 1)]
 ANHOS_CONSULTA.insert(0, ('', "Seleccione"))
+
+## Tipos de actividad económica
+TIPOS_ACTIVIDAD_ECONOMICA = (
+    ('AEP', _("Actividad Economica Principal")),
+    ('AES', _("Actividad Economica Secundaria"))
+)
+
+## Tipos de unidad económica
+TIPOS_UNIDAD = (
+    ('UE', _("Unidad Económica")),
+    ('SUE', _("Sub Unidad Económica"))
+)
