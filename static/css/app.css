@@ -305,6 +305,14 @@ table thead th:not(:first-child) {
     color: #dd4b39 !important;
 }
 
+.radio ul {
+    padding-left: 0;
+}
+.radio ul li {
+    list-style: none;
+    text-align: justify;
+}
+
 
 /**
 * Media Query
