@@ -292,7 +292,7 @@ h1, h2, h3, h4, h5, h6 {
 table thead th:not(:first-child) {
     text-align: center;
 }
-#datos-consultados, #filtros-consulta {
+#datos-consultados, #filtros-consulta, #resultado-filtros {
     display: none;
 }
 
