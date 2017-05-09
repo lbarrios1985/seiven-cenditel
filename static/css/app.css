@@ -292,13 +292,17 @@ h1, h2, h3, h4, h5, h6 {
 table thead th:not(:first-child) {
     text-align: center;
 }
-#datos-consultados {
+#datos-consultados, #filtros-consulta {
     display: none;
 }
 
 
 .select-anho {
     min-width: 120px;
+}
+
+.icon-minus {
+    color: #dd4b39 !important;
 }
 
 
