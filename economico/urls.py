@@ -34,7 +34,6 @@ urlpatterns = [
     url(r'^cargar-datos/cuenta-capital/$', economico_views.capital, name='economico-cuenta-capital'),
 ]
 
-
 ## URLs de peticiones AJAX
 urlpatterns += [
 ]

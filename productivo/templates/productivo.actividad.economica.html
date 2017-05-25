@@ -1,0 +1,114 @@
+{% extends 'base.template.html' %}
+{% load productivo_filtros %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% block content_header_title %}{% trans 'CONSULTAR DATOS' %}{% endblock %}
+{% block content_header_roadmap %}
+    <li><a href="{% url 'productivo-consultar-datos' %}">{% trans 'Producción - Consultar Datos' %}</a></li>
+    <li class="active">{% block active_link %}{% trans 'Actividad Económica' %}{% endblock %}</li>
+{% endblock %}
+{% block content %}
+    <div class="panel panel-produccion">
+        <div class="panel-heading">
+            <h2 class="panel-title">{% trans 'Productivo' %} - {% trans 'Actividad Económica' %}</h2>
+        </div>
+        <div class="panel-body">
+            <form action="" class="form form-horizontal" method="post" autocomplete="off">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group {% if form.ciiu.errors %}has-error{% endif %}">
+                            <label class="col-md-6 control-label" for="{{ form.ciiu.auto_id }}">
+                                {{ form.ciiu.label }}
+                            </label>
+                            <div class="col-md-6">
+                                {{ form.ciiu }}
+                                {% include 'base.form.errors.html' with form_errors=form.ciiu.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group {% if form.anho.errors %}has-error{% endif %}">
+                            <label class="col-md-6 control-label" for="{{ form.anho.auto_id }}">
+                                {{ form.anho.label }}
+                            </label>
+                            <div class="col-md-6">
+                                <div class="form-inline">
+                                    {{ form.anho }}
+                                    {% include 'base.form.errors.html' with form_errors=form.anho.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group {% if form.actividad_economica.errors %}has-error{% endif %}">
+                            <label class="col-md-6 control-label" for="{{ form.actividad_economica.auto_id }}">
+                                {{ form.actividad_economica.label }}
+                            </label>
+                            <div class="col-md-6">
+                                {{ form.actividad_economica }}
+                                {% include 'base.form.errors.html' with form_errors=form.actividad_economica.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group {% if form.tipo_actividad.errors %}has-error{% endif %}">
+                            <label class="col-md-6 control-label" for="{{ form.tipo_actividad.auto_id }}">
+                                {{ form.tipo_actividad.label }}
+                            </label>
+                            <div class="col-md-6">
+                                <div class="radio">
+                                    {{ form.tipo_actividad }}
+                                    {% include 'base.form.errors.html' with form_errors=form.tipo_actividad.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group {% if form.tipo_unidad.errors %}has-error{% endif %}">
+                            <label class="col-md-6 control-label" for="{{ form.tipo_unidad.auto_id }}">
+                                {{ form.tipo_unidad.label }}
+                            </label>
+                            <div class="col-md-6">
+                                <div class="radio">
+                                    {{ form.tipo_unidad }}
+                                    {% include 'base.form.errors.html' with form_errors=form.tipo_unidad.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group {% if form.estado.errors %}has-error{% endif %}">
+                            <label class="col-md-6 control-label" for="{{ form.estado.auto_id }}">
+                                {{ form.estado.label }}
+                            </label>
+                            <div class="col-md-6">
+                                <div class="form-inline">
+                                    {{ form.estado }}
+                                    {% include 'base.form.errors.html' with form_errors=form.estado.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 col-xs-6 text-center">
+                        <button type="button" class="btn btn-warning">{% trans 'Buscar' %}</button>
+                    </div>
+                    <div class="col-md-6 col-sx-6 text-center">
+                        <button type="reset" class="btn btn-warning">{% trans 'Limpiar' %}</button>
+                    </div>
+                </div>
+            </form>
+            {% include 'productivo.ue.datos.consultados.html' %}
+            {% include 'productivo.ae.filtros.consulta.html' %}
+            {% include 'productivo.ae.resultado.filtros.html' %}
+        </div>
+    </div>
+{% endblock %}

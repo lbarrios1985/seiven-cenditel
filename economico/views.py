@@ -20,7 +20,7 @@ from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 
 from .forms import (
-    RealPreciosForm, RealPIBForm, RealDemandaGlobalForm, RealOfertaGlobalForm, MonetarioAgregadosForm, MonetarioOperacionesInterbancariasForm,
+    RealPreciosForm, PIBForm, RealDemandaGlobalForm, RealOfertaGlobalForm, MonetarioAgregadosForm, MonetarioOperacionesInterbancariasForm,
     MonetarioTasasInteresForm, MonetarioInstrumentoPoliticaForm, ExternoBalanzaComercialForm, ExternoReservaCambioForm,
     ExternoCuentaCapitalForm, FiscalForm, CapitalForm
 )
@@ -64,12 +64,14 @@ def pib(request):
     Función que permite mostrar el furmulario para el registro de PIB
 
     @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @author Edgar A. Linares (elinares at cenditel.gob.ve)
     @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
     @date 19-09-2016
+    @date 05-04-2017
     @param request <b>{object}</b> Objeto que obtiene la petición
     @return Devuelve el response con el formulario de datos para el registro de PIB
     """
-    form = RealPIBForm()
+    form = PIBForm()
 
     return render(request, 'economico.pib.html', {
         'form': form, 'url_down': reverse('descargar_archivo'), 'url_up': reverse('cargar_archivo')

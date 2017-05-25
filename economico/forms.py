@@ -25,7 +25,11 @@ from django.forms import (
 
 from base.constant import (
     DOMINIO_PRECIOS, DOMINIO_PIB, DOMINIO_AGREGADO_MONETARIO, TIPO_PIB, TIPO_DEMANDA_GLOBAL, TIPO_OFERTA_GLOBAL, TRIMESTRES, MESES,
+<<<<<<< HEAD
     DOMINIO_CUENTA_CAPITAL,DOMINIO_CAMBIO,DOMINIO_COMERCIAL
+=======
+    DOMINIO_COMERCIAL, DOMINIO_CAMBIO, DOMINIO_CUENTA_CAPITAL, TIPO_BALANZA_COMERCIAL, DOMINIO_BALANZA_COMERCIAL
+>>>>>>> 085e07fe462990a6879f09c828101d9c7b25294e
 )
 from base.functions import cargar_anho_base
 
@@ -327,18 +331,20 @@ class RealPreciosForm(AnhoBaseForm, DominioForm, MesIniForm, MesFinForm, AnhoIni
 
 
 @python_2_unicode_compatible
-class RealPIBForm(TipoForm, AnhoBaseForm, DominioForm, AnhoIniForm, AnhoFinForm):
+class PIBForm(TipoForm, AnhoBaseForm, DominioForm, AnhoIniForm, AnhoFinForm, TrimestreIniForm, TrimestreFinForm):
     """!
-    Clase que contiene el formulario para la carga de datos de precios
+    Clase que contiene el formulario para la carga de datos de PIB
 
     @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @author Edgar A. Linares (elinares at cenditel.gob.ve)
     @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
     @date 19-09-2016
+    @date 05-04-2017
     @version 1.0.0
     """
 
     def __init__(self, *args, **kwargs):
-        super(RealPIBForm, self).__init__(*args, **kwargs)
+        super(PIBForm, self).__init__(*args, **kwargs)
         self.fields['dominio'].choices = DOMINIO_PIB
         self.fields['tipo'].choices = TIPO_PIB
 
@@ -431,6 +437,7 @@ class ExternoBalanzaComercialForm(TipoForm, DominioForm, AnhoBaseForm, Trimestre
     Clase que contiene el formulario para la carga de datos de Balanza Comercial
 
     @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @author Rodrigo Boet (rboet at cenditel.gob.ve)
     @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
     @date 19-09-2016
     @version 1.0.0
@@ -438,8 +445,19 @@ class ExternoBalanzaComercialForm(TipoForm, DominioForm, AnhoBaseForm, Trimestre
 
     def __init__(self, *args, **kwargs):
         super(ExternoBalanzaComercialForm, self).__init__(*args, **kwargs)
-        self.fields['tipo'].choices = TIPO_PIB
-        self.fields['dominio'].choices = DOMINIO_COMERCIAL
+        self.fields['tipo'].choices = TIPO_BALANZA_COMERCIAL
+        self.fields['dominio'].choices = DOMINIO_BALANZA_COMERCIAL
+        self.fields['anho_base'].choices = cargar_anho_base(anho_inicial='1997',anho_final='1997')
+        self.fields['anho_base'].required = False
+        ## Se deshabilitan los campos
+        self.fields['dominio'].widget.attrs.update({'disabled': True})
+        self.fields['anho_base'].widget.attrs.update({'disabled': True})
+        self.fields['periodo_trimestre_ini'].widget.attrs.update({'disabled': True})
+        self.fields['periodo_trimestre_fin'].widget.attrs.update({'disabled': True})
+        self.fields['periodo_anho_ini'].widget.attrs.update({'disabled': True})
+        self.fields['periodo_anho_fin'].widget.attrs.update({'disabled': True})
+        ## Se agregan las funciones javascript
+        self.fields['tipo'].widget.attrs.update({'onchange': 'edit_dom_bc($(this).val(),"id_dominio");'})
 
 
 @python_2_unicode_compatible

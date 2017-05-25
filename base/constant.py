@@ -14,6 +14,7 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
+from datetime import datetime
 
 
 ## Tipo de documento de identificación
@@ -102,6 +103,8 @@ DOMINIO_PRECIOS = (
 ## Selección de Dominio de PIB
 DOMINIO_PIB = (
     ("", _("Seleccione...")),
+    ('AE', _('Actividad Económica')),
+    ('SI', _('Sector Institucional')),
     ('ED', _('Enfoque Demanda')),
     ('EO', _('Enfoque Oferta'))
 )
@@ -129,7 +132,14 @@ DOMINIO_CAMBIO = (
     ('RI', _('Reservas Internacionales'))
 )
 
-## Selección de dominio de cuenta capital
+## Selección del dominio de la Balanza Comercial
+DOMINIO_BALANZA_COMERCIAL = (
+    ('', _('Seleccione...')),
+    ('BB', _('Balanza Comercial Bolívares')),
+    ('BD', _('Balanza Comercial Dólares'))
+)
+
+## Selección de dominio de Cuenta Capital
 DOMINIO_CUENTA_CAPITAL = (
     ("", _("Seleccione...")),
     ('BP', _('Balanza de Pagos')),
@@ -153,6 +163,14 @@ TIPO_DEMANDA_GLOBAL = (
 TIPO_OFERTA_GLOBAL = (
     ('', _('Seleccione...')),
     ('OG', _('Oferta Global'))
+)
+
+## Selección del tipo de Balanza Comercial
+TIPO_BALANZA_COMERCIAL = (
+    ('', _('Seleccione...')),
+    ('PR',_('Precios Corrientes')),
+    ('PC',_('Precios Constantes')),
+    ('PI',_('Índice de Precios Implícitos'))
 )
 
 ## Selección de Trimestres
@@ -204,3 +222,28 @@ CONVERT_MES = {
     _('Julio') : '07', _('Agosto') : '08', _('Septiembre') : '09', _('Octubre') : '10', _('Noviembre') : '11',
     _('Diciembre') : '12',
 }
+
+## Tipos de registro de balanza_datos
+BALANZA_DATOS = (
+    ("EB",_("Exportaciones de bienes FOB")),
+    ("IB",_("Importaciones de Bienes CIF")),
+    ("ES",_("Exportaciones de Servicios")),
+    ("FS",_("Fletes y Seguros")),
+    ("IS",_("Importaciones de Servicios")),
+)
+
+## Años de consulta
+ANHOS_CONSULTA = [(str(y), str(y)) for y in range(2009, datetime.now().year + 1)]
+ANHOS_CONSULTA.insert(0, ('', "Seleccione"))
+
+## Tipos de actividad económica
+TIPOS_ACTIVIDAD_ECONOMICA = (
+    ('AEP', _("Actividad Economica Principal")),
+    ('AES', _("Actividad Economica Secundaria"))
+)
+
+## Tipos de unidad económica
+TIPOS_UNIDAD = (
+    ('UE', _("Unidad Económica")),
+    ('SUE', _("Sub Unidad Económica"))
+)

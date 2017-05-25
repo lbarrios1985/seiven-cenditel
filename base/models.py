@@ -60,3 +60,30 @@ class Institucion(models.Model):
         @return Devuelve los datos de la institución
         """
         return "%s" % six.text_type(self.nombre)
+
+
+@python_2_unicode_compatible
+class Estado(models.Model):
+    """!
+    Clase que contiene los Estados de un Pais
+
+    @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 10-05-2016
+    @version 2.0.0
+    """
+
+    ## Nombre del Estado
+    nombre = models.CharField(max_length=50)
+
+    def __str__(self):
+        """!
+        Método que muestra la información sobre el Estado
+
+        @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 29-06-2016
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @return Devuelve los datos del Estado
+        """
+        return self.nombre

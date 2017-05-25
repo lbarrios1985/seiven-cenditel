@@ -1,7 +1,7 @@
 $(document).ready(function() {
     var select2 = $(".select2"), refresh_captcha = $('.js-captcha-refresh'),
-        input_captcha = $('input[name="captcha_1"]'), input_fecha = $(".fecha"),
-        file = $("#file"), form_upload = $('#form-upload-file');
+        input_captcha = $('input[name="captcha_1"]'), input_fecha = $(".fecha"), check_all = $('#check_all'),
+        file = $("#file"), form_upload = $('#form-upload-file'), data_table = $(".dataTable");
 
     if (select2.length > 0) {
         select2.select2();
@@ -81,6 +81,35 @@ $(document).ready(function() {
             /** Reestablece la condicion de envio del formulario */
             form_upload.unbind('submit');
 
+        });
+    }
+
+    if (data_table.length) {
+        $.extend( $.fn.dataTableExt.oStdClasses, {
+            "sFilterInput": "form-control input-sm",
+            "sLengthSelect": "form-control select2"
+        });
+        /** Inicializa los elementos del dataTable */
+        data_table.dataTable({
+            "language": {
+                "url": '//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json'
+            },
+            "ordering": true,
+            "order": [[0, 'asc']],
+            "bDestroy": true,
+            "bPaginate": true,
+            "bInfo": true,
+            "initComplete": function(settings, json) {
+                $('.dataTables_length select').select2();
+            }
+        });
+    }
+
+    if (check_all.length) {
+        check_all.on('click', function() {
+            $("#result-consult").find("tbody").find("input[type='checkbox']").each(function() {
+                $(this).prop('checked', check_all.is(':checked'));
+            });
         });
     }
 });
