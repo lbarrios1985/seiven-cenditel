@@ -16,16 +16,6 @@
                 <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-8 col-sm-offset-8 col-md-offset-8 col-lg-offset-8 text-center reservas">
                     <label class="control-label">{% trans 'Diarias' %}</label>
                 </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xs-offset-8 col-sm-offset-8 col-md-offset-8 col-lg-offset-8 text-center reservas"
-                     style="display:none">
-                    <label class="control-label">{% trans 'Semana' %}</label>
-                </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 text-center reservas" style="display:none">
-                    <label class="control-label">{% trans 'Mes' %}</label>
-                </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 text-center reservas" style="display:none">
-                    <label class="control-label">{% trans 'Año' %}</label>
-                </div>
             </div>
             <div class="row separador-row">
                 <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1">
@@ -46,9 +36,6 @@
                         <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                     </div>
                 </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 reservas" style="display:none">{{ form.periodo_semana_ini }}</div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 reservas" style="display:none">{{ form.periodo_mes_ini }}</div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 reservas" style="display:none">{{ form.periodo_anho_ini }}</div>
             </div>
             <div class="row separador-row">
                 <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xs-offset-7 col-sm-offset-7 col-md-offset-7 col-lg-offset-7">
@@ -60,12 +47,99 @@
                         <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                     </div>
                 </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 reservas" style="display:none">{{ form.periodo_semana_ini }}</div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 reservas" style="display:none">{{ form.periodo_mes_ini }}</div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 reservas" style="display:none">{{ form.periodo_anho_ini }}</div>
             </div>
-            {% include 'base.down.up.files.html' %}
+            <div id='TipoCambio' style='display:none;'>
+                {% include 'base.down.up.files.html' with app='economico' mod='TipoCambio' %}    
+            </div>
+            <div id='ReservasInternacionales' style='display:none;'>
+                {% include 'base.down.up.files.html' with app='economico' mod='ReservasInternacionales' %}    
+            </div>
+            
         </div>
     </div>
+{% endblock %}
+
+{% block extra_footer %}
+
+    <script>
+    /**
+    * @brief El Script configura todos los filtros que seleccione el usuario y ademas de ello hace las validaciones pertinentes sobre dicha selección
+    *
+    * @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+    * @copyright GNU/GPLv2
+    * @date 25-05-2017
+    * @return me devuelve la seleccion que realiza el usuario luego de verificarla
+    */ 
+
+        var dominio = $('#{{ form.dominio.auto_id }}');
+        var start_date = $("#{{ form.start_date.auto_id }}");
+        var end_date = $("#{{ form.end_date.auto_id }}");
+        
+
+        /**
+         * Función que configura los filtros de acuerdo a la selección del usuario
+         */
+        function set_filters() {
+            var filters = $("#filters"), json_filter = '';
+
+            if (dominio.val()) {
+                json_filter += "\"dominio\": \"" + dominio.val() + "\",";
+            }
+            if (start_date.val()) {
+                json_filter += "\"start_date\": \"" + start_date.val() + "\",";
+            }
+            if (end_date.val()) {
+                json_filter += "\"end_date\": \"" + end_date.val() + "\",";
+            }
+
+            if (json_filter) {
+                json_filter = json_filter.slice(0, -1);
+                filters.val(json_filter);
+            }
+
+            /**
+            * Aquí se realiza las validaciones de la selección que realice el usuario.
+            */
+
+            if(dominio.val()=='TC'){
+                if (Date.parse(start_date.val())<=Date.parse(end_date.val())){
+                    document.getElementById('TipoCambio').style.display = 'block';
+                    document.getElementById('ReservasInternacionales').style.display = 'none';
+                }
+                else{
+                    bootbox.alert('La fecha inicial no puede mayor a la fecha final ');
+                    document.getElementById('TipoCambio').style.display = 'none';
+                    document.getElementById('ReservasInternacionales').style.display = 'none';
+                }
+            }
+            
+            if(dominio.val()=='RI'){
+                if (Date.parse(start_date.val())<=Date.parse(end_date.val())){
+                    document.getElementById('ReservasInternacionales').style.display = 'block';
+                    document.getElementById('TipoCambio').style.display = 'none';
+                }
+                else{
+                    bootbox.alert('La fecha inicial no puede mayor a la fecha final ');
+                    document.getElementById('TipoCambio').style.display = 'none';
+                    document.getElementById('ReservasInternacionales').style.display = 'none';
+                }
+            }
+             if(dominio.val()==''){
+                bootbox.alert('Debe seleccionar un Dominio');
+                document.getElementById('TipoCambio').style.display = 'none';
+                document.getElementById('ReservasInternacionales').style.display = 'none';
+            }
+        }
+        /**
+        * A medida que se realizan las selecciones voy modificando los filtros
+        */
+            $(document).ready(function() {
+            dominio.on('change', function() {set_filters()});
+            start_date.on('change', function() { set_filters() });
+            end_date.on('change', function() { set_filters() });
+            end_date.on('keyup',function() { set_filters() });
+
+        });
+    </script>
 {% endblock %}
 

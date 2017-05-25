@@ -204,7 +204,9 @@ def reservas_tipo_cambio(request):
     """
     form = ExternoReservaCambioForm()
 
-    return render(request, 'economico.reservas.tipo.cambio.html', {'form': form})
+    return render(request, 'economico.reservas.tipo.cambio.html', {
+        'form': form, 'url_down': reverse('descargar_archivo'), 'url_up': reverse('cargar_archivo')
+    })
 
 
 @login_required

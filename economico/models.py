@@ -18,7 +18,7 @@ from django.conf import settings
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
-from datetime import datetime
+from datetime import datetime, timedelta
 from itertools import islice , cycle
 
 from base.constant import (
@@ -1043,7 +1043,7 @@ class DemandaAgregadaExterna(models.Model):
     demanda_global = models.ForeignKey(DemandaGlobal, verbose_name=_('Demanda GLobal'))
 
     class Meta:
-        verbose_name = _('Demanda Agragada Externa')
+        verbose_name = _('Demanda Agregada Externa')
 
 #-----------------------------Económico Real - Oferta Global
 
@@ -1160,7 +1160,199 @@ class OfertaExterna(models.Model):
         max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Importaciones de bienes y servicios")
     )
 
-    oferta_externa = models.ForeignKey(OfertaGlobal, verbose_name=_('Oferta GLobal'))
+    oferta_global = models.ForeignKey(OfertaGlobal, verbose_name=_('Oferta GLobal'))
 
     class Meta:
         verbose_name = _('Oferta Externa')
+
+#-----------------------------Economía - Externo - Reservas, Tipo de Cambio
+
+@python_2_unicode_compatible
+class TipoCambio(models.Model):
+    
+    ## Fecha del registro
+    fecha = models.DateField(null=True, verbose_name=_("Fecha"))
+
+    ## Tasa de cambio para la compra
+    tcn_compra = models.DecimalField(max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Tasa de cambio para la compra"))
+
+    ## Tasa de cambio para la venta
+    tcn_venta = models.DecimalField(max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Tasa de cambio para la venta"))
+
+    def gestion_init(self, *args, **kwargs):
+        """!
+        Método que permite descargar un archivo con los datos a gestionar
+
+        @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 24-05-2017
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve los datos a incluír en el archivo
+        """
+
+        fields = [
+            [
+                {'tag': str(_("Fecha")), 'color': 'indigo', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("TCN Compra")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("TCN Venta")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
+            ]
+        ]
+
+        """
+        colocar en el archivo de salida las fechas excepto fines de semana segun la seleccion del usuario         
+        """
+
+        inicio=datetime.strptime(kwargs['start_date'], "%d/%m/%Y")
+        fin=datetime.strptime(kwargs['end_date'], "%d/%m/%Y")
+        delta = timedelta(days=1)
+        while inicio <= fin:
+            if inicio.weekday() < 5:
+                fields.append([ {'tag': str(_(str(inicio.strftime('%d/%m/%Y'))))}])
+            inicio+= delta
+
+        return {'fields': fields, 'output': 'tipo-cambio'}
+
+
+    def gestion_process(self, file, user, *args, **kwargs):
+        """!
+        Método que permite cargar y gestionar datos
+
+        @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 24-05-2017
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param file <b>{string}</b> Ruta y nombre del archivo a gestionar
+        @param user <b>{object}</b> Objeto que contiene los datos del usuario que realiza la acción
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve el resultado de la acción con su correspondiente mensaje
+        """
+        ## aqui debo recorrer todo el archivo excel y verificar las celdas
+        
+        load_file = pyexcel.get_sheet(file_name=file)
+        errors, result, message = '', True, ''
+        load_data_msg = str(_("Datos Cargados"))
+
+        
+        for row in load_file.row[1:]:
+            try:
+                fecha=datetime.strptime(row[0], "%d/%m/%Y")
+                tipo_cambio , created = TipoCambio.objects.update_or_create(fecha=fecha, defaults={
+                    'tcn_compra': check_val_data(row[1]),
+                    'tcn_venta': check_val_data(row[2]),
+                })
+            except Exception as e:
+                errors += "- %s\n" % str(e)
+
+        if errors:
+            message = str(_("Error procesando datos. Verifique su correo para detalles del error"))
+            load_data_msg = str(_("Error al procesar datos del area Economía - Externo - Tipo de Cambio"))
+
+
+        ## Envia correo electronico al usuario indicando el estatus de la carga de datos
+        enviar_correo(user.email, 'gestion.informacion.load.mail', EMAIL_SUBJECT_LOAD_DATA, {
+            'load_data_msg': load_data_msg, 'administrador': administrador, 'admin_email': admin_email,
+            'errors': errors
+        })
+
+        return {'result': result, 'message': message}
+
+@python_2_unicode_compatible
+class ReservasInternacionales(models.Model):
+    
+    ## Fecha del registro
+    fecha = models.DateField(null=True, verbose_name=_("Fecha"))
+
+    ## Reserva Internacional
+    ri= models.DecimalField(max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Reserva Internacional"))
+
+    ## Reserva Internacional BCV
+    ri_bcv = models.DecimalField(max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Reserva Internacional BCV"))
+
+    ## Reserva Internacional FEM
+    ri_fem = models.DecimalField(max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Reserva Internacional FEM"))
+
+    def save(self, *args, **kwargs):
+        self.ri = self.ri_bcv + self.ri_fem
+        super(ReservasInternacionales, self).save(*args, **kwargs)
+
+    def gestion_init(self, *args, **kwargs):
+        """!
+        Método que permite descargar un archivo con los datos a gestionar
+
+        @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 24-05-2017
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve los datos a incluír en el archivo
+        """
+
+        fields = [
+            [
+                {'tag': str(_("Fecha")), 'color': 'indigo', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("RI_BCV")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("RI_FEM")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
+            ]
+        ]
+
+        """
+        colocar en el archivo de salida las fechas excepto fines de semana segun la seleccion del usuario         
+        """
+
+        inicio=datetime.strptime(kwargs['start_date'], "%d/%m/%Y")
+        fin=datetime.strptime(kwargs['end_date'], "%d/%m/%Y")
+        delta = timedelta(days=1)
+        diff = 0
+        while inicio <= fin:
+            if inicio.weekday() < 5:
+                fields.append([ {'tag': str(_(str(inicio.strftime('%d/%m/%Y'))))}])
+            inicio+= delta
+
+        return {'fields': fields, 'output': 'ReservasInternacionales'}
+
+    def gestion_process(self, file, user, *args, **kwargs):
+        """!
+        Método que permite cargar y gestionar datos
+
+        @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 24-05-2017
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param file <b>{string}</b> Ruta y nombre del archivo a gestionar
+        @param user <b>{object}</b> Objeto que contiene los datos del usuario que realiza la acción
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve el resultado de la acción con su correspondiente mensaje
+        """
+        load_file = pyexcel.get_sheet(file_name=file)
+        errors, result, message = '', True, ''
+        load_data_msg = str(_("Datos Cargados"))
+
+        
+        for row in load_file.row[1:]:
+            try:
+
+                reservas_internacionales , created = ReservasInternacionales.objects.update_or_create( fecha=row[0], ri_bcv=check_val_data(row[1]), ri_fem=check_val_data(row[2]) )
+                
+                ## Se crea  o actualiza el objeto de Demanda Agregada Interna luego de validar el valor en la hoja de calculo
+
+               
+            except Exception as e:
+                errors += "- %s\n" % str(e)
+
+        if errors:
+            message = str(_("Error procesando datos. Verifique su correo para detalles del error"))
+            load_data_msg = str(_("Error al procesar datos del area Economía - Externo - Reservas"))
+
+
+        ## Envia correo electronico al usuario indicando el estatus de la carga de datos
+        enviar_correo(user.email, 'gestion.informacion.load.mail', EMAIL_SUBJECT_LOAD_DATA, {
+            'load_data_msg': load_data_msg, 'administrador': administrador, 'admin_email': admin_email,
+            'errors': errors
+        })
+
+        return {'result': result, 'message': message}
