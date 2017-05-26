@@ -1370,7 +1370,6 @@ class OfertaExterna(models.Model):
 
     class Meta:
         verbose_name = _('Oferta Externa')
-<<<<<<< HEAD
 
 #-----------------------------Economía - Externo - Reservas, Tipo de Cambio
 
@@ -1386,57 +1385,17 @@ class TipoCambio(models.Model):
     ## Tasa de cambio para la venta
     tcn_venta = models.DecimalField(max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Tasa de cambio para la venta"))
 
-=======
-        
-        
-# ------------ Económico Externo - Balanza Comercial  --------------------
-        
-@python_2_unicode_compatible
-class BalanzaComercialBase(models.Model):
-    """!
-    Clase que contiene los registros base de la Balanza Comercial
-    
-    @author Rodrigo Boet (rboet at cenditel.gob.ve)
-    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
-    @date 02-05-2017
-    @version 1.0.0
-    """
-    
-    ## Año base del registro
-    anho_base = models.CharField(max_length=4, null=True)
-
-    ## Año al que pertenece el(los) registro(s)
-    anho = models.CharField(max_length=4, verbose_name=_("Año"))
-
-    ## Trimestre del registro
-    trimestre = models.CharField(max_length=2, choices=TRIMESTRES[1:], verbose_name=_("Trimestre"))
-    
-    ## Tipo del registro
-    tipo = models.CharField(max_length=2, choices=TIPO_BALANZA_COMERCIAL[1:])
-    
-    ## Dominio del registro
-    dominio = models.CharField(max_length=2, choices=DOMINIO_BALANZA_COMERCIAL[1:])
-    
->>>>>>> 085e07fe462990a6879f09c828101d9c7b25294e
     def gestion_init(self, *args, **kwargs):
-        """!
-        Método que permite descargar un archivo con los datos a gestionar
-
-<<<<<<< HEAD
+        """Método que permite descargar un archivo con los datos a gestionar
         @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
         @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
         @date 24-05-2017
-=======
-        @author Rodrigo Boet (rboet at cenditel.gob.ve)
-        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
-        @date 02-05-2017
->>>>>>> 085e07fe462990a6879f09c828101d9c7b25294e
         @param self <b>{object}</b> Objeto que instancia la clase
         @param args <b>{tupla}</b> Tupla con argumentos opcionales
         @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
         @return Devuelve los datos a incluír en el archivo
         """
-<<<<<<< HEAD
+
 
         fields = [
             [
@@ -1489,6 +1448,7 @@ class BalanzaComercialBase(models.Model):
                     'tcn_compra': check_val_data(row[1]),
                     'tcn_venta': check_val_data(row[2]),
                 })
+
             except Exception as e:
                 errors += "- %s\n" % str(e)
 
@@ -1552,7 +1512,6 @@ class ReservasInternacionales(models.Model):
         inicio=datetime.strptime(kwargs['start_date'], "%d/%m/%Y")
         fin=datetime.strptime(kwargs['end_date'], "%d/%m/%Y")
         delta = timedelta(days=1)
-        diff = 0
         while inicio <= fin:
             if inicio.weekday() < 5:
                 fields.append([ {'tag': str(_(str(inicio.strftime('%d/%m/%Y'))))}])
@@ -1560,7 +1519,90 @@ class ReservasInternacionales(models.Model):
 
         return {'fields': fields, 'output': 'ReservasInternacionales'}
 
-=======
+    def gestion_process(self, file, user, *args, **kwargs):
+        """!
+        Método que permite cargar y gestionar datos
+
+        @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 24-05-2017
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param file <b>{string}</b> Ruta y nombre del archivo a gestionar
+        @param user <b>{object}</b> Objeto que contiene los datos del usuario que realiza la acción
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve el resultado de la acción con su correspondiente mensaje
+        """
+
+        load_file = pyexcel.get_sheet(file_name=file)
+        errors, result, message = '', True, ''
+        load_data_msg = str(_("Datos Cargados"))
+
+        
+        for row in load_file.row[1:]:
+            try:
+                reservas_internacionales , created = ReservasInternacionales.objects.update_or_create( fecha=row[0], ri_bcv=check_val_data(row[1]), ri_fem=check_val_data(row[2]) )
+            
+            except Exception as e:
+                errors += "- %s\n" % str(e)
+
+        if errors:
+            message = str(_("Error procesando datos. Verifique su correo para detalles del error"))
+            load_data_msg = str(_("Error al procesar datos del area Economía - Externo - Tipo de Cambio"))
+
+
+        ## Envia correo electronico al usuario indicando el estatus de la carga de datos
+        enviar_correo(user.email, 'gestion.informacion.load.mail', EMAIL_SUBJECT_LOAD_DATA, {
+            'load_data_msg': load_data_msg, 'administrador': administrador, 'admin_email': admin_email,
+            'errors': errors
+        })
+
+        return {'result': result, 'message': message}
+
+@python_2_unicode_compatible
+                ## Se crea  o actualiza el objeto de Demanda Agregada Interna luego de validar el valor en la hoja de calculo
+
+        
+# ------------ Económico Externo - Balanza Comercial  --------------------
+        
+@python_2_unicode_compatible
+class BalanzaComercialBase(models.Model):
+    """!
+    Clase que contiene los registros base de la Balanza Comercial
+    
+    @author Rodrigo Boet (rboet at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 02-05-2017
+    @version 1.0.0
+    """
+    
+    ## Año base del registro
+    anho_base = models.CharField(max_length=4, null=True)
+
+    ## Año al que pertenece el(los) registro(s)
+    anho = models.CharField(max_length=4, verbose_name=_("Año"))
+
+    ## Trimestre del registro
+    trimestre = models.CharField(max_length=2, choices=TRIMESTRES[1:], verbose_name=_("Trimestre"))
+    
+    ## Tipo del registro
+    tipo = models.CharField(max_length=2, choices=TIPO_BALANZA_COMERCIAL[1:])
+    
+    ## Dominio del registro
+    dominio = models.CharField(max_length=2, choices=DOMINIO_BALANZA_COMERCIAL[1:])
+    
+    def gestion_init(self, *args, **kwargs):
+        """!
+        Método que permite descargar un archivo con los datos a gestionar
+
+        @author Rodrigo Boet (rboet at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 02-05-2017
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve los datos a incluír en el archivo
+        """
         nombre_archivo = 'balanza_comercial'
         fields = []
         ## Cabecera para precios corrientes en bs y precios constantes
@@ -1777,20 +1819,13 @@ class ReservasInternacionales(models.Model):
         ## Devuelve los datos correspondientes al archivo a descargar y el nombre de ese archivo
         return {'fields': fields, 'output': nombre_archivo}
     
->>>>>>> 085e07fe462990a6879f09c828101d9c7b25294e
     def gestion_process(self, file, user, *args, **kwargs):
         """!
         Método que permite cargar y gestionar datos
 
-<<<<<<< HEAD
-        @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
-        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
-        @date 24-05-2017
-=======
         @author Rodrigo boet (rboet at cenditel.gob.ve)
         @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
         @date 02-05-2017
->>>>>>> 085e07fe462990a6879f09c828101d9c7b25294e
         @param self <b>{object}</b> Objeto que instancia la clase
         @param file <b>{string}</b> Ruta y nombre del archivo a gestionar
         @param user <b>{object}</b> Objeto que contiene los datos del usuario que realiza la acción
@@ -1798,20 +1833,6 @@ class ReservasInternacionales(models.Model):
         @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
         @return Devuelve el resultado de la acción con su correspondiente mensaje
         """
-<<<<<<< HEAD
-        load_file = pyexcel.get_sheet(file_name=file)
-        errors, result, message = '', True, ''
-        load_data_msg = str(_("Datos Cargados"))
-
-        
-        for row in load_file.row[1:]:
-            try:
-
-                reservas_internacionales , created = ReservasInternacionales.objects.update_or_create( fecha=row[0], ri_bcv=check_val_data(row[1]), ri_fem=check_val_data(row[2]) )
-                
-                ## Se crea  o actualiza el objeto de Demanda Agregada Interna luego de validar el valor en la hoja de calculo
-
-=======
         
         load_file = pyexcel.get_sheet(file_name=file)
         anho_base, errors, result, message = '', '', True, ''
@@ -1923,32 +1944,20 @@ class ReservasInternacionales(models.Model):
                         'privado_petroleo':check_val_data(row[20]),
                         'privado_no_petroleo':check_val_data(row[21]),
                     })
->>>>>>> 085e07fe462990a6879f09c828101d9c7b25294e
                
             except Exception as e:
                 errors += "- %s\n" % str(e)
 
         if errors:
             message = str(_("Error procesando datos. Verifique su correo para detalles del error"))
-<<<<<<< HEAD
-            load_data_msg = str(_("Error al procesar datos del area Economía - Externo - Reservas"))
-
-
-        ## Envia correo electronico al usuario indicando el estatus de la carga de datos
-=======
             load_data_msg = str(_("Error al procesar datos del área Económica - Externo"))
 
 
         # Envia correo electronico al usuario indicando el estatus de la carga de datos
->>>>>>> 085e07fe462990a6879f09c828101d9c7b25294e
         enviar_correo(user.email, 'gestion.informacion.load.mail', EMAIL_SUBJECT_LOAD_DATA, {
             'load_data_msg': load_data_msg, 'administrador': administrador, 'admin_email': admin_email,
             'errors': errors
         })
-<<<<<<< HEAD
-
-        return {'result': result, 'message': message}
-=======
         
         return {'result': result, 'message': message}
 
@@ -2055,4 +2064,3 @@ class BalanzaComercialPrecioImplicito(models.Model):
     
     ## Relación con la balanza base
     balanza = models.ForeignKey(BalanzaComercialBase)
->>>>>>> 085e07fe462990a6879f09c828101d9c7b25294e

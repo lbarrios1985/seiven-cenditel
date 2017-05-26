@@ -213,7 +213,7 @@ EMAIL_PORT = 25
 EMAIL_FROM = 'seiven@cenditel.gob.ve'
 
 ## Registro de vitácoras de errores (logs)
-LOGS_PATH = '/var/log/seiven'
+LOGS_PATH = ''
 
 ## Ruta en la que se guardan los archivos para la gestión de información
 GESTION_INFORMACION_FILES = os.path.join(BASE_DIR, "static/files")

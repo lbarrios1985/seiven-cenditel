@@ -49,10 +49,10 @@
                 </div>
             </div>
             <div id='TipoCambio' style='display:none;'>
-                {% include 'base.down.up.files.html' with app='economico' mod='TipoCambio' %}    
+                {% include 'base.down.up.files.html' with url_down='/gestion-informacion/ajax/descargar_archivo' url_up='/gestion-informacion/ajax/cargar_archivo' app='economico' mod='TipoCambio' %}    
             </div>
             <div id='ReservasInternacionales' style='display:none;'>
-                {% include 'base.down.up.files.html' with app='economico' mod='ReservasInternacionales' %}    
+                {% include 'base.down.up.files.html' with url_down='/gestion-informacion/ajax/descargar_archivo' url_up='/gestion-informacion/ajax/cargar_archivo' app='economico' mod='ReservasInternacionales' %}   
             </div>
             
         </div>
@@ -137,7 +137,7 @@
             dominio.on('change', function() {set_filters()});
             start_date.on('change', function() { set_filters() });
             end_date.on('change', function() { set_filters() });
-            end_date.on('keyup',function() { set_filters() });
+            end_date.on('keyup', function() { set_filters() });
 
         });
     </script>
