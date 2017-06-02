@@ -25,7 +25,8 @@ from django.forms import (
 
 from base.constant import (
     DOMINIO_PRECIOS, DOMINIO_PIB, DOMINIO_AGREGADO_MONETARIO, TIPO_PIB, TIPO_DEMANDA_GLOBAL, TIPO_OFERTA_GLOBAL, TRIMESTRES, MESES,
-    DOMINIO_COMERCIAL, DOMINIO_CAMBIO, DOMINIO_CUENTA_CAPITAL, TIPO_BALANZA_COMERCIAL, DOMINIO_BALANZA_COMERCIAL
+    DOMINIO_COMERCIAL, DOMINIO_CAMBIO, DOMINIO_CUENTA_CAPITAL, TIPO_BALANZA_COMERCIAL, DOMINIO_BALANZA_COMERCIAL, DOMINIO_TASAS_INTERES,
+    PERIODICIDAD
 )
 from base.functions import cargar_anho_base
 
@@ -103,6 +104,25 @@ class AnhoBaseForm(forms.Form):
         super(AnhoBaseForm, self).__init__(*args, **kwargs)
         self.fields['anho_base'].choices = cargar_anho_base(anho_inicial='2007')
 
+@python_2_unicode_compatible
+class PeriodicidadForm(forms.Form):
+    """!
+    Clase que contiene el campo común para la selección de la periodicidad
+
+    @author Edgar A. Linares (elinares at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 26-04-2017
+    @version 1.0.0
+    """
+
+    ## Opciones de periodicidad
+    periodicidad = ChoiceField(
+        label=_(u"Periodicidad"), choices=(),
+        widget=Select(attrs={
+            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
+            'title': _(u"Seleccione la periodicidad")
+        })
+    )
 
 @python_2_unicode_compatible
 class MesIniForm(forms.Form):
@@ -376,15 +396,15 @@ class RealOfertaGlobalForm(AnhoBaseForm, AnhoIniForm, AnhoFinForm, TrimestreIniF
         self.fields['tipo'].choices = TIPO_OFERTA_GLOBAL
 
 @python_2_unicode_compatible
-class MonetarioAgregadosForm(
-    DominioForm, MesIniForm, MesFinForm, AnhoIniForm, AnhoFinForm, SemanaIniForm, SemanaFinForm, StartDateForm, EndDateForm
-):
+class MonetarioAgregadosForm(DominioForm, StartDateForm, EndDateForm, SemanaIniForm, SemanaFinForm, MesIniForm, MesFinForm, AnhoIniForm, AnhoFinForm):
     """!
     Clase que contiene el formulario para la carga de datos de Agregados Monetarios
 
     @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @author Edgar A. Linares (elinares at cenditel.gob.ve)
     @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
     @date 19-09-2016
+    @date 30-05-2017
     @version 1.0.0
     """
 
@@ -406,15 +426,22 @@ class MonetarioOperacionesInterbancariasForm(StartDateForm, EndDateForm):
 
 
 @python_2_unicode_compatible
-class MonetarioTasasInteresForm(SemanaIniForm, SemanaFinForm, MesIniForm, MesFinForm, AnhoIniForm, AnhoFinForm):
+class MonetarioTasasInteresForm(DominioForm, PeriodicidadForm, StartDateForm, EndDateForm, SemanaIniForm, SemanaFinForm, MesIniForm, MesFinForm, AnhoIniForm, AnhoFinForm):
     """!
     Clase que contiene el formulario para la carga de datos de Tasas de Interés
 
     @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @author Edgar A. Linares (elinares at cenditel.gob.ve)
     @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
     @date 19-09-2016
+    @date 26-04-2017
     @version 1.0.0
     """
+
+    def __init__(self, *args, **kwargs):
+        super(MonetarioTasasInteresForm, self).__init__(*args, **kwargs)
+        self.fields['dominio'].choices = DOMINIO_TASAS_INTERES
+        self.fields['periodicidad'].choices = PERIODICIDAD
 
 @python_2_unicode_compatible
 class MonetarioInstrumentoPoliticaForm(MesIniForm, MesFinForm, AnhoIniForm, AnhoFinForm):

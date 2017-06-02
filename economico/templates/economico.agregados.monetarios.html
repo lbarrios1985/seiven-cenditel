@@ -60,17 +60,92 @@
                         <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                     </div>
                 </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 liquidez" style="display:none">{{ form.periodo_semana_ini }}</div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 liquidez" style="display:none">{{ form.periodo_mes_ini }}</div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 liquidez" style="display:none">{{ form.periodo_anho_ini }}</div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 liquidez" style="display:none">{{ form.periodo_semana_fin }}</div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 liquidez" style="display:none">{{ form.periodo_mes_fin }}</div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 liquidez" style="display:none">{{ form.periodo_anho_fin }}</div>
             </div>
-            {% include 'base.down.up.files.html' %}
+            <div class="enlaces" style='display:none;'>
+                {% include 'base.down.up.files.html' with app='economico' mod='AgregadosBase'%}
+            </div>
         </div>
     </div>
 {% endblock %}
 
 {% block extra_footer %}
     <script>
+        var dominio = $("#{{ form.dominio.auto_id }}");
+        var fecha_ini = $("#{{ form.start_date.auto_id }}");
+        var fecha_fin = $("#{{ form.end_date.auto_id }}");
+        var semana_ini = $("#{{ form.periodo_semana_ini.auto_id }}");
+        var semana_fin = $("#{{ form.periodo_semana_fin.auto_id }}");
+        var mes_ini = $("#{{ form.periodo_mes_ini.auto_id }}");
+        var mes_fin = $("#{{ form.periodo_mes_fin.auto_id }}");
+        var anho_ini = $("#{{ form.periodo_semana_ini.auto_id }}");
+        var anho_fin = $("#{{ form.periodo_anho_fin.auto_id }}");
+
+        function set_filters() {
+            /**
+            * @brief Realiza cambios en la vista ocasionados por modificaciones
+            * en los formularios. Almacena los valores de los parámetros que serán usados
+            * en el modelo
+            *
+            * @author Edgar A. Linares (elinares at cenditel.gob.ve)
+            * @copyright GNU/GPLv2
+            * @date 30-05-2017
+            */ 
+            var filters = $("#filters"), json_filter = '';
+
+            if (dominio.val()) {
+                if (dominio.val() == 'RB') {
+                    json_filter += "\"reservas_bancarias__isnull\": \"false\",";
+                }
+                else if (dominio.val() == 'LM') {
+                    json_filter += "\"liquidez_monetaria__isnull\": \"false\",";
+                }
+                // Modificado el 06-04-2017 por Edgar A. Linares
+                else if (dominio.val() == 'BMU') {
+                    json_filter += "\"monetaria_usos__isnull\": \"false\","; 
+                }
+                else if (dominio.val() == 'BMF') {
+                    json_filter += "\"monetaria_fuentes__isnull\": \"false\",";
+                }
+            }
+            if (dominio.val()){
+                $('.enlaces').show();
+            }
+            else {
+                $('.enlaces').hide();
+            }
+            if (fecha_ini.val()) {
+                json_filter += "\"dia__gte\": \"" + fecha_ini.val() + "\",";
+            }
+            if (fecha_fin.val()) {
+                json_filter += "\"dia__lte\": \"" + fecha_fin.val() + "\",";
+            }
+            if (semana_ini.val()) {
+                json_filter += "\"semana__gte\": \"" + semana_ini.val() + "\",";
+            }
+            if (semana_fin.val()) {
+                json_filter += "\"semana__lte\": \"" + semana_fin.val() + "\",";
+            }
+            if (mes_ini.val()) {
+                json_filter += "\"mes__gte\": \"" + mes_ini.val() + "\",";
+            }
+            if (mes_fin.val()) {
+                json_filter += "\"mes__lte\": \"" + mes_fin.val() + "\",";
+            }
+            if (anho_ini.val()) {
+                json_filter += "\"anho__gte\": \"" + anho_ini.val() + "\",";
+            }
+            if (anho_fin.val()) {
+                json_filter += "\"anho__lte\": \"" + anho_fin.val() + "\",";
+            }
+            if (json_filter) {
+                json_filter = json_filter.slice(0, -1);
+                filters.val(json_filter);
+            }
+        }    
+
         $(document).ready(function() {
             $("#{{ form.dominio.auto_id }}").on('change', function() {
                 if ($(this).val() == 'RB' || $(this).val() == '') {
@@ -82,6 +157,15 @@
                     $('.reservas').hide();
                 }
             });
+            dominio.on('change', function() { set_filters() });
+            fecha_ini.on('change', function() { set_filters() });
+            fecha_fin.on('change', function() { set_filters() });
+            semana_ini.on('change', function() { set_filters() });
+            semana_fin.on('change', function() { set_filters() });
+            mes_ini.on('change', function() { set_filters() });
+            mes_fin.on('change', function() { set_filters() });
+            anho_ini.on('change', function() { set_filters() });
+            anho_fin.on('change', function() { set_filters() });
         });
     </script>
 {% endblock %}

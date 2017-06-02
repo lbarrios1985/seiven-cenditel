@@ -146,6 +146,14 @@ DOMINIO_CUENTA_CAPITAL = (
     ('DE', _('Deuda Externa'))
 )
 
+## Selección de dominio de Monetario Financiero - Tasas de Interés
+DOMINIO_TASAS_INTERES = (
+    ("", _("Seleccione...")),
+    ("PB", _('Principales Bancos')),
+    ("TA", _('Tasa Activa')),
+    ("TP", _('Tasa Pasiva')),
+)
+
 ## Selección de Tipo de PIB
 TIPO_PIB = (
     ('', _('Seleccione...')),
@@ -200,7 +208,8 @@ MESES = (
 )
 
 ## Periocidad en el registro
-PERIOCIDAD = (
+PERIODICIDAD = (
+    ('', _('Seleccione...')),
     ('D', _('Diaria')),
     ('S', _('Semanal')),
     ('M', _('Mensual')),

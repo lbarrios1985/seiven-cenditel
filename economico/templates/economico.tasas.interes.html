@@ -13,40 +13,207 @@
         </div>
         <div class="panel-body">
             <div class="row">
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xs-offset-6 col-sm-offset-6 col-md-offset-6 col-lg-offset-6 text-center">
-                    <label class="control-label">{% trans 'Semana' %}</label>
-                </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 text-center">
-                    <label class="control-label">{% trans 'Mes' %}</label>
-                </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 text-center">
-                    <label class="control-label">{% trans 'Año' %}</label>
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <p>
+                        {% blocktrans %}
+                            Para cargar los datos asociados a las <b>Tasas de Interés</b> seleccione el
+                            dominio y la periodicidad.
+                        {% endblocktrans %}
+                    </p>
                 </div>
             </div>
             <div class="row separador-row">
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    <label for="{{ form.dominio.auto_id }}" class="control-label">{{ form.dominio.label }}</label>
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.dominio }}</div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    <label for="{{ form.periodicidad.auto_id }}" class="control-label">{{ form.periodicidad.label }}</label>
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.periodicidad }}</div>
+            </div>
+            <div class="row separador-row ver-periodo" style='display:none;'>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xs-offset-5 col-sm-offset-5 col-md-offset-5 col-lg-offset-5 text-center">
+                </div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 text-center ver-fecha" style='display:none;'>
+                    <label class="control-label">{% trans 'Fecha' %}</label>
+                </div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 text-center ver-semana" style='display:none;'>
+                    <label class="control-label">{% trans 'Semana' %}</label>
+                </div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 text-center ver-mes" style='display:none;'>
+                    <label class="control-label">{% trans 'Mes' %}</label>
+                </div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 text-center ver-anho" style='display:none;'>
+                    <label class="control-label">{% trans 'Año' %}</label>
+                </div>
+            </div>
+            <div class="row separador-row ver-periodo" style='display:none;'>
                 <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xs-offset-4 col-sm-offset-4 col-md-offset-4 col-lg-offset-4">
                     <label class="control-label">{% trans 'Período' %}</label>
                 </div>
                 <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
-                    <label for="{{ form.periodo_semana_ini.auto_id }}" class="control-label">
-                        {{ form.periodo_semana_ini.label }}
+                    <label for="{{ form.start_date.auto_id }}" class="control-label">
+                        {{ form.start_date.label }}
                     </label>
                 </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{ form.periodo_semana_ini }}</div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{ form.periodo_mes_ini }}</div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{ form.periodo_anho_ini }}</div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 ver-fecha" style='display:none;'>
+                    <div class="input-group">
+                        {{ form.start_date }}
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 ver-semana" style='display:none;'>
+                    {{ form.periodo_semana_ini }}
+                </div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 ver-mes" style='display:none;'>
+                    {{ form.periodo_mes_ini }}
+                </div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 ver-anho" style='display:none;'>
+                    {{ form.periodo_anho_ini }}
+                </div>
             </div>
-            <div class="row separador-row">
+            <div class="row separador-row ver-periodo" style='display:none;'>
                 <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xs-offset-5 col-sm-offset-5 col-md-offset-5 col-lg-offset-5">
-                    <label for="{{ form.periodo_semana_fin.auto_id }}" class="control-label">
-                        {{ form.periodo_semana_fin.label }}
+                    <label for="{{ form.end_date.auto_id }}" class="control-label">
+                        {{ form.end_date.label }}
                     </label>
                 </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{ form.periodo_semana_fin }}</div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{ form.periodo_mes_fin }}</div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{ form.periodo_anho_fin }}</div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 ver-fecha" style='display:none;'>
+                    <div class="input-group">
+                        {{ form.end_date }}
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 ver-semana" style='display:none;'>
+                    {{ form.periodo_semana_fin }}
+                </div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 ver-mes" style='display:none;'>
+                    {{ form.periodo_mes_fin }}
+                </div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 ver-anho" style='display:none;'>
+                    {{ form.periodo_anho_fin }}
+                </div>
             </div>
-            {% include 'base.down.up.files.html' %}
+            <div class="enlaces" style='display:block;'>
+                {% include 'base.down.up.files.html' with app='economico' mod='TasasInteres' %}
+            </div>
         </div>
     </div>
+{% endblock %}
+{% block extra_footer %}
+    <script>
+        var dominio = $("#{{ form.dominio.auto_id }}");
+        var periodicidad = $("#{{ form.periodicidad.auto_id }}");
+        var fecha_ini = $("#{{ form.start_date.auto_id }}");
+        var fecha_fin = $("#{{ form.end_date.auto_id }}");
+        var semana_ini = $("#{{ form.periodo_semana_ini.auto_id }}");
+        var semana_fin = $("#{{ form.periodo_semana_fin.auto_id }}");
+        var mes_ini = $("#{{ form.periodo_mes_ini.auto_id }}");
+        var mes_fin = $("#{{ form.periodo_mes_fin.auto_id }}");
+        var anho_ini = $("#{{ form.periodo_anho_ini.auto_id }}");
+        var anho_fin = $("#{{ form.periodo_anho_fin.auto_id }}");
+
+        $("#id_periodicidad option[value='T']").remove();
+        function set_filters() {
+            /**
+            * @brief Realiza cambios en la vista ocasionados por modificaciones
+            * en los formularios. Almacena los valores de los parámetros que serán usados
+            * en el modelo
+            *
+            * @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+            * @author Edgar A. Linares (elinares at cenditel.gob.ve)
+            * @copyright GNU/GPLv2
+            * @date 26-04-2017
+            */
+
+            var filters = $("#filters"), json_filter = '';
+            if (dominio.val()) {                
+                if (dominio.val() == 'PB') {
+                    json_filter += "\"tasa_pb__isnull\": \"false\",";
+                }
+                else if (dominio.val() == 'TA'){
+                    json_filter += "\"tasa_activa__isnull\": \"false\",";
+                }
+                else if (dominio.val() == 'TP'){
+                    json_filter += "\"tasa_pasiva__isnull\": \"false\",";
+                }
+            }
+            if (dominio.val() && periodicidad.val()) {
+                $('.ver-periodo').show();
+            }
+            else {
+                $('.ver-periodo').hide();
+            }
+            if (periodicidad.val()) {
+                if(periodicidad.val() == 'D') {
+                    $('.ver-fecha').show();
+                    $('.ver-semana').hide();
+                    $('.ver-mes').hide();
+                    $('.ver-anho').hide();
+                }
+                else if(periodicidad.val() == 'S') {
+                    $('.ver-fecha').hide();
+                    $('.ver-semana').show();
+                    $('.ver-mes').show();
+                    $('.ver-anho').show();
+                }
+                else if(periodicidad.val() == 'M') {
+                    $('.ver-fecha').hide();
+                    $('.ver-semana').hide();
+                    $('.ver-mes').show();
+                    $('.ver-anho').show();
+                }
+                else if(periodicidad.val() == 'A') {
+                    $('.ver-fecha').hide();
+                    $('.ver-semana').hide();
+                    $('.ver-mes').hide();
+                    $('.ver-anho').show();
+                }
+            }
+            if (fecha_ini.val()) {
+                console.log("Fecha inicial: " + fecha_ini.val());
+                json_filter += "\"fecha__gte\": \"" + fecha_ini.val() + "\",";
+            }
+            if (fecha_fin.val()) {
+                console.log("Fecha final: " + fecha_fin.val());
+                json_filter += "\"fecha__lte\": \"" + fecha_fin.val() + "\",";
+            }
+            if (semana_ini.val()) {
+                json_filter += "\"semana__gte\": \"" + semana_ini.val() + "\",";
+            }
+            if (semana_fin.val()) {
+                json_filter += "\"semana__lte\": \"" + semana_fin.val() + "\",";
+            }
+            if (mes_ini.val()) {
+                json_filter += "\"mes__gte\": \"" + mes_ini.val() + "\",";
+            }
+            if (mes_fin.val()) {
+                json_filter += "\"mes__lte\": \"" + mes_fin.val() + "\",";
+            }
+            if (anho_ini.val()) {
+                json_filter += "\"anho__gte\": \"" + anho_ini.val() + "\",";
+            }
+            if (anho_fin.val()) {
+                json_filter += "\"anho__lte\": \"" + anho_fin.val() + "\",";
+            }
+            if (json_filter) {
+                json_filter = json_filter.slice(0, -1);
+                filters.val(json_filter);
+            }
+        }
+
+        $(document).ready(function() {
+            dominio.on('change', function() { set_filters() });
+            periodicidad.on('change', function() { set_filters() });
+            fecha_ini.on('change', function() { set_filters() });
+            fecha_fin.on('change', function() { set_filters() });
+            semana_ini.on('change', function() { set_filters() });
+            semana_fin.on('change', function() { set_filters() });
+            mes_ini.on('change', function() { set_filters() });
+            mes_fin.on('change', function() { set_filters() });
+            anho_ini.on('change', function() { set_filters() });
+            anho_fin.on('change', function() { set_filters() });
+        });
+    </script>
 {% endblock %}
