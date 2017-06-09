@@ -23,7 +23,7 @@ from itertools import islice , cycle
 
 from base.constant import (
     DOMINIO, PERIOCIDAD, TRIMESTRES, MESES, ECONOMICO_SUB_AREA, CONVERT_MES, EMAIL_SUBJECT_LOAD_DATA,
-    TIPO_BALANZA_COMERCIAL, DOMINIO_BALANZA_COMERCIAL, BALANZA_DATOS, INVERSION_CARTERA
+    TIPO_BALANZA_COMERCIAL, DOMINIO_BALANZA_COMERCIAL, BALANZA_DATOS, INVERSION_CARTERA, SECTOR_DEUDA
 )
 from base.functions import enviar_correo, check_val_data
 
@@ -1895,6 +1895,154 @@ class CuentaCapitalBalanzaBase(models.Model):
     class Meta:
         unique_together = ("anho", "trimestre")
         
+    def gestion_init(self, *args, **kwargs):
+        """!
+        Método que permite descargar un archivo con los datos a gestionar
+
+        @author Rodrigo Boet (rboet at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 08-05-2017
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve los datos a incluír en el archivo
+        """
+        nombre_archivo = 'cuenta_capital'
+        fields = []
+        header = []
+        sub_header = []
+        
+        ## Cabecera para balanza de pagos
+        if(kwargs['dominio']=='BP'):
+            nombre_archivo += "_balanza_pagos"
+            head = [
+                {'tag': '', 'cabecera': True},
+                {'tag': '', 'cabecera': True},
+                {'tag': str(_("Cuenta Corriente")), 'color': 'ocean_blue', 'text_color': 'white', 'combine': 11, 'cabecera': True},
+                {'tag': str(_("Cuenta Capital y Financiera")), 'color': 'aqua', 'text_color': 'white', 'combine': 27, 'cabecera': True},
+                {'tag': '', 'cabecera': True},
+            ]
+            header = [
+                {'tag': '', 'cabecera': True},
+                {'tag': '', 'cabecera': True},
+                {'tag': str(_("Saldo de Servicios")), 'color': 'sky_blue', 'text_color': 'white', 'combine': 6, 'cabecera': True},
+                {'tag': str(_("Saldo en Renta")), 'color': 'coral', 'text_color': 'white', 'combine': 4, 'cabecera': True},
+                {'tag': '', 'cabecera': True,'color': 'white'},
+                {'tag': str(_("Cuenta Capital")), 'color': 'green', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("Cuenta Financiera")), 'color': 'ice_blue', 'text_color': 'white', 'combine': 26, 'cabecera': True},
+                {'tag': '', 'color': 'orange', 'cabecera': True},
+            ]
+            ## Se añade la cabecera
+            fields.append(head)
+            fields.append(header)
+            sub_header = [
+                {'tag': str(_("Trimestre")), 'color': 'white', 'text_color': 'black','cabecera': True},
+                {'tag': str(_("Año")), 'color': 'white', 'text_color': 'black', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalSaldos._meta.get_field('transporte').verbose_name)), 'color': 'sky_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalSaldos._meta.get_field('viajes').verbose_name)), 'color': 'sky_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalSaldos._meta.get_field('comunicacion').verbose_name)), 'color': 'sky_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalSaldos._meta.get_field('seguro').verbose_name)), 'color': 'sky_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalSaldos._meta.get_field('gobierno').verbose_name)), 'color': 'sky_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalSaldos._meta.get_field('otros').verbose_name)), 'color': 'sky_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalSaldos._meta.get_field('remuneracion_empleado').verbose_name)), 'color': 'coral', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalSaldos._meta.get_field('inversion_directa').verbose_name)), 'color': 'coral', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalSaldos._meta.get_field('inversion_cartera').verbose_name)), 'color': 'coral', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalSaldos._meta.get_field('otra_inversion').verbose_name)), 'color': 'coral', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalOtros._meta.get_field('transferencia_corriente').verbose_name)), 'color': 'white', 'text_color': 'black', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalOtros._meta.get_field('cuenta_capital').verbose_name)), 'color': 'green', 'text_color': 'white', 'cabecera': True},
+                {'tag': "ID_"+str(_(CuentaCapitalInversionDirecta._meta.get_field('extranjero').verbose_name)), 'color': 'ice_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': "ID_"+str(_(CuentaCapitalInversionDirecta._meta.get_field('pais').verbose_name)), 'color': 'ice_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': "IC_A_Spu"+str(_(CuentaCapitalInversionCartera._meta.get_field('titulo_participacion_capital').verbose_name)), 'color': 'ice_blue','text_color': 'white', 'cabecera': True},
+                {'tag': "IC_A_Spu"+str(_(CuentaCapitalInversionCartera._meta.get_field('titulo_deuda').verbose_name)), 'color': 'ice_blue','text_color': 'white', 'cabecera': True},
+                {'tag': "IC_A_Spr"+str(_(CuentaCapitalInversionCartera._meta.get_field('titulo_participacion_capital').verbose_name)), 'color': 'ice_blue','text_color': 'white', 'cabecera': True},
+                {'tag': "IC_A_Spr"+str(_(CuentaCapitalInversionCartera._meta.get_field('titulo_deuda').verbose_name)), 'color': 'ice_blue','text_color': 'white', 'cabecera': True},
+                {'tag': "IC_P_Spu"+str(_(CuentaCapitalInversionCartera._meta.get_field('titulo_participacion_capital').verbose_name)), 'color': 'ice_blue','text_color': 'white', 'cabecera': True},
+                {'tag': "IC_P_Spu"+str(_(CuentaCapitalInversionCartera._meta.get_field('titulo_deuda').verbose_name)), 'color': 'ice_blue','text_color': 'white', 'cabecera': True},
+                {'tag': "IC_P_Spr"+str(_(CuentaCapitalInversionCartera._meta.get_field('titulo_participacion_capital').verbose_name)), 'color': 'ice_blue','text_color': 'white', 'cabecera': True},
+                {'tag': "IC_P_Spr"+str(_(CuentaCapitalInversionCartera._meta.get_field('titulo_deuda').verbose_name)), 'color': 'ice_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': "OI_A_Spu"+str(_(CuentaCapitalOtraInversion._meta.get_field('credito_comercial').verbose_name)), 'color': 'ice_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': "OI_A_Spu"+str(_(CuentaCapitalOtraInversion._meta.get_field('prestamo').verbose_name)), 'color': 'ice_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': "OI_A_Spu"+str(_(CuentaCapitalOtraInversion._meta.get_field('moneda_deposito').verbose_name)), 'color': 'ice_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': "OI_A_Spu"+str(_(CuentaCapitalOtraInversion._meta.get_field('otros').verbose_name)), 'color': 'ice_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': "OI_A_Spr"+str(_(CuentaCapitalOtraInversion._meta.get_field('credito_comercial').verbose_name)), 'color': 'ice_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': "OI_A_Spr"+str(_(CuentaCapitalOtraInversion._meta.get_field('prestamo').verbose_name)), 'color': 'ice_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': "OI_A_Spr"+str(_(CuentaCapitalOtraInversion._meta.get_field('moneda_deposito').verbose_name)), 'color': 'ice_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': "OI_A_Spr"+str(_(CuentaCapitalOtraInversion._meta.get_field('otros').verbose_name)), 'color': 'ice_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': "OI_P_Spu"+str(_(CuentaCapitalOtraInversion._meta.get_field('credito_comercial').verbose_name)), 'color': 'ice_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': "OI_P_Spu"+str(_(CuentaCapitalOtraInversion._meta.get_field('prestamo').verbose_name)), 'color': 'ice_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': "OI_P_Spu"+str(_(CuentaCapitalOtraInversion._meta.get_field('moneda_deposito').verbose_name)), 'color': 'ice_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': "OI_P_Spu"+str(_(CuentaCapitalOtraInversion._meta.get_field('otros').verbose_name)), 'color': 'ice_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': "OI_P_Spr"+str(_(CuentaCapitalOtraInversion._meta.get_field('credito_comercial').verbose_name)), 'color': 'ice_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': "OI_P_Spr"+str(_(CuentaCapitalOtraInversion._meta.get_field('prestamo').verbose_name)), 'color': 'ice_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': "OI_P_Spr"+str(_(CuentaCapitalOtraInversion._meta.get_field('moneda_deposito').verbose_name)), 'color': 'ice_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': "OI_P_Spr"+str(_(CuentaCapitalOtraInversion._meta.get_field('otros').verbose_name)), 'color': 'ice_blue', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalOtros._meta.get_field('errores_omisiones').verbose_name)), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
+            ]
+            ## Se añade la subcabecera
+            fields.append(sub_header)
+        ## Cabecera para deudas
+        elif(kwargs['dominio']=='DE'):
+            nombre_archivo += "_deudas"
+            head = [
+                {'tag': '', 'cabecera': True},
+                {'tag': '', 'cabecera': True},
+                {'tag': str(_("Sector Público")), 'color': 'ocean_blue', 'text_color': 'white', 'combine': 9, 'cabecera': True},
+                {'tag': str(_("Sector Privado")), 'color': 'aqua', 'text_color': 'white', 'combine': 9, 'cabecera': True},
+            ]
+            header = [
+                {'tag': '', 'cabecera': True},
+                {'tag': '', 'cabecera': True},
+                {'tag': str(_("Capital")), 'color': 'green', 'text_color': 'white', 'combine': 4, 'cabecera': True},
+                {'tag': str(_("Intereses")), 'color': 'indigo', 'text_color': 'white', 'combine': 5, 'cabecera': True},
+                {'tag': str(_("Capital")), 'color': 'green', 'text_color': 'white', 'combine': 4, 'cabecera': True},
+                {'tag': str(_("Intereses")), 'color': 'indigo', 'text_color': 'white', 'combine': 5, 'cabecera': True},
+            ]
+            ## Se añade la cabecera
+            fields.append(head)
+            fields.append(header)
+            sub_header = [
+                {'tag': str(_("Trimestre")), 'color': 'white', 'text_color': 'black','cabecera': True},
+                {'tag': str(_("Año")), 'color': 'white', 'text_color': 'black', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalDeudaCapital._meta.get_field('bono_pagare').verbose_name)), 'color': 'green', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalDeudaCapital._meta.get_field('credito_comercial').verbose_name)), 'color': 'green', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalDeudaCapital._meta.get_field('prestamo').verbose_name)), 'color': 'green', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalDeudaCapital._meta.get_field('otros').verbose_name)), 'color': 'green', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalDeudaIntereses._meta.get_field('bono_pagare').verbose_name)), 'color': 'indigo', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalDeudaIntereses._meta.get_field('instrumento_mercado').verbose_name)), 'color': 'indigo', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalDeudaIntereses._meta.get_field('credito_comercial').verbose_name)), 'color': 'indigo', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalDeudaIntereses._meta.get_field('prestamo').verbose_name)), 'color': 'indigo', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalDeudaIntereses._meta.get_field('otros').verbose_name)), 'color': 'indigo', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalDeudaCapital._meta.get_field('bono_pagare').verbose_name)), 'color': 'green', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalDeudaCapital._meta.get_field('credito_comercial').verbose_name)), 'color': 'green', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalDeudaCapital._meta.get_field('prestamo').verbose_name)), 'color': 'green', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalDeudaCapital._meta.get_field('otros').verbose_name)), 'color': 'green', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalDeudaIntereses._meta.get_field('bono_pagare').verbose_name)), 'color': 'indigo', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalDeudaIntereses._meta.get_field('instrumento_mercado').verbose_name)), 'color': 'indigo', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalDeudaIntereses._meta.get_field('credito_comercial').verbose_name)), 'color': 'indigo', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalDeudaIntereses._meta.get_field('prestamo').verbose_name)), 'color': 'indigo', 'cabecera': True},
+                {'tag': str(_(CuentaCapitalDeudaIntereses._meta.get_field('otros').verbose_name)), 'color': 'indigo', 'cabecera': True},
+            ]
+            ## Se añade la subcabecera
+            fields.append(sub_header)
+        
+        # Almacena los datos de año y trimestre inicial provenientes del formulario
+        anho_ini = int(kwargs['anho__gte'])
+        trimestre_ini = int(kwargs['trimestre__gte'])
+        
+        while True:
+            registros = [({'tag': anho_ini})]
+            registros.append({'tag': trimestre_ini})
+            # Agrega los datos a la nueva fila del archivo a generar
+            fields.append(registros)
+            if (anho_ini == int(kwargs['anho__lte']) and trimestre_ini == int(kwargs['trimestre__lte'])):
+                break
+            if (trimestre_ini == 4):
+                trimestre_ini = 0
+                anho_ini += 1
+            trimestre_ini += 1
+        
+        return {'fields': fields, 'output': nombre_archivo}
+        
 @python_2_unicode_compatible
 class CuentaCapitalSaldos(models.Model):
     """!
@@ -2074,3 +2222,102 @@ class CuentaCapitalOtraInversion(models.Model):
        
     ## Relación con el registro base de la cuenta capital
     cuenta_capital = models.ForeignKey(CuentaCapitalBalanzaBase)
+    
+    
+# ---------------------  Deudas  ----------------------------
+@python_2_unicode_compatible
+class CuentaCapitalDeudaBase(models.Model):
+    """!
+    Clase que contiene los registros base de la Cuenta Capital, en la parte de deudas
+    
+    @author Rodrigo Boet (rboet at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 08-05-2017
+    @version 1.0.0
+    """
+    ## Año al que pertenece el(los) registro(s)
+    anho = models.CharField(max_length=4, verbose_name=_("Año"))
+
+    ## Trimestre del registro
+    trimestre = models.CharField(max_length=2, choices=TRIMESTRES[1:], verbose_name=_("Trimestre"))
+    
+    class Meta:
+        unique_together = ("anho", "trimestre")
+        
+@python_2_unicode_compatible
+class CuentaCapitalDeudaCapital(models.Model):
+    """!
+    Clase que contiene los registros base de la Cuenta Capital Deuda, en la parte de deudas (capital)
+    
+    @author Rodrigo Boet (rboet at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 08-05-2017
+    @version 1.0.0
+    """   
+    ## Valor de los bonos y pagarés
+    bono_pagare = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Bonos y Pagarés")
+    )
+    
+    ## Valores de los cŕeditos comerciales
+    credito_comercial = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Créditos Comerciales")
+    )
+    
+    ## Valores del préstamo
+    prestamo = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Préstamos")
+    )
+    
+    ## Otros valores
+    otros = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Otros")
+    )
+    
+    ## Tipo de dato de la deuda
+    tipo = models.CharField(max_length=2, choices=SECTOR_DEUDA)
+       
+    ## Relación con el registro base de la cuenta capital (deuda)
+    deuda = models.ForeignKey(CuentaCapitalDeudaBase)
+    
+    
+@python_2_unicode_compatible
+class CuentaCapitalDeudaIntereses(models.Model):
+    """!
+    Clase que contiene los registros base de la Cuenta Capital Deuda, en la parte de deudas (intereses)
+    
+    @author Rodrigo Boet (rboet at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 08-05-2017
+    @version 1.0.0
+    """   
+    ## Valor de los bonos y pagarés
+    bono_pagare = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Bonos y Pagarés")
+    )
+    
+    ## Valores del instrumento del mercado monetario
+    instrumento_mercado = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Instrumentos del Mercado Monetario")
+    )
+    
+    ## Valores de los cŕeditos comerciales
+    credito_comercial = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Créditos Comerciales")
+    )
+    
+    ## Valores del préstamo
+    prestamo = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Préstamos")
+    )
+    
+    ## Otros valores
+    otros = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Otros")
+    )
+    
+    ## Tipo de dato de la deuda
+    tipo = models.CharField(max_length=2, choices=SECTOR_DEUDA)
+       
+    ## Relación con el registro base de la cuenta capital (deuda)
+    deuda = models.ForeignKey(CuentaCapitalDeudaBase)

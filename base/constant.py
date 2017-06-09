@@ -240,3 +240,9 @@ INVERSION_CARTERA = (
     ("PSPu",_("Pasivos Sector Público")),
     ("PSPr",_("Pasivos Sector Privado")),
 )
+
+## Sectores de la deuda
+SECTOR_DEUDA = (
+    ("SPu",_("Sector Público")),
+    ("SPr",_("Sector Privado")),
+)
