@@ -18,12 +18,12 @@ from django.conf import settings
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
-from datetime import datetime
+from datetime import datetime, timedelta
 from itertools import islice , cycle
 
 from base.constant import (
-    DOMINIO, PERIOCIDAD, TRIMESTRES, MESES, ECONOMICO_SUB_AREA, CONVERT_MES, EMAIL_SUBJECT_LOAD_DATA,
-    TIPO_BALANZA_COMERCIAL, DOMINIO_BALANZA_COMERCIAL, BALANZA_DATOS, INVERSION_CARTERA, SECTOR_DEUDA
+    DOMINIO, PERIODICIDAD, TRIMESTRES, MESES, ECONOMICO_SUB_AREA, CONVERT_MES, EMAIL_SUBJECT_LOAD_DATA,
+    TIPO_BALANZA_COMERCIAL, DOMINIO_BALANZA_COMERCIAL, BALANZA_DATOS
 )
 from base.functions import enviar_correo, check_val_data
 
@@ -650,7 +650,7 @@ class PIB(models.Model):
                     nombre_archivo = 'PIB-Real_produccion'
 
         ## Sección para la selección de los datos del dominio Actividad Económica
-        if any('pibactividad' in index for index in kwargs):
+        elif any('pibactividad' in index for index in kwargs):
             fields = [
                 [
                     {'tag': '', 'cabecera': True},
@@ -682,7 +682,7 @@ class PIB(models.Model):
             nombre_archivo = 'PIB-Actividad_economica'
 
         ## Sección para la selección de los datos del dominio Actividad Económica
-        if any('pibsector' in index for index in kwargs):
+        elif any('pibsector' in index for index in kwargs):
             fields = [
                 [
                     {'tag': '', 'cabecera': True},
@@ -1249,7 +1249,7 @@ class DemandaAgregadaExterna(models.Model):
     demanda_global = models.ForeignKey(DemandaGlobal, verbose_name=_('Demanda GLobal'))
 
     class Meta:
-        verbose_name = _('Demanda Agragada Externa')
+        verbose_name = _('Demanda Agregada Externa')
 
 #-----------------------------Económico Real - Oferta Global
 
@@ -1366,14 +1366,1050 @@ class OfertaExterna(models.Model):
         max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Importaciones de bienes y servicios")
     )
 
-    oferta_externa = models.ForeignKey(OfertaGlobal, verbose_name=_('Oferta GLobal'))
+    oferta_global = models.ForeignKey(OfertaGlobal, verbose_name=_('Oferta GLobal'))
 
     class Meta:
         verbose_name = _('Oferta Externa')
+
+# ------------ Económico Real - Monetario Financiero - Agregados Monetarios --------------------
+@python_2_unicode_compatible
+class AgregadosBase(models.Model):
+    """!
+    Clase que contiene los registros comunes de los modelos relacionados con la Sub-área Agregados Monetarios
+
+    @author Edgar A. Linares (elinares at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 30-05-2017
+    @version 1.0.0
+    """
+
+    ## Semana a la que pertenece el registro
+    semana = models.CharField(max_length=2, verbose_name=_("Semana"))
+
+    ## Mes al que pertenece el registro
+    mes = models.CharField(max_length=2, choices=MESES[1:], verbose_name=_("Mes"))
+
+    ## Año al que pertenece el registro
+    anho = models.CharField(max_length=4, verbose_name=_("Año"))
+
+    class Meta:
+        verbose_name = _('Agregados Base')
+
+    def gestion_init(self, *args, **kwargs):
+        """!
+        Método que permite descargar un archivo con los datos a gestionar en base a los valores
+        introducidos por el usuario en el formulario
+
+        @author Edgar A. Linares (elinares at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 30-05-2017
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve los datos a incluír en el archivo correspondiente
+        """
         
+        ## Sección para la selección de los datos del dominio Liquidez Monetaria
+        if any('liquidez_monetaria' in index for index in kwargs):
+            fields = [
+                    [
+                        {'tag': '', 'cabecera': True},
+                        {'tag': str(AgregadosMonetarios._meta.verbose_name), 'color': 'orange', 'text_color': 'white', 'combine': 6,'cabecera': True}                    
+                    ],
+                    [
+                        {'tag': str(AgregadosBase._meta.get_field('semana').verbose_name), 'cabecera': True},
+                        {'tag': str(AgregadosMonetarios._meta.get_field('monedas_billetes').verbose_name), 'cabecera': True},
+                        {'tag': str(AgregadosMonetarios._meta.get_field('depositos_vista').verbose_name), 'cabecera': True},
+                        {'tag': str(AgregadosMonetarios._meta.get_field('depositos_ahorro').verbose_name), 'cabecera': True},
+                        {'tag': str(AgregadosMonetarios._meta.get_field('depositos_plazo').verbose_name), 'cabecera': True},
+                        {'tag': str(AgregadosMonetarios._meta.get_field('cuasidinero').verbose_name), 'cabecera': True},
+                        {'tag': str(AgregadosMonetarios._meta.get_field('cedulas_hipotecarias').verbose_name), 'cabecera': True}
+                    ]
+                ]
+            nombre_archivo = 'Agregados_monetarios'
+        ## Sección para la selección de los datos del dominio Reservas Bancarias
+        elif any('reservas_bancarias' in index for index in kwargs):
+            fields = [
+                [
+                    {'tag': '', 'cabecera': True},
+                    {'tag': str(ReservasBancarias._meta.verbose_name), 'color': 'orange', 'text_color': 'white', 'combine': 1,'cabecera': True}
+                ],
+                [
+                    {'tag': str(ReservasBancarias._meta.get_field('fecha').verbose_name), 'cabecera': True},
+                    {'tag': str(ReservasBancarias._meta.get_field('reservas_bancarias').verbose_name), 'cabecera': True}
+                ]
+            ]
+            nombre_archivo = 'Reservas_bancarias'
+        ## Sección para la selección de los datos del dominio Base Monetaria Usos
+        elif any('monetaria_usos' in index for index in kwargs):
+            fields = [
+                [
+                    {'tag': '', 'cabecera': True},
+                    {'tag': str(MonetariaUsos._meta.verbose_name), 'color': 'orange', 'text_color': 'white', 'combine': 4,'cabecera': True}
+                ],
+                [
+                    {'tag': str(AgregadosBase._meta.get_field('semana').verbose_name), 'cabecera': True},
+                    {'tag': str(MonetariaUsos._meta.get_field('depositos_bcu').verbose_name), 'cabecera': True},
+                    {'tag': str(MonetariaUsos._meta.get_field('depositos_rsb').verbose_name), 'cabecera': True},
+                    {'tag': str(MonetariaUsos._meta.get_field('depositos_ep').verbose_name), 'cabecera': True},
+                    {'tag': str(MonetariaUsos._meta.get_field('monedas_billetes').verbose_name), 'cabecera': True}
+                ]
+            ]
+            nombre_archivo = 'Base_monetaria_usos'
+        ## Sección para la selección de los datos del dominio Base Monetaria Fuentes
+        elif any('monetaria_fuentes' in index for index in kwargs):
+            fields = [
+                [
+                    {'tag': '', 'cabecera': True},
+                    {'tag': str(MonetariaFuentes._meta.verbose_name), 'color': 'orange', 'text_color': 'white', 'combine': 6,'cabecera': True}
+                ],
+                [
+                    {'tag': str(AgregadosBase._meta.get_field('semana').verbose_name), 'cabecera': True},
+                    {'tag': str(MonetariaFuentes._meta.get_field('reservas_internacionales').verbose_name), 'cabecera': True},
+                    {'tag': str(MonetariaFuentes._meta.get_field('sector_publico').verbose_name), 'cabecera': True},
+                    {'tag': str(MonetariaFuentes._meta.get_field('sector_financiero').verbose_name), 'cabecera': True},
+                    {'tag': str(MonetariaFuentes._meta.get_field('credito_bcv').verbose_name), 'cabecera': True},
+                    {'tag': str(MonetariaFuentes._meta.get_field('otras_cuentas').verbose_name), 'cabecera': True},
+                    {'tag': str(MonetariaFuentes._meta.get_field('capital_pagado_reservas').verbose_name), 'cabecera': True}
+                ]
+            ]
+            nombre_archivo = 'Base_monetaria_fuentes'    
+        ## Colocar en el archivo de salida las fechas excepto fines de semana segun la selección del usuario
+        if any('fecha' in index for index in kwargs):
+            inicio=datetime.strptime(kwargs['fecha__gte'], "%d/%m/%Y")
+            fin=datetime.strptime(kwargs['fecha__lte'], "%d/%m/%Y")
+            delta = timedelta(days=1)
+            while inicio <= fin:
+                if inicio.weekday() < 5:
+                    fields.append([ {'tag': str(_(str(inicio.strftime('%d/%m/%Y'))))}])
+                inicio+= delta        
+        ## Devuelve los datos correspondientes al archivo a descargar y el nombre de ese archivo    
+        return {'fields': fields, 'output': nombre_archivo}
+
+    def gestion_process(self, file, user, *args, **kwargs):
+        """!
+        Método que permite cargar y gestionar datos
+
+        @author Edgar A. Linares (elinares at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 30-05-2017
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param file <b>{string}</b> Ruta y nombre del archivo a gestionar
+        @param user <b>{object}</b> Objeto que contiene los datos del usuario que realiza la acción
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve el resultado de la acción con su correspondiente mensaje
+        """
+
+        load_file = pyexcel.get_sheet(file_name=file)
+        errors, result, message = '', False, ''
+        is_reservas_bancarias, is_liquidez_monetaria, is_monetaria_usos, is_monetaria_fuentes = True, True, True, True
+        load_data_msg = str(_("Datos Cargados"))
+
+        """!
+        Verifica cuál es el archivo que se está cargando en base a los parámetros provenientes
+        del formulario
+        """
+        if any('liquidez_monetaria' in index for index in kwargs):
+            is_liquidez_monetaria = True
+        elif any('reservas_bancarias' in index for index in kwargs):
+            is_reservas_bancarias = True
+        elif any('monetaria_usos' in index for index in kwargs):
+            is_monetaria_usos = True
+        elif any('monetaria_fuentes' in index for index in kwargs):
+            is_monetaria_fuentes = True
+
+        ## Valida que el archivo corresponde a lo indicado en los parámetros del formulario
+        if is_liquidez_monetaria and (load_file.row[0][1] == str(AgregadosMonetarios._meta.verbose_name)):
+            result = True
+        elif is_reservas_bancarias and (load_file.row[0][1] == str(ReservasBancarias._meta.verbose_name)):
+            result = True
+        elif is_monetaria_usos and (load_file.row[0][1] == str(MonetariaUsos._meta.verbose_name)):
+            result = True
+        elif is_monetaria_fuentes and (load_file.row[0][1] == str(MonetariaFuentes._meta.verbose_name)):
+            result = True
+
+        ## Comprueba si el archivo está vacio
+        if len(load_file.row_range()) < 2:
+            result = False
+
+        ## Si el archivo no pasa las validaciones, devuelve False y un mensaje indicando el problema
+        if not result:
+            return {
+                'result': False,
+                'message': str(_("El documento a cargar no es válido o no corresponde a los parámetros seleccionados"))
+            }
+
+        ## En base al archivo cargado, se validan y cargan a la base de datos los valores contenidos en el archivo
+        for row in load_file.row[2:]:
+            try:
+                # Asigna la semana del registro
+                semana = row[0] if not is_reservas_bancarias else None
+
+                # Asigna el mes del registro
+                mes = 10
+
+                # Asigna el año del registro
+                anho = 100
+
+                # Asigna la fecha del registro
+                fecha = fecha=datetime.strptime(row[0], "%d/%m/%Y")
+                #datetime(int(anho), int(mes), 1) if is_reservas_bancarias else 1000
+
+                # Gestión para los datos básicos de Agregados Monetarios
+                agregados, created = AgregadosBase.objects.update_or_create(semana=semana, mes=mes, anho=anho)
+
+                if is_liquidez_monetaria:
+                    ## Gestión de datos para la categoría Agregados Monetarios
+                    AgregadosMonetarios.objects.update_or_create(agregados = agregados, default={
+                        'monedas_billetes': chek_val_data(row[1]),
+                        'depositos_vista': chek_val_data(row[2]),
+                        'depositos_ahorro': chek_val_data(row[3]),
+                        'depositos_plazo': chek_val_data(row[4]),
+                        'cuasidinero': chek_val_data(row[5]),
+                        'cedulas_hipotecarias': chek_val_data(row[6])
+                    })
+                elif is_reservas_bancarias:
+                    ## Gestión de datos para la categoría Reservas Bancarias
+                    ReservasBancarias.objects.update_or_create(agregados = agregados, default={
+                        'fecha': fecha,
+                        'reservas_bancarias': chek_val_data(row[1])
+                    })
+                elif is_monetaria_usos:
+                    ## Gestión de datos para la categoría Base Monetaria Usos
+                    MonetariaUsos.objects.update_or_create(agregados = agregados, default={
+                        'depositos_bcu': chek_val_data(row[1]),
+                        'depositos_rsb': chek_val_data(row[2]),
+                        'depositos_ep': chek_val_data(row[3]),
+                        'monedas_billetes': chek_val_data(row[4])
+                    })
+                elif is_monetaria_fuentes:
+                    ## Gestión de datos para la categoría Base Monetaria Fuentes
+                    MonetariaFuentes.objects.update_or_create(agregados = agregados, default={
+                        'reservas_internacionales': chek_val_data(row[1]),
+                        'sector_publico': chek_val_data(row[2]),
+                        'sector_financiero': chek_val_data(row[3]),
+                        'credito_bcv': chek_val_data(row[4]),
+                        'otras_cuentas': chek_val_data(row[5]),
+                        'capital_pagado_reservas': chek_val_data(row[6])
+                    })
+            except Exception as e:
+                errors += "- %s\n" % str(e)
+
+        if errors:
+            message = str(_("Error procesando datos. Verifique su correo para detalles del error"))
+            load_data_msg = str(_("Error al procesar datos del área Económica - Agregados Monetarios"))
+
+        ## Envia correo electronico al usuario indicando el estatus de la carga de datos
+        enviar_correo(user.email, 'gestion.informacion.load.mail', EMAIL_SUBJECT_LOAD_DATA, {
+            'load_data_msg': load_data_msg, 'administrador': administrador, 'admin_email': admin_email,
+            'errors': errors
+        })
+
+        return {'result': result, 'message': message}
+
+
+class AgregadosMonetarios(models.Model):
+    """!
+    Clase que contiene los registros de la categoría liquidez monetaria de la sub-área Agregados Monetarios
+
+    @author Edgar A. Linares (elinares at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 30-05-2017
+    @version 1.0.0
+    """
+
+    ## Monedas y Billetes circulantes
+    monedas_billetes = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Monedas y Billetes")
+    )
+
+    ## Depósitos a la Vista circulantes
+    depositos_vista = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Depósitos a la Vista")
+    )
+
+    ## Depósitos de Ahorro de liquidez monetaria
+    depositos_ahorro = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Depósitos de Ahorro")
+    )
+
+    ## Depósitos a Plazo de liquidez monetaria
+    depositos_plazo = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Depósitos a Plazo")
+    )
+
+    ## Cuasidinero de liquidez monetaria
+    cuasidinero = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Cuasidinero")
+    )
+
+    ## Cédulas Hipotecarias de liquidez ampliada
+    cedulas_hipotecarias = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Cédulas Hipotecarias")
+    )
+
+    ## Campo que crea la relacion con el modelo AgregadosBase
+    agregados = models.ForeignKey(AgregadosBase, verbose_name=_('Agregados Base'))
+
+    class Meta:
+        verbose_name = _('Agregados Monetarios')
+
+@python_2_unicode_compatible
+class ReservasBancarias(models.Model):
+    """!
+    Clase que contiene los registros de la categoría reservas bancarias de la sub-área Agregados Monetarios
+
+    @author Edgar A. Linares (elinares at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 30-05-2017
+    @version 1.0.0
+    """
+    
+    ## Fecha a la que pertenece el registro
+    fecha = models.DateField(null=True, verbose_name=_("Fecha"))
+
+    ## Reservas Bancarias 
+    reservas_bancarias = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Reservas Bancarias")
+    )
+
+    ## Campo que crea la relacion con el modelo AgregadosBase
+    agregados = models.ForeignKey(AgregadosBase, verbose_name=_('Agregados Base'))
+
+    class Meta:
+        verbose_name = _('Reservas Bancarias')
+
+@python_2_unicode_compatible
+class MonetariaUsos(models.Model):
+    """!
+    Clase que contiene los registros de la categoría base monetaria usos de la sub-área Agregados Monetarios
+
+    @author Edgar A. Linares (elinares at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 30-05-2017
+    @version 1.0.0
+    """
+
+    ## Depósitos Bancarios de Bancos Comerciales y Universales
+    depositos_bcu = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Depósitos Bancarios de Bancos Comerciales y Universales")
+    )
+
+    ## Depósitos del Resto del Sistema Bancario
+    depositos_rsb = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Depósitos del Resto del Sistema Bancario")
+    )
+
+    ## Depósitos Especiales del Público
+    depositos_ep = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Depósitos Especiales del Público")
+    )
+
+    ## Monedas y Billetes en Circulación
+    monedas_billetes = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Monedas y Billetes en Circulación")
+    )
+
+    ## Campo que crea la relacion con el modelo AgregadosBase
+    agregados = models.ForeignKey(AgregadosBase, verbose_name=_('Agregados Base'))
+
+    class Meta:
+        verbose_name = _('Base Monetaria Usos')
+
+@python_2_unicode_compatible
+class MonetariaFuentes(models.Model):
+    """!
+    Clase que contiene los registros de la categoría base monetaria fuentes de la sub-área Agregados Monetarios
+
+    @author Edgar A. Linares (elinares at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 30-05-2017
+    @version 1.0.0
+    """
+
+    ## Reservas Internacionales Netas
+    reservas_internacionales = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Reservas Internacionales Netas")
+    )
+
+    ## Sector Público Neto
+    sector_publico = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Sector Público Neto")
+    )
+
+    ## Sector Financiero
+    sector_financiero = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Sector Financiero")
+    )
+
+    ## Instrumentos de Crédito Emitidos por el BCV
+    credito_bcv = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Instrumentos de Crédito Emitidos por el BCV")
+    )
+
+    ## Otras Cuentas Netas
+    otras_cuentas = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Otras Cuentas Netas")
+    )
+
+    ## Capital Pagado y Reservas
+    capital_pagado_reservas = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Capital Pagado y Reservas")
+    )
+
+    ## Campo que crea la relacion con el modelo AgregadosBase
+    agregados = models.ForeignKey(AgregadosBase, verbose_name=_('Agregados Base'))
+    
+    class Meta:
+        verbose_name = _('Base Monetaria Fuentes')
+
+# ------------ Económico Real - Monetario Financiero - Tasas de Interés --------------------
+@python_2_unicode_compatible
+class TasasInteres(models.Model):
+    """!
+    Clase que contiene los registros comunes la sub-área Tasas de Interés
+
+    @author Edgar A. Linares (elinares at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 30-05-2017
+    @version 1.0.0
+    """
+
+    ## Fecha a la que pertenece el registro
+    fecha = models.DateField(null=True, verbose_name=_("Fecha"))
+    
+    ## Semana a la que pertenece el registro
+    semana = models.CharField(max_length=2, verbose_name=_("Semana"))
+
+    ## Mes al que pertenece el registro
+    mes = models.CharField(max_length=2, choices=MESES[1:], verbose_name=_("Mes"))
+
+    ## Año al que pertenece el registro
+    anho = models.CharField(max_length=4, verbose_name=_("Año"))
+
+    class Meta:
+        verbose_name = _('Tasas de Interés')
+    
+    def gestion_init(self, *args, **kwargs):
+        """!
+        Método que permite descargar un archivo con los datos a gestionar en base a los valores
+        introducidos por el usuario en el formulario
+
+        @author Edgar A. Linares (elinares at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 31-05-2017
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve los datos a incluír en el archivo correspondiente
+        """
+
+        ## Sección para la selección de los datos del dominio Tasa de Interés de los 6 Principales Bancos
+        if any('tasa_pb' in index for index in kwargs):
+            fields = [
+                [
+                    {'tag': '', 'cabecera': True},
+                    {'tag': str(PrincipalesBancos._meta.verbose_name), 'color': 'orange', 'text_color': 'white', 'combine': 3, 'cabecera': True}
+                ],
+                [
+                    {'tag': str(TasasInteres._meta.get_field('semana').verbose_name), 'cabecera': True},
+                    {'tag': str(PrincipalesBancos._meta.get_field('operaciones_activas').verbose_name), 'cabecera': True},
+                    {'tag': str(PrincipalesBancos._meta.get_field('depositos_90_dias').verbose_name), 'cabecera': True},
+                    {'tag': str(PrincipalesBancos._meta.get_field('depositos_ahorro').verbose_name), 'cabecera': True}
+                ]
+            ]
+            ## Asigna el nombre del archivo a descargar
+            nombre_archivo = 'Tasas_interes_principales_bancos'
+        ## Sección para la selección de los datos del dominio Tasa de Interés Activa
+        elif any('tasa_activa' in index for index in kwargs):
+            fields = [
+                [
+                    {'tag': '', 'cabecera': True},
+                    {'tag': str(_('Tasas de Bancos Comerciales y Universales')), 'color': 'orange', 'text_color': 'white', 'combine': 4, 'cabecera': True},
+                    {'tag': str(_('Por Actividad Económica')), 'color': 'green', 'text_color': 'white', 'combine': 13, 'cabecera': True},
+                    {'tag': str(_('Condición Jurídica')), 'color': 'ocean_blue', 'text_color': 'white', 'combine': 2, 'cabecera': True}
+                ],
+                [
+                    {'tag': str(TasasInteres._meta.get_field('fecha').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaActiva._meta.get_field('activas').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaActiva._meta.get_field('pagares').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaActiva._meta.get_field('prestamos').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaActiva._meta.get_field('descuentos').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaActiva._meta.get_field('agricola').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaActiva._meta.get_field('industria_manufacturera').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaActiva._meta.get_field('comercio').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaActiva._meta.get_field('servicios').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaActiva._meta.get_field('creditos_hipotecarios').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaActiva._meta.get_field('transporte_almacenamiento').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaActiva._meta.get_field('turismo').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaActiva._meta.get_field('comunicaciones').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaActiva._meta.get_field('adquisicion_vehiculos').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaActiva._meta.get_field('otros_economicos').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaActiva._meta.get_field('minas_canteras').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaActiva._meta.get_field('electricidad_gas_agua').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaActiva._meta.get_field('tarjeta_credito').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaActiva._meta.get_field('persona_natural').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaActiva._meta.get_field('persona_juridica').verbose_name), 'cabecera': True},
+                ]
+            ]
+            ## Asigna el nombre del archivo a descargar
+            nombre_archivo = 'Tasas_activa'
+        ## Sección para la selección de los datos del dominio Tasa de Interés Pasiva
+        elif any('tasa_pasiva' in index for index in kwargs):
+            fields = [
+                [
+                    {'tag': '', 'cabecera': True},
+                    {'tag': str(TasaPasiva._meta.verbose_name), 'color': 'orange', 'text_color': 'white', 'combine': 9, 'cabecera': True}
+                ],
+                [
+                    {'tag': str(TasasInteres._meta.get_field('fecha').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaPasiva._meta.get_field('cuentas_corrientes').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaPasiva._meta.get_field('captaciones_nominativas').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaPasiva._meta.get_field('otros_instrumentos').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaPasiva._meta.get_field('depositos_plazo_total').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaPasiva._meta.get_field('depositos_menor_30').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaPasiva._meta.get_field('depositos_30_dias').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaPasiva._meta.get_field('depositos_60_dias').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaPasiva._meta.get_field('depositos_90_dias').verbose_name), 'cabecera': True},
+                    {'tag': str(TasaPasiva._meta.get_field('depositos_mayor_90').verbose_name), 'cabecera': True},
+                ]
+            ]
+            ## Asigna el nombre del archivo a descargar
+            nombre_archivo = 'Tasas_pasiva'
+        ## Colocar en el archivo de salida las fechas excepto fines de semana segun la selección del usuario
+        if any('fecha' in index for index in kwargs):
+            inicio=datetime.strptime(kwargs['fecha__gte'], "%d/%m/%Y")
+            fin=datetime.strptime(kwargs['fecha__lte'], "%d/%m/%Y")
+            delta = timedelta(days=1)
+            while inicio <= fin:
+                if inicio.weekday() < 5:
+                    fields.append([ {'tag': str(_(str(inicio.strftime('%d/%m/%Y'))))}])
+                inicio+= delta
+        ## Devuelve los datos correspondientes al archivo a descargar y el nombre de ese archivo
+        return {'fields': fields, 'output': nombre_archivo}
+
+    def gestion_process(self, file, user, *args, **kwargs):
+        """!
+        Método que permite cargar y gestionar datos
+
+        @author Edgar A. Linares (elinares at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 31-05-2017
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param file <b>{string}</b> Ruta y nombre del archivo a gestionar
+        @param user <b>{object}</b> Objeto que contiene los datos del usuario que realiza la acción
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve el resultado de la acción con su correspondiente mensaje
+        """
+
+        load_file = pyexcel.get_sheet(file_name=file)
+        errors, result, message = '', False, ''
+        is_tasa_pb, is_tasa_activa, is_tasa_pasiva = False, False, False
+        load_data_msg = str(_("Datos Cargados"))
+
+        """!
+        Verifica cuál es el archivo que se está cargando en base a los parámetros provenientes
+        del formulario
+        """
+        if any('tasa_pb' in index for index in kwargs):
+            is_tasa_pb = True
+        elif any('tasa_activa' in index for index in kwargs):
+            is_tasa_activa = True
+        elif any('tasa_pasiva' in index for index in kwargs):
+            is_tasa_pasiva = True
+
+        ## Valida que el archivo corresponde a lo indicado en los parámetros del formulario
+        if is_tasa_pb and (load_file.row[0][1] == str(PrincipalesBancos._meta.verbose_name)):
+            result = True
+        elif is_tasa_activa and (load_file.row[0][1] == str(_('Tasas de Bancos Comerciales y Universales'))):
+            result = True
+        elif is_tasa_pasiva and (load_file.row[0][1] == str(TasaPasiva._meta.verbose_name)):
+            result = True
+
+        ## Comprueba si el archivo está vacio
+        if len(load_file.row_range()) < 2:
+            result = False
+
+        ## Si el archivo no pasa las validaciones, devuelve False y un mensaje indicando el problema
+        if not result:
+            return {
+                'result': False,
+                'message': str(_("El documento a cargar no es válido o no corresponde a los parámetros seleccionados"))
+            }
+        
+        ## En base al archivo cargado, se validan y cargan a la base de datos los valores contenidos en el archivo
+        for row in load_file.row[2:]:
+            try:
+                ## Asigna la semana del registro
+                semana = 1
+                #row[0] if is_tasa_pb else None
+
+                ## Asigna el mes del registro
+                mes = None
+
+                ## Asigna el año del registro
+                anho = None
+
+                ## Asigna la fecha del registro
+                fecha = datetime.strptime(row[0], "%d/%m/%Y")
+
+                ## Gestión para los datos básicos de Tasas de Interés
+                tasas, created = TasasInteres.objects.update_or_create(fecha=fecha, semana=semana, mes=mes, anho=anho)
+
+                if is_tasa_pb:
+                    ## Gestión de datos para la categoría Seis Principales Bancos
+                    PrincipalesBancos.objects.update_or_create(tasas=tasas, defaults={
+                        'operaciones_activas': check_val_data(row[1]),
+                        'depositos_90_dias': check_val_data(row[2]),
+                        'depositos_ahorro': check_val_data(row[3])
+                    })
+                elif is_tasa_activa:
+                    ## Gestión de datos para la categoría Tasas de Interés Activa
+                    TasaActiva.objects.update_or_create(tasas=tasas, defaults={
+                        'activas': check_val_data(row[1]),
+                        'pagares': check_val_data(row[2]),
+                        'prestamos': check_val_data(row[3]),
+                        'descuentos': check_val_data(row[4]),
+                        'agricola': check_val_data(row[5]),
+                        'industria_manufacturera': check_val_data(row[6]),
+                        'comercio': check_val_data(row[7]),
+                        'servicios': check_val_data(row[8]),
+                        'creditos_hipotecarios': check_val_data(row[9]),
+                        'transporte_alimento': check_val_data(row[10]),
+                        'turismo': check_val_data(row[11]),
+                        'comunicaciones': check_val_data(row[12]),
+                        'adquisicion_vehiculos': check_val_data(row[13]),
+                        'otros_economicos': check_val_data(row[14]),
+                        'minas_canteras': check_val_data(row[15]),
+                        'electricidad_gas_agua': check_val_data(row[16]),
+                        'tarjeta_credito': check_val_data(row[17]),
+                        'persona_natural': check_val_data(row[18]),
+                        'persona_juridica': check_val_data(row[19])
+                    })
+                elif is_tasa_pasiva:
+                    ## Gestión de datos para la categoría Tasas de Interés Pasiva
+                    TasaPasiva.objects.update_or_create(tasas=tasas, defaults={
+                        'cuentas_corrientes': check_val_data(row[1]),
+                        'captaciones_nominativas': check_val_data(row[2]),
+                        'otros_instrumentos': check_val_data(row[3]),
+                        'depositos_plazo_total': check_val_data(row[4]),
+                        'depositos_menor_30': check_val_data(row[5]),
+                        'depositos_30_dias': check_val_data(row[6]),
+                        'depositos_60_dias': check_val_data(row[7]),
+                        'depositos_90_dias': check_val_data(row[8]),
+                        'depositos_mayor_90': check_val_data(row[9]),
+                    })
+            except Exception as e:
+                errors += "- %s\n" % str(e)
+
+        if errors:
+            message = str(_("Error procesando datos. Verifique su correo para detalles del error"))
+            load_data_msg = str(_("Error al procesar datos del área Económica - PIB"))
+
+        ## Envia correo electronico al usuario indicando el estatus de la carga de datos
+        enviar_correo(user.email, 'gestion.informacion.load.mail', EMAIL_SUBJECT_LOAD_DATA, {
+            'load_data_msg': load_data_msg, 'administrador': administrador, 'admin_email': admin_email,
+            'errors': errors
+        })
+
+        return {'result': result, 'message': message}
+
+@python_2_unicode_compatible
+class PrincipalesBancos(models.Model):
+    """!
+    Clase que contiene los registros de la categoría Seis Principales Bancos de la sub-área Tasas de Interés
+
+    @author Edgar A. Linares (elinares at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 31-05-2017
+    @version 1.0.0
+    """
+
+    ## Operaciones Activas
+    operaciones_activas = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Operaciones Activas")
+    )
+
+    ## Depósitos a Plazos 90 días
+    depositos_90_dias = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Depósitos a Plazos 90 días")
+    )
+
+    ## Depósitos de Ahorro
+    depositos_ahorro = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Depósitos de Ahorro")
+    )
+
+    ## Campo que crea la relación con el modelo TasasInteres
+    tasas = models.ForeignKey(TasasInteres, verbose_name=_('Tasas de Interés'))
+
+    class Meta:
+        verbose_name = _('Tasa de Interés de los Seis Principales Bancos')
+
+@python_2_unicode_compatible
+class TasaActiva(models.Model):
+    """!
+    Clase que contiene los registros de la categoría Tasas de Interés Activa de la sub-área Tasas de Interés
+
+    @author Edgar A. Linares (elinares at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 31-05-2017
+    @version 1.0.0
+    """
+
+    ## Tasas Activas de Bancos Comerciales y Universales
+    activas = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Activas")
+    )
+
+    ## Pagarés de Bancos Comerciales y Universales
+    pagares = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Pagarés")
+    )
+
+    ## Préstamos de Bancos Comerciales y Universales
+    prestamos = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Préstamos")
+    )
+
+    ## Descuentos de Bancos Comerciales y Universales
+    descuentos = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Descuentos")
+    )
+
+    ## Actividad Económica Agrícola
+    agricola = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Agrícola")
+    )
+
+    ## Actividad Económica Industria Manufacturera Total
+    industria_manufacturera = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Industria Manufacturera Total")
+    )
+
+    ## Actividad Económica Comercio
+    comercio = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Comercio")
+    )
+
+    ## Actividad Económica Servicios
+    servicios = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Servicios")
+    )
+
+    ## Actividad Económica Créditos Hipotecarios
+    creditos_hipotecarios = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Créditos Hipotecarios")
+    )
+
+    ## Actividad Económica Transporte y Almacenamiento
+    transporte_almacenamiento = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Transporte y Almacenamiento")
+    )
+
+    ## Actividad Económica Turismo
+    turismo = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Turismo")
+    )
+
+    ## Actividad Económica Comunicaciones
+    comunicaciones = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Comunicaciones")
+    )
+
+    ## Actividad Económica Adquisición de Vehiculos 
+    adquisicion_vehiculos = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Adquisición de Vehículos")
+    )
+
+    ## Actividad Económica Otros Destinos Económicos
+    otros_economicos = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Otros Destinos Económicos")
+    )
+
+    ## Actividad Económica Explotación de Minas y Canteras
+    minas_canteras = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Explotación de Minas y Canteras")
+    )
+
+    ## Actividad Económica Electricidad, Gas y Agua
+    electricidad_gas_agua = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Electricidad, Gas y Agua")
+    )
+
+    ## Actividad Económica Tarjetas de Crédito
+    tarjeta_credito = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Tarjetas de Crédito")
+    )
+
+    ## Condición Jurídica Persona Natural
+    persona_natural = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Persona Natural")
+    )
+
+    ## Condición Jurídica Persona Jurídica
+    persona_juridica = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Persona Jurídica")
+    )
+
+    ## Campo que crea la relación con el modelo TasasInteres
+    tasas = models.ForeignKey(TasasInteres, verbose_name=_('Tasas de Interés'))
+
+    class Meta:
+        verbose_name = _('Tasa de Interés Activa')
+
+@python_2_unicode_compatible
+class TasaPasiva(models.Model):
+    """!
+    Clase que contiene los registros de la categoría Tasas de Interés Pasiva de la sub-área Tasas de Interés
+
+    @author Edgar A. Linares (elinares at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 31-05-2017
+    @version 1.0.0
+    """
+
+    ## Cuentas Corrientes Remunerables
+    cuentas_corrientes = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Cuentas Corrientes Remunerables")
+    )
+
+    ## Captaciones Nominativas a la Vista
+    captaciones_nominativas = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Captaciones Nominativas a la Vista")
+    )
+
+    ## Otros Instrumentos
+    otros_instrumentos = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Otros Instrumentos")
+    )
+
+    ## Depósitos a Plazo Total
+    depositos_plazo_total = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Depósitos a Plazo Total")
+    )
+
+    ## Depósitos a Plazo Menor a 30 Días
+    depositos_menor_30 = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Depósitos Menor a 30 Días")
+    )
+
+    ## Depósitos a Plazo 30 Días
+    depositos_30_dias = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Depósitos a 30 Días")
+    )
+
+    ## Depósitos a Plazo 60 Días
+    depositos_60_dias = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Depósitos a 60 Días")
+    )
+
+    ## Depósitos a Plazo 90 Días
+    depositos_90_dias = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Depósitos a 90 Días")
+    )
+
+    ## Depósitos a Plazo Mayor a 90 Días
+    depositos_mayor_90 = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Depósitos Mayor a 90 Días")
+    )
+
+    ## Campo que crea la relación con el modelo TasasInteres
+    tasas = models.ForeignKey(TasasInteres, verbose_name=_('Tasas de Interés'))
+
+    class Meta:
+        verbose_name = _('Tasa de Interés Activa')
+
+#-----------------------------Economía - Externo - Reservas, Tipo de Cambio
+@python_2_unicode_compatible
+class TipoCambio(models.Model):
+    
+    ## Fecha del registro
+    fecha = models.DateField(null=True, verbose_name=_("Fecha"))
+
+    ## Tasa de cambio para la compra
+    tcn_compra = models.DecimalField(max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Tasa de cambio para la compra"))
+
+    ## Tasa de cambio para la venta
+    tcn_venta = models.DecimalField(max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Tasa de cambio para la venta"))
+
+    def gestion_init(self, *args, **kwargs):
+        """Método que permite descargar un archivo con los datos a gestionar
+        @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 24-05-2017
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve los datos a incluír en el archivo
+        """
+
+
+        fields = [
+            [
+                {'tag': str(_("Fecha")), 'color': 'indigo', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("TCN Compra")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("TCN Venta")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
+            ]
+        ]
+
+        """
+        colocar en el archivo de salida las fechas excepto fines de semana segun la seleccion del usuario         
+        """
+
+        inicio=datetime.strptime(kwargs['start_date'], "%d/%m/%Y")
+        fin=datetime.strptime(kwargs['end_date'], "%d/%m/%Y")
+        delta = timedelta(days=1)
+        while inicio <= fin:
+            if inicio.weekday() < 5:
+                fields.append([ {'tag': str(_(str(inicio.strftime('%d/%m/%Y'))))}])
+            inicio+= delta
+
+        return {'fields': fields, 'output': 'tipo-cambio'}
+
+
+    def gestion_process(self, file, user, *args, **kwargs):
+        """!
+        Método que permite cargar y gestionar datos
+
+        @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 24-05-2017
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param file <b>{string}</b> Ruta y nombre del archivo a gestionar
+        @param user <b>{object}</b> Objeto que contiene los datos del usuario que realiza la acción
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve el resultado de la acción con su correspondiente mensaje
+        """
+        ## aqui debo recorrer todo el archivo excel y verificar las celdas
+        
+        load_file = pyexcel.get_sheet(file_name=file)
+        errors, result, message = '', True, ''
+        load_data_msg = str(_("Datos Cargados"))
+
+        
+        for row in load_file.row[1:]:
+            try:
+                fecha=datetime.strptime(row[0], "%d/%m/%Y")
+                tipo_cambio , created = TipoCambio.objects.update_or_create(fecha=fecha, defaults={
+                    'tcn_compra': check_val_data(row[1]),
+                    'tcn_venta': check_val_data(row[2]),
+                })
+
+            except Exception as e:
+                errors += "- %s\n" % str(e)
+
+        if errors:
+            message = str(_("Error procesando datos. Verifique su correo para detalles del error"))
+            load_data_msg = str(_("Error al procesar datos del area Economía - Externo - Tipo de Cambio"))
+
+
+        ## Envia correo electronico al usuario indicando el estatus de la carga de datos
+        enviar_correo(user.email, 'gestion.informacion.load.mail', EMAIL_SUBJECT_LOAD_DATA, {
+            'load_data_msg': load_data_msg, 'administrador': administrador, 'admin_email': admin_email,
+            'errors': errors
+        })
+
+        return {'result': result, 'message': message}
+
+@python_2_unicode_compatible
+class ReservasInternacionales(models.Model):
+    
+    ## Fecha del registro
+    fecha = models.DateField(null=True, verbose_name=_("Fecha"))
+
+    ## Reserva Internacional
+    ri= models.DecimalField(max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Reserva Internacional"))
+
+    ## Reserva Internacional BCV
+    ri_bcv = models.DecimalField(max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Reserva Internacional BCV"))
+
+    ## Reserva Internacional FEM
+    ri_fem = models.DecimalField(max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Reserva Internacional FEM"))
+
+    def save(self, *args, **kwargs):
+        self.ri = self.ri_bcv + self.ri_fem
+        super(ReservasInternacionales, self).save(*args, **kwargs)
+
+    def gestion_init(self, *args, **kwargs):
+        """!
+        Método que permite descargar un archivo con los datos a gestionar
+
+        @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 24-05-2017
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve los datos a incluír en el archivo
+        """
+
+        fields = [
+            [
+                {'tag': str(_("Fecha")), 'color': 'indigo', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("RI_BCV")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("RI_FEM")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
+            ]
+        ]
+
+        """
+        colocar en el archivo de salida las fechas excepto fines de semana segun la seleccion del usuario         
+        """
+
+        inicio=datetime.strptime(kwargs['start_date'], "%d/%m/%Y")
+        fin=datetime.strptime(kwargs['end_date'], "%d/%m/%Y")
+        delta = timedelta(days=1)
+        while inicio <= fin:
+            if inicio.weekday() < 5:
+                fields.append([ {'tag': str(_(str(inicio.strftime('%d/%m/%Y'))))}])
+            inicio+= delta
+
+        return {'fields': fields, 'output': 'ReservasInternacionales'}
+
+    def gestion_process(self, file, user, *args, **kwargs):
+        """!
+        Método que permite cargar y gestionar datos
+
+        @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 24-05-2017
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param file <b>{string}</b> Ruta y nombre del archivo a gestionar
+        @param user <b>{object}</b> Objeto que contiene los datos del usuario que realiza la acción
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve el resultado de la acción con su correspondiente mensaje
+        """
+
+        load_file = pyexcel.get_sheet(file_name=file)
+        errors, result, message = '', True, ''
+        load_data_msg = str(_("Datos Cargados"))
+
+        
+        for row in load_file.row[1:]:
+            try:
+                reservas_internacionales , created = ReservasInternacionales.objects.update_or_create( fecha=row[0], ri_bcv=check_val_data(row[1]), ri_fem=check_val_data(row[2]) )
+            
+            except Exception as e:
+                errors += "- %s\n" % str(e)
+
+        if errors:
+            message = str(_("Error procesando datos. Verifique su correo para detalles del error"))
+            load_data_msg = str(_("Error al procesar datos del area Economía - Externo - Tipo de Cambio"))
+
+
+        ## Envia correo electronico al usuario indicando el estatus de la carga de datos
+        enviar_correo(user.email, 'gestion.informacion.load.mail', EMAIL_SUBJECT_LOAD_DATA, {
+            'load_data_msg': load_data_msg, 'administrador': administrador, 'admin_email': admin_email,
+            'errors': errors
+        })
+
+        return {'result': result, 'message': message}
         
 # ------------ Económico Externo - Balanza Comercial  --------------------
-        
 @python_2_unicode_compatible
 class BalanzaComercialBase(models.Model):
     """!

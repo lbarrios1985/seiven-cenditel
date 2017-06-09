@@ -1,0 +1,169 @@
+{% load i18n %}
+{% load static from staticfiles %}
+<div id="resultado-filtros">
+    <hr>
+    <div class="row">
+        <div class="col-md-12">
+            <h4>
+                <i class="fa fa-minus-circle icon-minus" role="button"
+                   onclick="show_hide_filters('result_unidad_economica', $(this))"></i>&#160;&#160;
+                {% trans 'Datos de la Unidad Economica' %}
+            </h4>
+            <div id="opciones-result_unidad_economica">
+                <div class="row">
+                    <div class="col-md-12 text-right">
+                        <img src="{% static 'img/botones/descargar-pdf.png' %}" role="button" data-toggle="tooltip"
+                             alt="{% trans 'Descargar PDF' %}" title="{% trans 'Descargar PDF' %}"
+                             class="img-responsive inline">
+                        <img src="{% static 'img/botones/descargar-ods.png' %}" role="button" data-toggle="tooltip"
+                             alt="{% trans 'Descargar ODS' %}" title="{% trans 'Descargar ODF' %}"
+                             class="img-responsive inline">
+                        <img src="{% static 'img/botones/descargar-csv.png' %}" role="button" data-toggle="tooltip"
+                             alt="{% trans 'Descargar CSV' %}" title="{% trans 'Descargar CSV' %}"
+                             class="img-responsive inline">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table-striped table-hover display dataTable responsive" width="100%" id="result-consult">
+                            <thead>
+                                <tr>
+                                    <th>{% trans 'R.I.F.' %}</th>
+                                    <th>{% trans 'Razon Social' %}</th>
+                                    <th>{% trans 'Estado' %}</th>
+                                    <th>{% trans 'Naturaleza Juridica' %}</th>
+                                    <th>{% trans 'Numero de trabajadores' %}</th>
+                                    <th>{% trans 'Actividad Economica Principal' %}</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row separador-row">
+        <div class="col-md-12">
+            <h4>
+                <i class="fa fa-minus-circle icon-minus" role="button"
+                   onclick="show_hide_filters('result_sub_unidad_economica', $(this))"></i>&#160;&#160;
+                {% trans 'Datos de la Sub Unidad Economica' %}
+            </h4>
+            <div id="opciones-result_sub_unidad_economica">
+                <div class="row">
+                    <div class="col-md-12 text-right">
+                        <img src="{% static 'img/botones/descargar-pdf.png' %}" role="button" data-toggle="tooltip"
+                             alt="{% trans 'Descargar PDF' %}" title="{% trans 'Descargar PDF' %}"
+                             class="img-responsive inline">
+                        <img src="{% static 'img/botones/descargar-ods.png' %}" role="button" data-toggle="tooltip"
+                             alt="{% trans 'Descargar ODS' %}" title="{% trans 'Descargar ODF' %}"
+                             class="img-responsive inline">
+                        <img src="{% static 'img/botones/descargar-csv.png' %}" role="button" data-toggle="tooltip"
+                             alt="{% trans 'Descargar CSV' %}" title="{% trans 'Descargar CSV' %}"
+                             class="img-responsive inline">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table-striped table-hover display dataTable responsive" width="100%" id="result-consult">
+                            <thead>
+                                <tr>
+                                    <th>{% trans 'R.I.F.' %}</th>
+                                    <th>{% trans 'Razon Social' %}</th>
+                                    <th>{% trans 'Estado' %}</th>
+                                    <th>{% trans 'Naturaleza Juridica' %}</th>
+                                    <th>{% trans 'Numero de trabajadores' %}</th>
+                                    <th>{% trans 'Actividad Economica Principal' %}</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row separador-row">
+        <div class="col-md-12">
+            <h4>
+                <i class="fa fa-minus-circle icon-minus" role="button"
+                   onclick="show_hide_filters('result_proceso_productivo', $(this))"></i>&#160;&#160;
+                {% trans 'Datos del Proceso Productivo' %}
+            </h4>
+            <div id="opciones-result_proceso_productivo">
+                <div class="row">
+                    <div class="col-md-12 text-right">
+                        <img src="{% static 'img/botones/descargar-pdf.png' %}" role="button" data-toggle="tooltip"
+                             alt="{% trans 'Descargar PDF' %}" title="{% trans 'Descargar PDF' %}"
+                             class="img-responsive inline">
+                        <img src="{% static 'img/botones/descargar-ods.png' %}" role="button" data-toggle="tooltip"
+                             alt="{% trans 'Descargar ODS' %}" title="{% trans 'Descargar ODF' %}"
+                             class="img-responsive inline">
+                        <img src="{% static 'img/botones/descargar-csv.png' %}" role="button" data-toggle="tooltip"
+                             alt="{% trans 'Descargar CSV' %}" title="{% trans 'Descargar CSV' %}"
+                             class="img-responsive inline">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table-striped table-hover display dataTable responsive" width="100%" id="result-consult">
+                            <thead>
+                                <tr>
+                                    <th>{% trans 'R.I.F.' %}</th>
+                                    <th>{% trans 'Razon Social' %}</th>
+                                    <th>{% trans 'Estado' %}</th>
+                                    <th>{% trans 'Naturaleza Juridica' %}</th>
+                                    <th>{% trans 'Numero de trabajadores' %}</th>
+                                    <th>{% trans 'Actividad Economica Principal' %}</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row separador-row">
+        <div class="col-md-12">
+            <h4>
+                <i class="fa fa-minus-circle icon-minus" role="button"
+                   onclick="show_hide_filters('result_actividad_economica', $(this))"></i>&#160;&#160;
+                {% trans 'Datos de la Actividad Economica' %}
+            </h4>
+            <div id="opciones-result_actividad_economica">
+                <div class="row">
+                    <div class="col-md-12 text-right">
+                        <img src="{% static 'img/botones/descargar-pdf.png' %}" role="button" data-toggle="tooltip"
+                             alt="{% trans 'Descargar PDF' %}" title="{% trans 'Descargar PDF' %}"
+                             class="img-responsive inline">
+                        <img src="{% static 'img/botones/descargar-ods.png' %}" role="button" data-toggle="tooltip"
+                             alt="{% trans 'Descargar ODS' %}" title="{% trans 'Descargar ODF' %}"
+                             class="img-responsive inline">
+                        <img src="{% static 'img/botones/descargar-csv.png' %}" role="button" data-toggle="tooltip"
+                             alt="{% trans 'Descargar CSV' %}" title="{% trans 'Descargar CSV' %}"
+                             class="img-responsive inline">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table-striped table-hover display dataTable responsive" width="100%" id="result-consult">
+                            <thead>
+                                <tr>
+                                    <th>{% trans 'R.I.F.' %}</th>
+                                    <th>{% trans 'Razon Social' %}</th>
+                                    <th>{% trans 'Estado' %}</th>
+                                    <th>{% trans 'Naturaleza Juridica' %}</th>
+                                    <th>{% trans 'Numero de trabajadores' %}</th>
+                                    <th>{% trans 'Actividad Economica Principal' %}</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

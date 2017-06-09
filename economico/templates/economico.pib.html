@@ -16,65 +16,61 @@
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                     <p>
                         {% blocktrans %}
-                            Para cargar los datos asociados al <b>Producto Interno Bruto - PIB </b> seleccione el
-                            tipo, dominio y el año base.
+                            Para cargar los datos asociados al <b>Producto Interno Bruto - PIB </b> seleccione el tipo, dominio y el año base.
                         {% endblocktrans %}
                     </p>
                 </div>
             </div>
             <div class="row separador-row">
                 <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                    <label for="{{ form.tipo.auto_id }}" class="control-label">{{ form.tipo.label }}</label>
+                    <label for="{{ form.tipo.auto_id }}" class="control-label">
+                    {{ form.tipo.label }}</label>
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"> {{ form.tipo }}</div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    <label for="{{ form.dominio.auto_id }}" class="control-label">
+                    {{ form.dominio.label }}</label>
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.dominio }}</div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    <label for="{{ form.anho_base.auto_id }}" class="control-label">
+                    {{ form.anho_base.label }}</label>
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.anho_base }}</div>
+            </div>
+            <div class="row separador-row periodo" style='display:none;'>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-4 col-sm-offset-4 col-md-offset-4 col-lg-offset-4">                        
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 trimestral" style='display:none;'>
+                    <label class="control-label">{% trans 'Trimestral' %}</label>
                 </div>
                 <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                    {{ form.tipo }}
-                </div>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                    <label for="{{ form.dominio.auto_id }}" class="control-label">{{ form.dominio.label }}</label>
-                </div>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                    {{ form.dominio }}
-                </div>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                    <label for="{{ form.anho_base.auto_id }}" class="control-label">{{ form.anho_base.label }}</label>
-                </div>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                    {{ form.anho_base }}
+                    <label class="control-label">{% trans 'Año' %}</label>
                 </div>
             </div>
-            <!--Modificado el 05-04-2017 Edgar Linares -->
-            <hr>
-            <div id ="periodos" style='display:none;'>
-                <div class="row separador-row">
-                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-4 col-sm-offset-4 col-md-offset-4 col-lg-offset-4">                        
-                    </div>
-                    <div id ="trimestral1" style='display:none;' class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                        <label class="control-label">{% trans 'Trimestral' %}</label>
-                    </div>
-                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                        <label class="control-label">{% trans 'Año' %}</label>
-                    </div>
+            <div class="row separador-row periodo" style='display:none;'>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2">
+                    <label class="control-label">{% trans 'Período' %}</label>
                 </div>
-                <div class="row separador-row">
-                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2">
-                        <label class="control-label">{% trans 'Período' %}</label>
-                    </div>
-                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                        <label class="control-label">{{ form.periodo_trimestre_ini.label }}</label>
-                    </div>
-                    <div id ="trimestral2" style='display:none;' class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.periodo_trimestre_ini }}</div>
-                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.periodo_anho_ini }}</div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    <label class="control-label">{{ form.periodo_trimestre_ini.label }}</label>
                 </div>
-                <div class="row separador-row">
-                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-4 col-sm-offset-4 col-md-offset-4 col-lg-offset-4">
-                        <label class="control-label">{{ form.periodo_trimestre_fin.label }}</label>
-                    </div>
-                    <div id ="trimestral3" style='display:none;' class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.periodo_trimestre_fin }}</div>
-                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.periodo_anho_fin }}</div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 trimestral" style='display:none;'>
+                    {{ form.periodo_trimestre_ini }}
                 </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.periodo_anho_ini }}</div>
+            </div>
+            <div class="row separador-row periodo" style='display:none;'>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-4 col-sm-offset-4 col-md-offset-4 col-lg-offset-4">
+                    <label class="control-label">{{ form.periodo_trimestre_fin.label }}</label>
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 trimestral" style='display:none;'>
+                    {{ form.periodo_trimestre_fin }}
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.periodo_anho_fin }}</div>
             </div>
             <!-- -->
-            <div id="enlaces" style='display:none;'>
+            <div class="enlaces" style='display:none;'>
                 {% include 'base.down.up.files.html' with app='economico' mod='PIB' %}
             </div>
         </div>
@@ -136,41 +132,35 @@
                 }
             }
             if (tipo.val() == 'R' && (dominio.val() == 'AE' || dominio.val() == 'SI')) {
-                document.getElementById("periodos").style.display = 'block';
-                document.getElementById("trimestral1").style.display = 'block';
-                document.getElementById("trimestral2").style.display = 'block';
-                document.getElementById("trimestral3").style.display = 'block';
+                $('.periodo').show();
+                $('.trimestral').show();
             }
             else if (tipo.val() && dominio.val()) {
-                document.getElementById("periodos").style.display = 'block';
-                document.getElementById("trimestral1").style.display = 'none';
-                document.getElementById("trimestral2").style.display = 'none';
-                document.getElementById("trimestral3").style.display = 'none';
+                $('.periodo').show();
+                $('.trimestral').hide();
             }
             else {
-                document.getElementById("periodos").style.display = 'none';
-                document.getElementById("trimestral1").style.display = 'none';
-                document.getElementById("trimestral2").style.display = 'none';
-                document.getElementById("trimestral3").style.display = 'none';
+                $('.periodo').hide();
+                $('.trimestral').hide();
             }
             if (dominio.val() && anho_ini.val() && anho_fin.val()){
                 if ( (dominio.val() == 'ED' || dominio.val() == 'EO') &&
                      anho_fin.val() >= anho_ini.val() ) {
-                    document.getElementById("enlaces").style.display = 'block';
+                    $('.enlaces').show();
                 }
                 else if ( (dominio.val() == 'AE' || dominio.val() == 'SI') &&
                         (anho_fin.val() >= anho_ini.val()) &&
                         trimestre_ini.val() && trimestre_fin.val() ) {
                     if ( (anho_fin.val() == anho_ini.val()) && 
                         (trimestre_fin.val() >= trimestre_ini.val()) )
-                        document.getElementById("enlaces").style.display = 'block';
+                        $('.enlaces').show();
                     else if (anho_fin.val() > anho_ini.val())
-                        document.getElementById("enlaces").style.display = 'block';
+                        $('.enlaces').show();
                     else
-                        document.getElementById("enlaces").style.display = 'none';
+                        $('.enlaces').hide();
                 }
                 else {
-                    document.getElementById("enlaces").style.display = 'none';
+                    $('.enlaces').hide();
                }
             }
             if (anho_base.val()) {

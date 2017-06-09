@@ -8,8 +8,8 @@ static/files/*.*
 *.xml
 tmp/*.png
 database_config.py
+seiven.sublime-project
 migrations
-fixtures
 *.sql
 *.log
 venv/

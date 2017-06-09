@@ -38,7 +38,16 @@ function passwordStrength(password) {
  * @param element_id Cadena de texto con el id del elemento a mostrar u ocultar
  */
 function show_hide(element_id) {
+    $('.smal-box').each(function() {
+        if (!$(this).is("#" + element_id)) {
+            $(this).hide();
+        }
+    });
     var element = $("#" + element_id);
+
+    //element.hide() ? element.is(":visible") : element.show();
+
+
     if (element.is(":visible")) {
         element.hide();
     }
@@ -95,7 +104,8 @@ function enable_periodo_bc(value) {
  * @param element_id Cadena de texto con el id del elemento a mostrar u ocultar
  * @param condicion Booleano que indica si el campo se debe deshabilitar o no
  */
-function disable(element_id,condicion=true) {
+function disable(element_id,condicion) {
+    condicion = (typeof condicion != "undefined");
     var element = $("#" + element_id);
     if (condicion) {
         element.attr('disabled',true);
@@ -140,3 +150,22 @@ function edit_fields_cc(value) {
         enable_periodo_bc(false);
     }
 }
+
+/*
+ * @brief Función que muestra u oculta elementos de filtros de consulta
+ * @param filtros Cadena de texto con el tipo de filtro a utilizar
+ * @param element Objeto que contiene el elemento que realiza la acción para ocultar o mostrar filtros de consulta
+ */
+function show_hide_filters(filtros, element) {
+    if ($("#opciones-" + filtros).is(':visible')) {
+        $("#opciones-" + filtros).hide();
+        element.removeClass("fa-minus-circle");
+        element.addClass("fa-plus-circle");
+    }
+    else {
+        $("#opciones-" + filtros).show();
+        element.removeClass("fa-plus-circle");
+        element.addClass("fa-minus-circle");
+    }
+}
+

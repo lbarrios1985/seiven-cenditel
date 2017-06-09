@@ -14,6 +14,7 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
+from datetime import datetime
 
 
 ## Tipo de documento de identificación
@@ -145,6 +146,14 @@ DOMINIO_CUENTA_CAPITAL = (
     ('DE', _('Deuda Externa'))
 )
 
+## Selección de dominio de Monetario Financiero - Tasas de Interés
+DOMINIO_TASAS_INTERES = (
+    ("", _("Seleccione...")),
+    ("PB", _('Principales Bancos')),
+    ("TA", _('Tasa Activa')),
+    ("TP", _('Tasa Pasiva')),
+)
+
 ## Selección de Tipo de PIB
 TIPO_PIB = (
     ('', _('Seleccione...')),
@@ -199,7 +208,8 @@ MESES = (
 )
 
 ## Periocidad en el registro
-PERIOCIDAD = (
+PERIODICIDAD = (
+    ('', _('Seleccione...')),
     ('D', _('Diaria')),
     ('S', _('Semanal')),
     ('M', _('Mensual')),
@@ -246,3 +256,21 @@ SECTOR_DEUDA = (
     ("SPu",_("Sector Público")),
     ("SPr",_("Sector Privado")),
 )
+
+
+## Años de consulta
+ANHOS_CONSULTA = [(str(y), str(y)) for y in range(2009, datetime.now().year + 1)]
+ANHOS_CONSULTA.insert(0, ('', "Seleccione"))
+
+## Tipos de actividad económica
+TIPOS_ACTIVIDAD_ECONOMICA = (
+    ('AEP', _("Actividad Economica Principal")),
+    ('AES', _("Actividad Economica Secundaria"))
+)
+
+## Tipos de unidad económica
+TIPOS_UNIDAD = (
+    ('UE', _("Unidad Económica")),
+    ('SUE', _("Sub Unidad Económica"))
+)
+

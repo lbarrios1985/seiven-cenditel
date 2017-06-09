@@ -119,14 +119,18 @@ def agregados_monetarios(request):
     Función que permite mostrar el furmulario para el registro de Agregados Monetarios
 
     @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @author Edgar A. Linares (elinares at cenditel.gob.ve)
     @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
     @date 19-09-2016
+    @date 30-05-2017
     @param request <b>{object}</b> Objeto que obtiene la petición
     @return Devuelve el response con el formulario de datos para el registro de Agregados Monetarios
     """
     form = MonetarioAgregadosForm()
 
-    return render(request, 'economico.agregados.monetarios.html', {'form': form})
+    return render(request, 'economico.agregados.monetarios.html', {
+        'form': form, 'url_down': reverse('descargar_archivo'), 'url_up': reverse('cargar_archivo')
+    })
 
 
 @login_required
@@ -151,14 +155,18 @@ def tasas_interes(request):
     Función que permite mostrar el furmulario para el registro de Tasas de Interés
 
     @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @author Edgar A. Linares (elinares at cenditel.gob.ve)
     @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
     @date 20-09-2016
+    @date 26-04-2017
     @param request <b>{object}</b> Objeto que obtiene la petición
     @return Devuelve el response con el formulario de datos para el registro de Tasas de Interés
     """
     form = MonetarioTasasInteresForm()
 
-    return render(request, 'economico.tasas.interes.html', {'form': form})
+    return render(request, 'economico.tasas.interes.html', {
+        'form': form, 'url_down': reverse('descargar_archivo'), 'url_up': reverse('cargar_archivo')
+    })
 
 
 @login_required
@@ -207,7 +215,9 @@ def reservas_tipo_cambio(request):
     """
     form = ExternoReservaCambioForm()
 
-    return render(request, 'economico.reservas.tipo.cambio.html', {'form': form})
+    return render(request, 'economico.reservas.tipo.cambio.html', {
+        'form': form, 'url_down': reverse('descargar_archivo'), 'url_up': reverse('cargar_archivo')
+    })
 
 
 @login_required

@@ -1,0 +1,90 @@
+{% extends 'base.template.html' %}
+{% load productivo_filtros %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% block content_header_title %}{% trans 'CONSULTAR DATOS' %}{% endblock %}
+{% block content_header_roadmap %}
+    <li><a href="{% url 'productivo-consultar-datos' %}">{% trans 'Producción - Consultar Datos' %}</a></li>
+    <li class="active">{% block active_link %}{% trans 'Unidad Económica' %}{% endblock %}</li>
+{% endblock %}
+{% block content %}
+    <div class="panel panel-produccion">
+        <div class="panel-heading">
+            <h2 class="panel-title">{% trans 'Productivo' %} - {% trans 'Unidad Económica' %}</h2>
+        </div>
+        <div class="panel-body">
+            <form action="" class="form form-horizontal" method="post" autocomplete="off">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group {% if form.anho.errors %}has-error{% endif %}">
+                            <label class="col-md-1 control-label" for="{{ form.anho.auto_id }}">
+                                {{ form.anho.label }}
+                            </label>
+                            <div class="col-md-10">
+                                <div class="form-inline">
+                                    {{ form.anho }}
+                                    {% include 'base.form.errors.html' with form_errors=form.anho.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <h4>{% trans 'Realice la búsqueda por una de las tres categorías' %}</h4>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group {% if form.nombre.errors %}has-error{% endif %}">
+                            <label class="col-md-4 control-label" for="{{ form.nombre.auto_id }}">
+                                {{ form.nombre.label }}
+                            </label>
+                            <div class="col-md-8">
+                                <div class="form-inline">
+                                    {{ form.nombre }}
+                                    {% include 'base.form.errors.html' with form_errors=form.nombre.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group {% if form.rif.errors %}has-error{% endif %}">
+                            <label class="col-md-4 control-label" for="{{ form.rif.auto_id }}">
+                                {{ form.rif.label }}
+                            </label>
+                            <div class="col-md-8">
+                                <div class="form-inline">
+                                    {{ form.rif }}
+                                    {% include 'base.form.errors.html' with form_errors=form.rif.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group {% if form.estado.errors %}has-error{% endif %}">
+                            <label class="col-md-4 control-label" for="{{ form.estado.auto_id }}">
+                                {{ form.estado.label }}
+                            </label>
+                            <div class="col-md-8">
+                                <div class="form-inline">
+                                    {{ form.estado }}
+                                    {% include 'base.form.errors.html' with form_errors=form.estado.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 col-xs-6 text-center">
+                        <button type="button" class="btn btn-warning">{% trans 'Buscar' %}</button>
+                    </div>
+                    <div class="col-md-6 col-sx-6 text-center">
+                        <button type="reset" class="btn btn-warning">{% trans 'Limpiar' %}</button>
+                    </div>
+                </div>
+            </form>
+            {% include 'productivo.ue.datos.consultados.html' %}
+            {% include 'productivo.ue.filtros.consulta.html' %}
+            {% include 'productivo.ue.resultado.filtros.html' %}
+        </div>
+    </div>
+{% endblock %}
