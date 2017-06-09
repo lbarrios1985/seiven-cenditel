@@ -23,7 +23,7 @@ from itertools import islice , cycle
 
 from base.constant import (
     DOMINIO, PERIODICIDAD, TRIMESTRES, MESES, ECONOMICO_SUB_AREA, CONVERT_MES, EMAIL_SUBJECT_LOAD_DATA,
-    TIPO_BALANZA_COMERCIAL, DOMINIO_BALANZA_COMERCIAL, BALANZA_DATOS
+    TIPO_BALANZA_COMERCIAL, DOMINIO_BALANZA_COMERCIAL, BALANZA_DATOS, INVERSION_CARTERA, SECTOR_DEUDA
 )
 from base.functions import enviar_correo, check_val_data
 
@@ -2972,8 +2972,8 @@ class CuentaCapitalBalanzaBase(models.Model):
             fields.append(head)
             fields.append(header)
             sub_header = [
-                {'tag': str(_("Trimestre")), 'color': 'white', 'text_color': 'black','cabecera': True},
-                {'tag': str(_("Año")), 'color': 'white', 'text_color': 'black', 'cabecera': True},
+                {'tag': str(_("Año")), 'color': 'white', 'text_color': 'black','cabecera': True},
+                {'tag': str(_("Trimestre")), 'color': 'white', 'text_color': 'black', 'cabecera': True},
                 {'tag': str(_(CuentaCapitalSaldos._meta.get_field('transporte').verbose_name)), 'color': 'sky_blue', 'text_color': 'white', 'cabecera': True},
                 {'tag': str(_(CuentaCapitalSaldos._meta.get_field('viajes').verbose_name)), 'color': 'sky_blue', 'text_color': 'white', 'cabecera': True},
                 {'tag': str(_(CuentaCapitalSaldos._meta.get_field('comunicacion').verbose_name)), 'color': 'sky_blue', 'text_color': 'white', 'cabecera': True},
@@ -3037,8 +3037,8 @@ class CuentaCapitalBalanzaBase(models.Model):
             fields.append(head)
             fields.append(header)
             sub_header = [
-                {'tag': str(_("Trimestre")), 'color': 'white', 'text_color': 'black','cabecera': True},
-                {'tag': str(_("Año")), 'color': 'white', 'text_color': 'black', 'cabecera': True},
+                {'tag': str(_("Año")), 'color': 'white', 'text_color': 'black','cabecera': True},
+                {'tag': str(_("Trimestre")), 'color': 'white', 'text_color': 'black', 'cabecera': True},
                 {'tag': str(_(CuentaCapitalDeudaCapital._meta.get_field('bono_pagare').verbose_name)), 'color': 'green', 'text_color': 'white', 'cabecera': True},
                 {'tag': str(_(CuentaCapitalDeudaCapital._meta.get_field('credito_comercial').verbose_name)), 'color': 'green', 'text_color': 'white', 'cabecera': True},
                 {'tag': str(_(CuentaCapitalDeudaCapital._meta.get_field('prestamo').verbose_name)), 'color': 'green', 'text_color': 'white', 'cabecera': True},
@@ -3078,6 +3078,89 @@ class CuentaCapitalBalanzaBase(models.Model):
             trimestre_ini += 1
         
         return {'fields': fields, 'output': nombre_archivo}
+    
+    def gestion_process(self, file, user, *args, **kwargs):
+        """!
+        Método que permite cargar y gestionar datos
+
+        @author Rodrigo boet (rboet at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 09-06-2017
+        @param self <b>{object}</b> Objeto que instancia la clase
+        @param file <b>{string}</b> Ruta y nombre del archivo a gestionar
+        @param user <b>{object}</b> Objeto que contiene los datos del usuario que realiza la acción
+        @param args <b>{tupla}</b> Tupla con argumentos opcionales
+        @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
+        @return Devuelve el resultado de la acción con su correspondiente mensaje
+        """
+        
+        load_file = pyexcel.get_sheet(file_name=file)
+        anho_base, errors, result, message = '', '', True, ''
+        load_data_msg = str(_("Datos Cargados"))
+
+        ## Se asigna un valor al dominio
+        dominio = kwargs['dominio']
+        
+        for row in load_file.row[2:]:
+            try:
+                if(dominio=='BP'):
+                    pass
+                    """
+                    cuenta_capital_base, created = CuentaCapitalBalanzaBase.objects.update_or_create(
+                    anho=row[1],
+                    trimestre=row[0])"""
+                elif(dominio=='DE'):
+                    cuenta_capital_base, created = CuentaCapitalDeudaBase.objects.update_or_create(
+                    anho=row[0],
+                    trimestre=row[1])
+                    
+                    ## Se crean o actulizan los objetos de deuda capital e intereses del sector público
+                    CuentaCapitalDeudaCapital.objects.update_or_create(deuda=cuenta_capital_base,tipo="SPu",defaults={
+                        'bono_pagare':row[2],
+                        'credito_comercial':row[3],
+                        'prestamo':row[4],
+                        'otros':row[5],
+                    })
+                    
+                    CuentaCapitalDeudaIntereses.objects.update_or_create(deuda=cuenta_capital_base,tipo="SPu",defaults={
+                        'bono_pagare':row[6],
+                        'instrumento_mercado':row[7],
+                        'credito_comercial':row[8],
+                        'prestamo':row[9],
+                        'otros':row[10],
+                    })
+                    
+                    ## Se crean o actulizan los objetos de deuda capital e intereses del sector privado
+                    CuentaCapitalDeudaCapital.objects.update_or_create(deuda=cuenta_capital_base,tipo="SPr",defaults={
+                        'bono_pagare':row[11],
+                        'credito_comercial':row[12],
+                        'prestamo':row[13],
+                        'otros':row[14],
+                    })
+                    
+                    CuentaCapitalDeudaIntereses.objects.update_or_create(deuda=cuenta_capital_base,tipo="SPr",defaults={
+                        'bono_pagare':row[15],
+                        'instrumento_mercado':row[16],
+                        'credito_comercial':row[17],
+                        'prestamo':row[18],
+                        'otros':row[19],
+                    })
+               
+            except Exception as e:
+                errors += "- %s\n" % str(e)
+
+        if errors:
+            message = str(_("Error procesando datos. Verifique su correo para detalles del error"))
+            load_data_msg = str(_("Error al procesar datos del área Económica - Externo"))
+
+
+        # Envia correo electronico al usuario indicando el estatus de la carga de datos
+        enviar_correo(user.email, 'gestion.informacion.load.mail', EMAIL_SUBJECT_LOAD_DATA, {
+            'load_data_msg': load_data_msg, 'administrador': administrador, 'admin_email': admin_email,
+            'errors': errors
+        })
+        
+        return {'result': result, 'message': message}
         
 @python_2_unicode_compatible
 class CuentaCapitalSaldos(models.Model):
@@ -3195,7 +3278,7 @@ class CuentaCapitalInversionCartera(models.Model):
     )
     
     ## Tipo de dato de la inversión de cartera
-    tipo = models.CharField(max_length=2, choices=INVERSION_CARTERA)
+    tipo = models.CharField(max_length=4, choices=INVERSION_CARTERA)
        
     ## Relación con el registro base de la cuenta capital
     cuenta_capital = models.ForeignKey(CuentaCapitalBalanzaBase)
@@ -3254,7 +3337,7 @@ class CuentaCapitalOtraInversion(models.Model):
     )
     
     ## Tipo de dato de la inversión de cartera
-    tipo = models.CharField(max_length=2, choices=INVERSION_CARTERA)
+    tipo = models.CharField(max_length=4, choices=INVERSION_CARTERA)
        
     ## Relación con el registro base de la cuenta capital
     cuenta_capital = models.ForeignKey(CuentaCapitalBalanzaBase)
@@ -3311,7 +3394,7 @@ class CuentaCapitalDeudaCapital(models.Model):
     )
     
     ## Tipo de dato de la deuda
-    tipo = models.CharField(max_length=2, choices=SECTOR_DEUDA)
+    tipo = models.CharField(max_length=3, choices=SECTOR_DEUDA)
        
     ## Relación con el registro base de la cuenta capital (deuda)
     deuda = models.ForeignKey(CuentaCapitalDeudaBase)
@@ -3353,7 +3436,7 @@ class CuentaCapitalDeudaIntereses(models.Model):
     )
     
     ## Tipo de dato de la deuda
-    tipo = models.CharField(max_length=2, choices=SECTOR_DEUDA)
+    tipo = models.CharField(max_length=3, choices=SECTOR_DEUDA)
        
     ## Relación con el registro base de la cuenta capital (deuda)
     deuda = models.ForeignKey(CuentaCapitalDeudaBase)

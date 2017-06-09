@@ -80,26 +80,6 @@ function edit_dom_bc(value,element_id) {
 }
 
 /**
- * @brief Funcion que permite mostrar los dominios indicados en
- * Balanza comercial
- * @param value Booleano para activar/desactivar el periodo
- */
-function enable_periodo_bc(value) {
-    if (value) {
-        disable('id_periodo_trimestre_ini',false);
-        disable('id_periodo_trimestre_fin',false);
-        disable('id_periodo_anho_ini',false);
-        disable('id_periodo_anho_fin',false);
-    }
-    else{
-        disable('id_periodo_trimestre_ini');
-        disable('id_periodo_trimestre_fin');
-        disable('id_periodo_anho_ini');
-        disable('id_periodo_anho_fin');
-    }
-}
-
-/**
  * @brief Funcion que permite habilitar/deshabilitar elementos con su id
  * @param element_id Cadena de texto con el id del elemento a mostrar u ocultar
  * @param condicion Booleano que indica si el campo se debe deshabilitar o no
@@ -136,6 +116,26 @@ function validar_anho_trimestre() {
 }
 
 /**
+ * @brief Funcion que permite mostrar los dominios indicados en
+ * Balanza comercial
+ * @param value Booleano para activar/desactivar el periodo
+ */
+function enable_periodo_bc(value) {
+    if (value) {
+        disable('id_periodo_trimestre_ini');
+        disable('id_periodo_trimestre_fin');
+        disable('id_periodo_anho_ini');
+        disable('id_periodo_anho_fin');
+    }
+    else{
+        disable('id_periodo_trimestre_ini',true);
+        disable('id_periodo_trimestre_fin',true);
+        disable('id_periodo_anho_ini',true);
+        disable('id_periodo_anho_fin',true);
+    }
+}
+
+/**
  * @brief Funcion que permite mostrar/ocultar y deshabilitar/habilitar
  * los campos necesarios para la cuenta capital
  * @param value Cadena de texto con el valor del select padre
@@ -168,4 +168,3 @@ function show_hide_filters(filtros, element) {
         element.addClass("fa-minus-circle");
     }
 }
-
