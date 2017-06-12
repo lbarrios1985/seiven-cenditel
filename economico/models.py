@@ -3069,6 +3069,120 @@ class CuentaCapitalBalanzaBase(models.Model):
             registros = [({'tag': anho_ini})]
             registros.append({'tag': trimestre_ini})
             # Agrega los datos a la nueva fila del archivo a generar
+            if(kwargs['dominio']=='BP'):
+                cuenta_capital_base = CuentaCapitalBalanzaBase.objects.filter(anho=anho_ini,trimestre=trimestre_ini)
+                if(cuenta_capital_base):
+                    cuenta_capital_base = cuenta_capital_base.get()
+                    
+                    ## Se cargan los saldos de la cuenta capital
+                    cuenta_capital_saldos = CuentaCapitalSaldos.objects.get(cuenta_capital=cuenta_capital_base)
+                    registros.append({'tag': cuenta_capital_saldos.transporte})
+                    registros.append({'tag': cuenta_capital_saldos.viajes})
+                    registros.append({'tag': cuenta_capital_saldos.comunicacion})
+                    registros.append({'tag': cuenta_capital_saldos.seguro})
+                    registros.append({'tag': cuenta_capital_saldos.gobierno})
+                    registros.append({'tag': cuenta_capital_saldos.otros})
+                    registros.append({'tag': cuenta_capital_saldos.remuneracion_empleado})
+                    registros.append({'tag': cuenta_capital_saldos.inversion_directa})
+                    registros.append({'tag': cuenta_capital_saldos.inversion_cartera})
+                    registros.append({'tag': cuenta_capital_saldos.otra_inversion})
+                    
+                    ## Se cargan otros de la cuenta capital
+                    cuenta_capital_otros = CuentaCapitalOtros.objects.get(cuenta_capital=cuenta_capital_base)
+                    registros.append({'tag': cuenta_capital_otros.transferencia_corriente})
+                    registros.append({'tag': cuenta_capital_otros.cuenta})
+                    
+                    ## Se carga la inversión de la cuenta capital
+                    cuenta_capital_inv_directa = CuentaCapitalInversionDirecta.objects.get(cuenta_capital=cuenta_capital_base)
+                    registros.append({'tag': cuenta_capital_inv_directa.extranjero})
+                    registros.append({'tag': cuenta_capital_inv_directa.pais})
+                    
+                    ## ------> Inversión Cartera
+                    
+                    ## Se carga la inversión cartera de la cuenta capital - Activos sector público
+                    cuenta_capital_inv_cartera_apu = CuentaCapitalInversionCartera.objects.get(cuenta_capital=cuenta_capital_base,tipo="ASPu")
+                    registros.append({'tag': cuenta_capital_inv_cartera_apu.titulo_participacion_capital})
+                    registros.append({'tag': cuenta_capital_inv_cartera_apu.titulo_deuda})
+                    
+                    ## Se carga la inversión cartera de la cuenta capital - Activos sector privado
+                    cuenta_capital_inv_cartera_apr = CuentaCapitalInversionCartera.objects.get(cuenta_capital=cuenta_capital_base,tipo="ASPr")
+                    registros.append({'tag': cuenta_capital_inv_cartera_apr.titulo_participacion_capital})
+                    registros.append({'tag': cuenta_capital_inv_cartera_apr.titulo_deuda})
+                    
+                    ## Se carga la inversión cartera de la cuenta capital - Pasivos sector público
+                    cuenta_capital_inv_cartera_ppu = CuentaCapitalInversionCartera.objects.get(cuenta_capital=cuenta_capital_base,tipo="PSPu")
+                    registros.append({'tag': cuenta_capital_inv_cartera_ppu.titulo_participacion_capital})
+                    registros.append({'tag': cuenta_capital_inv_cartera_ppu.titulo_deuda})
+                    
+                    ## Se carga la inversión cartera de la cuenta capital - Pasivos sector privado
+                    cuenta_capital_inv_cartera_ppr = CuentaCapitalInversionCartera.objects.get(cuenta_capital=cuenta_capital_base,tipo="PSPr")
+                    registros.append({'tag': cuenta_capital_inv_cartera_ppr.titulo_participacion_capital})
+                    registros.append({'tag': cuenta_capital_inv_cartera_ppr.titulo_deuda})
+                    
+                    ## ------> Otra Inversión
+                    
+                    ## Se carga la otra inversión de la cuenta capital - Activo sector público
+                    cuenta_capital_otra_inv_apu = CuentaCapitalOtraInversion.objects.get(cuenta_capital=cuenta_capital_base,tipo="ASPu")
+                    registros.append({'tag': cuenta_capital_otra_inv_apu.credito_comercial})
+                    registros.append({'tag': cuenta_capital_otra_inv_apu.prestamo})
+                    registros.append({'tag': cuenta_capital_otra_inv_apu.moneda_deposito})
+                    registros.append({'tag': cuenta_capital_otra_inv_apu.otros})
+                    
+                    ## Se carga la otra inversión de la cuenta capital - Activo sector privado
+                    cuenta_capital_otra_inv_apr = CuentaCapitalOtraInversion.objects.get(cuenta_capital=cuenta_capital_base,tipo="ASPr")
+                    registros.append({'tag': cuenta_capital_otra_inv_apr.credito_comercial})
+                    registros.append({'tag': cuenta_capital_otra_inv_apr.prestamo})
+                    registros.append({'tag': cuenta_capital_otra_inv_apr.moneda_deposito})
+                    registros.append({'tag': cuenta_capital_otra_inv_apr.otros})
+                    
+                    ## Se carga la otra inversión de la cuenta capital - Pasivo sector público
+                    cuenta_capital_otra_inv_ppu = CuentaCapitalOtraInversion.objects.get(cuenta_capital=cuenta_capital_base,tipo="PSPu")
+                    registros.append({'tag': cuenta_capital_otra_inv_ppu.credito_comercial})
+                    registros.append({'tag': cuenta_capital_otra_inv_ppu.prestamo})
+                    registros.append({'tag': cuenta_capital_otra_inv_ppu.moneda_deposito})
+                    registros.append({'tag': cuenta_capital_otra_inv_ppu.otros})
+                    
+                    ## Se carga la otra inversión de la cuenta capital - Pasivo sector privado
+                    cuenta_capital_otra_inv_ppr = CuentaCapitalOtraInversion.objects.get(cuenta_capital=cuenta_capital_base,tipo="PSPr")
+                    registros.append({'tag': cuenta_capital_otra_inv_ppr.credito_comercial})
+                    registros.append({'tag': cuenta_capital_otra_inv_ppr.prestamo})
+                    registros.append({'tag': cuenta_capital_otra_inv_ppr.moneda_deposito})
+                    registros.append({'tag': cuenta_capital_otra_inv_ppr.otros})
+                    
+                    ## Se cargan los errores u omisiones
+                    registros.append({'tag': cuenta_capital_otros.errores_omisiones})
+                    
+                    
+            elif(kwargs['dominio']=='DE'):
+                cuenta_capital_base = CuentaCapitalDeudaBase.objects.filter(anho=anho_ini,trimestre=trimestre_ini)
+                if(cuenta_capital_base):
+                    cuenta_capital_base = cuenta_capital_base.get()
+                    ## Se carga la deuda capital del sector público
+                    cuenta_capital_deuda_pu = CuentaCapitalDeudaCapital.objects.get(deuda_id=cuenta_capital_base.id,tipo="SPu")
+                    registros.append({'tag': cuenta_capital_deuda_pu.bono_pagare})
+                    registros.append({'tag': cuenta_capital_deuda_pu.credito_comercial})
+                    registros.append({'tag': cuenta_capital_deuda_pu.prestamo})
+                    registros.append({'tag': cuenta_capital_deuda_pu.otros})
+                    ## Se carga la deuda de interes del sector público
+                    cuenta_capital_interes_pu = CuentaCapitalDeudaIntereses.objects.get(deuda_id=cuenta_capital_base.id,tipo="SPu")
+                    registros.append({'tag': cuenta_capital_interes_pu.bono_pagare})
+                    registros.append({'tag': cuenta_capital_interes_pu.instrumento_mercado})
+                    registros.append({'tag': cuenta_capital_interes_pu.credito_comercial})
+                    registros.append({'tag': cuenta_capital_interes_pu.prestamo})
+                    registros.append({'tag': cuenta_capital_interes_pu.otros})
+                    ## Se carga la deuda capital del sector privado
+                    cuenta_capital_deuda_pu = CuentaCapitalDeudaCapital.objects.get(deuda_id=cuenta_capital_base.id,tipo="SPr")
+                    registros.append({'tag': cuenta_capital_deuda_pu.bono_pagare})
+                    registros.append({'tag': cuenta_capital_deuda_pu.credito_comercial})
+                    registros.append({'tag': cuenta_capital_deuda_pu.prestamo})
+                    registros.append({'tag': cuenta_capital_deuda_pu.otros})
+                    ## Se carga la deuda de interes del sector privado
+                    cuenta_capital_interes_pu = CuentaCapitalDeudaIntereses.objects.get(deuda_id=cuenta_capital_base.id,tipo="SPr")
+                    registros.append({'tag': cuenta_capital_interes_pu.bono_pagare})
+                    registros.append({'tag': cuenta_capital_interes_pu.instrumento_mercado})
+                    registros.append({'tag': cuenta_capital_interes_pu.credito_comercial})
+                    registros.append({'tag': cuenta_capital_interes_pu.prestamo})
+                    registros.append({'tag': cuenta_capital_interes_pu.otros})
             fields.append(registros)
             if (anho_ini == int(kwargs['anho__lte']) and trimestre_ini == int(kwargs['trimestre__lte'])):
                 break
@@ -3124,7 +3238,7 @@ class CuentaCapitalBalanzaBase(models.Model):
                     })
                     
                     ## Se crean o actualizan los objetos de otros montos de cuenta capital
-                    CuentaCapitaOtros.objects.update_or_create(cuenta_capital = cuenta_capital_base, defaults={
+                    CuentaCapitalOtros.objects.update_or_create(cuenta_capital = cuenta_capital_base, defaults={
                         'transferencia_corriente':row[12],
                         'cuenta':row[13],
                         'errores_omisiones':row[40],
