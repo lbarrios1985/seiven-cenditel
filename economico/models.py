@@ -3095,21 +3095,111 @@ class CuentaCapitalBalanzaBase(models.Model):
         """
         
         load_file = pyexcel.get_sheet(file_name=file)
-        anho_base, errors, result, message = '', '', True, ''
+        errors, result, message = '', True, ''
         load_data_msg = str(_("Datos Cargados"))
 
         ## Se asigna un valor al dominio
         dominio = kwargs['dominio']
         
-        for row in load_file.row[2:]:
+        for row in load_file.row[3:]:
             try:
                 if(dominio=='BP'):
-                    pass
-                    """
+                    ## Registro base de la cuenta capital balanza
                     cuenta_capital_base, created = CuentaCapitalBalanzaBase.objects.update_or_create(
-                    anho=row[1],
-                    trimestre=row[0])"""
+                    anho=row[0],
+                    trimestre=row[1])
+                    
+                    ## Se crean o actualizan los objetos de saldos de cuenta capital
+                    CuentaCapitalSaldos.objects.update_or_create(cuenta_capital = cuenta_capital_base, defaults={
+                        'transporte': row[2],
+                        'viajes': row[3],
+                        'comunicacion': row[4],
+                        'seguro': row[5],
+                        'gobierno': row[6],
+                        'otros': row[7],
+                        'remuneracion_empleado': row[8],
+                        'inversion_directa': row[9],
+                        'inversion_cartera': row[10],
+                        'otra_inversion': row[11],
+                    })
+                    
+                    ## Se crean o actualizan los objetos de otros montos de cuenta capital
+                    CuentaCapitaOtros.objects.update_or_create(cuenta_capital = cuenta_capital_base, defaults={
+                        'transferencia_corriente':row[12],
+                        'cuenta':row[13],
+                        'errores_omisiones':row[40],
+                    })
+                    
+                    ## Se crean o actualizan los objetos de inversión directa de cuenta capital
+                    CuentaCapitalInversionDirecta.objects.update_or_create(cuenta_capital = cuenta_capital_base, defaults={
+                        'extranjero':row[14],
+                        'pais':row[15],
+                    })
+                    
+                    ## ------> Inversión Cartera
+                    
+                    ## Se crean o actualizan los objetos de inversión cartera de cuenta capital - Activos sector público
+                    CuentaCapitalInversionCartera.objects.update_or_create(cuenta_capital = cuenta_capital_base, tipo="ASPu", defaults={
+                        'titulo_participacion_capital':row[16],
+                        'titulo_deuda':row[17],
+                    })
+                    
+                    
+                    ## Se crean o actualizan los objetos de inversión cartera de cuenta capital - Activos sector privado
+                    CuentaCapitalInversionCartera.objects.update_or_create(cuenta_capital = cuenta_capital_base, tipo="ASPr", defaults={
+                        'titulo_participacion_capital':row[18],
+                        'titulo_deuda':row[19],
+                    })
+                    
+                    ## Se crean o actualizan los objetos de inversión cartera de cuenta capital - Pasivos sector público
+                    CuentaCapitalInversionCartera.objects.update_or_create(cuenta_capital = cuenta_capital_base, tipo="PSPu", defaults={
+                        'titulo_participacion_capital':row[20],
+                        'titulo_deuda':row[21],
+                    })
+                    
+                    ## Se crean o actualizan los objetos de inversión cartera de cuenta capital - Pasivos sector privado
+                    CuentaCapitalInversionCartera.objects.update_or_create(cuenta_capital = cuenta_capital_base, tipo="PSPr", defaults={
+                        'titulo_participacion_capital':row[22],
+                        'titulo_deuda':row[23],
+                    })
+                    
+                    ## ------> Otra Inversión
+                    
+                    ## Se crean o actualizan los objetos de otras inversiones de cuenta capital - Activos sector público
+                    CuentaCapitalOtraInversion.objects.update_or_create(cuenta_capital = cuenta_capital_base, tipo="ASPu", defaults={
+                        'credito_comercial':row[24],
+                        'prestamo':row[25],
+                        'moneda_deposito':row[26],
+                        'otros':row[27],
+                    })
+                    
+                    
+                    ## Se crean o actualizan los objetos de otras inversiones de cuenta capital - Activos sector privado
+                    CuentaCapitalOtraInversion.objects.update_or_create(cuenta_capital = cuenta_capital_base, tipo="ASPr", defaults={
+                        'credito_comercial':row[28],
+                        'prestamo':row[29],
+                        'moneda_deposito':row[30],
+                        'otros':row[31],
+                    })
+                    
+                    ## Se crean o actualizan los objetos de otras inversiones de cuenta capital - Pasivos sector público
+                    CuentaCapitalOtraInversion.objects.update_or_create(cuenta_capital = cuenta_capital_base, tipo="PSPu", defaults={
+                        'credito_comercial':row[32],
+                        'prestamo':row[33],
+                        'moneda_deposito':row[34],
+                        'otros':row[35],
+                    })
+                    
+                    ## Se crean o actualizan los objetos de otras inversiones de cuenta capital - Pasivos sector privado
+                    CuentaCapitalOtraInversion.objects.update_or_create(cuenta_capital = cuenta_capital_base, tipo="PSPr", defaults={
+                        'credito_comercial':row[36],
+                        'prestamo':row[37],
+                        'moneda_deposito':row[38],
+                        'otros':row[39],
+                    })                    
+                    
                 elif(dominio=='DE'):
+                    ## Registro base de la cuenta capital deuda
                     cuenta_capital_base, created = CuentaCapitalDeudaBase.objects.update_or_create(
                     anho=row[0],
                     trimestre=row[1])
@@ -3145,6 +3235,7 @@ class CuentaCapitalBalanzaBase(models.Model):
                         'prestamo':row[18],
                         'otros':row[19],
                     })
+                    
                
             except Exception as e:
                 errors += "- %s\n" % str(e)
