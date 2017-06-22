@@ -22,7 +22,7 @@ from datetime import datetime, timedelta
 from itertools import islice , cycle
 
 from base.constant import (
-    DOMINIO, PERIOCIDAD, TRIMESTRES, MESES, ECONOMICO_SUB_AREA, CONVERT_MES, EMAIL_SUBJECT_LOAD_DATA,
+    DOMINIO, PERIOCIDAD, TRIMESTRES, MESES, ECONOMICO_SUB_AREA, CONVERT_MES, EMAIL_SUBJECT_CM_RESULT,
     TIPO_BALANZA_COMERCIAL, DOMINIO_BALANZA_COMERCIAL, BALANZA_DATOS
 )
 from base.functions import enviar_correo, check_val_data
@@ -1150,7 +1150,7 @@ class DemandaGlobal(models.Model):
 
         return {'fields': fields, 'output': 'demanda'}
 
-    def gestion_process(self, file, user, *args, **kwargs):
+    def gestion_process(self,user, *args, **kwargs):
         """!
         Método que permite cargar y gestionar datos
 
@@ -1166,30 +1166,27 @@ class DemandaGlobal(models.Model):
         """
         
         ## aqui debo recorrer todo el archivo excel y verificar las celdas
-        load_file = pyexcel.get_sheet(file_name=file)
+        load_file = pyexcel.get_book(bookdict=kwargs['file_content'])[0]
         anho_base, errors, result, message = '', '', True, ''
         load_data_msg = str(_("Datos Cargados"))
-
-        
-        for row in load_file.row[1:]:
+        for row in range(1,len(load_file.row_range())):
+            
             try:
-
-                real_demanda , created = DemandaGlobal.objects.update_or_create(anho=row[0], anho_base=kwargs['anho_base'], trimestre=row[1], demanda_global= row[2]+row[7])
-                
+                real_demanda , created = DemandaGlobal.objects.update_or_create(anho=load_file[row,0], anho_base=kwargs['anho_base'], trimestre=load_file[row,1], demanda_global= load_file[row,2]+load_file[row,7])
                 ## Se crea  o actualiza el objeto de Demanda Agregada Interna luego de validar el valor en la hoja de calculo
 
                 DemandaAgregadaInterna.objects.update_or_create(demanda_global=real_demanda, defaults={
-                    'demanda_agregada_interna': check_val_data(row[2]),
-                    'gasto_consumo_final_gobierno': check_val_data(row[3]),
-                    'gasto_consumo_final_privado': check_val_data(row[4]),
-                    'formacion_bruta_capital_fijo': check_val_data(row[5]),
-                    'variación_existencias': check_val_data(row[6]),
+                    'demanda_agregada_interna': check_val_data(load_file[row,2]),
+                    'gasto_consumo_final_gobierno': check_val_data(load_file[row,3]),
+                    'gasto_consumo_final_privado': check_val_data(load_file[row,4]),
+                    'formacion_bruta_capital_fijo': check_val_data(load_file[row,5]),
+                    'variación_existencias': check_val_data(load_file[row,6]),
                 })
                 
                 #Se crea  o actualiza el objeto de Demanda Agregada Externa luego de validar el valor en la hoja de calculo
 
                 DemandaAgregadaExterna.objects.update_or_create(demanda_global=real_demanda, defaults={
-                    'exportacion_bienes_servicios':check_val_data(row[7])
+                    'exportacion_bienes_servicios':check_val_data(load_file[row,7])
                 })
                
             except Exception as e:
@@ -1201,7 +1198,7 @@ class DemandaGlobal(models.Model):
 
 
         ## Envia correo electronico al usuario indicando el estatus de la carga de datos
-        enviar_correo(user.email, 'gestion.informacion.load.mail', EMAIL_SUBJECT_LOAD_DATA, {
+        enviar_correo(user.email, 'gestion.informacion.load.mail', EMAIL_SUBJECT_CM_RESULT, {
             'load_data_msg': load_data_msg, 'administrador': administrador, 'admin_email': admin_email,
             'errors': errors
         })
