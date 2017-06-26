@@ -122,6 +122,27 @@
             periodo_mes_fin.on('change', function() { set_filters() });
             periodo_anho_ini.on('change', function() { set_filters() });
             periodo_anho_fin.on('change', function() { set_filters() });
+			
+			$('.fileinput-upload-button').click(function(event){
+                event.preventDefault();
+                var fdata = new FormData();
+                fdata.append('file',file.files[0]);
+                $.ajax({
+                    url: URL_CARGAR_ARCHIVO_CM+models,
+                    data: fdata,
+                    contentType: false,
+                    processData: false,
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function(data){
+                        var msg = data.message ? data.result : data.error;
+                        bootbox.alert(msg);
+                    },
+                    error: function(error){
+                        console.log(error);
+                    }
+                });
+            });
         });
     </script>
 {% endblock %}

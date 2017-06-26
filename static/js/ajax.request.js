@@ -1,51 +1,42 @@
 /**
- * @brief Función que permite la descarga de archivos para la gestión de información
- * @param url ['string] Contiene la URL para la descargar de archivos de gestión de información
- * @param app [string] Contiene el nombre de la aplicación o módulo para la gestión de los datos
- * @param mod ['string'] Contiene el nombre del modelo del cual descargará los datos
- * @param filter ['string'] Contiene el filtro a aplicar en la búsqueda de información para generar el archivo
+ * @brief Función que permite descargar el archivo de carga masiva de datos
+ * @param app Nombre de la aplicación de la cual se van a descargar los datos
+ * @param mod Nombre del modelo que contiene el método de descarga de información
+ * @param anho Año de registro del cual se van a descargar los datos. Este parámetro es opcional.
+ * @param rel_id Identificador del modelo relacional del cual se van a descargar datos. Este parámetro es opcional.
  */
-function descargar_archivo(url, app, mod, filter) {
-    params = (typeof(filter)!="undefined") ? {app:app, mod:mod, filter: filter} : {app:app, mod:mod};
-
-    $.getJSON(url, params, function(datos) {
-        if (datos.resultado) {
-            bootbox.alert(datos.message);
-            window.open(URL_STATIC_INFO_FILES+datos.archivo);
-        }
-        else {
-            bootbox.alert(datos.error);
-            console.log(datos.error);
-        }
-    }).fail(function(jqxhr, textStatus, error) {
-        var err = textStatus + ", " + error;
-        bootbox.alert( MSG_PETICION_AJAX_FALLIDA + err );
-        console.log(MSG_PETICION_AJAX_FALLIDA + err)
-    });
+function cm_descargar_archivo(app, mod,filter) {
+    var url_attrs = URL_DESCARGAR_ARCHIVO_CM+'?app=' + app + '&mod=' + mod + '&filter=' + filter;
+    $(location).attr('href', url_attrs);
 }
 
-
 /**
- * @brief Función que permite la carga de datos en el sistema
- * @param url ['string] Contiene la URL para la cargar de datos
- * @param app [string] Contiene el nombre de la aplicación o módulo para registrar los datos
- * @param mod ['string'] Contiene el nombre del modelo en el cual se cargarán los datos
- * @param filter ['string'] Contiene el filtro a aplicar en el registro de datos
+ * @brief Función que realiza el procedimiento para la carga masiva de datos
+ * @param app Nombre de la aplicación para la cual se van a cargar los datos
+ * @param mod Nombre del modelo que contiene el método para la carga de datos
+ * @param anho_id Identificador del elemento que contiene el año de registro
+ * @param father_id Identificador del elemento relacionado al modelo
+ * @param file Nombre del archivo que se va a cargar
+ * @param form_token Cadena hash que contien el token del formulario a cargar
  */
-function cargar_archivo(url, app, mod, filter) {
-    params = (typeof(filter)!="undefined") ? {app:app, mod:mod, filter: filter} : {app:app, mod:mod};
-
-    $.getJSON(url, params, function(datos) {
-        if (datos.resultado) {
-            bootbox.alert(datos.message);
+function cm_cargar_archivo(app, mod,file, form_token) {
+    var url_attrs = '?app=' + app + '&mod=' + mod ;
+    var fdata = new FormData();
+    fdata.append('file',file.files[0]);
+    fdata.append('csrfmiddlewaretoken',form_token);
+    $.ajax({
+        url: URL_CARGAR_ARCHIVO_CM+url_attrs,
+        data: fdata,
+        contentType: false,
+        processData: false,
+        type: 'POST',
+        dataType: 'json',
+        success: function(data){
+            var msg = data.result ? data.message : data.error;
+            bootbox.alert(msg);
+        },
+        error: function(error){
+            console.log(error);
         }
-        else {
-            bootbox.alert(datos.error);
-            console.log(datos.error);
-        }
-    }).fail(function(jqxhr, textStatus, error) {
-        var err = textStatus + ", " + error;
-        bootbox.alert( MSG_PETICION_AJAX_FALLIDA + err );
-        console.log(MSG_PETICION_AJAX_FALLIDA + err)
     });
 }

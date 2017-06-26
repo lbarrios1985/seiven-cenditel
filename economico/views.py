@@ -92,7 +92,7 @@ def demanda_global(request):
     form = RealDemandaGlobalForm()
 
     return render(request, 'economico.demanda.global.html', {
-        'form': form, 'url_down': reverse('descargar_archivo'), 'url_up': reverse('cargar_archivo')
+        'form': form, 'url_down': reverse('cm_descargar_archivo'), 'url_up': reverse('cm_cargar_datos')
     })
     
 @login_required
@@ -109,7 +109,7 @@ def oferta_global(request):
     form = RealOfertaGlobalForm()
 
     return render(request, 'economico.oferta.global.html', {
-        'form': form, 'url_down': reverse('descargar_archivo'), 'url_up': reverse('cargar_archivo')
+        'form': form, 'url_down': reverse('cm_descargar_archivo'), 'url_up': reverse('cm_cargar_datos')
     })
 
 
@@ -199,7 +199,7 @@ def balanza_comercial(request):
     form = ExternoBalanzaComercialForm()
 
     return render(request, 'economico.balanza.comercial.html', {'form': form,
-                    'url_down': reverse('descargar_archivo'), 'url_up': reverse('cargar_archivo'),})
+                    'url_down': reverse('cm_descargar_archivo'), 'url_up': reverse('cm_cargar_datos'),})
 
 
 @login_required
@@ -298,5 +298,5 @@ def capital(request):
     form = CapitalForm()
 
     return render(request, 'economico.cuenta.capital.html', {'form': form,
-            'url_down': reverse('descargar_archivo'), 'url_up': reverse('cargar_archivo'),
+            'url_down': reverse('cm_descargar_archivo'), 'url_up': reverse('cm_cargar_datos'),
             'title': _('Cuenta Capital')})

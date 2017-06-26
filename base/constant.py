@@ -37,6 +37,9 @@ EMAIL_SUBJECT_REGISTRO = "Bienvenido a %s" % APP_NAME
 ## Asunto del mensaje de información sobre la carga de datos
 EMAIL_SUBJECT_LOAD_DATA = "Gestión de Datos - SEIVEN"
 
+## Asunto del mensaje de información sobre la carga de datos
+EMAIL_SUBJECT_CM_RESULT = "Resultado en registro de datos de %s"
+
 admin_email = ''
 if settings.ADMINS:
     ## Contiene el correo electrónico del administrador del sistema

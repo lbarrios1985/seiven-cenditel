@@ -18,3 +18,4 @@ xlrd>=1.0.0
 xlutils>=2.0.0
 xlwt>=1.1.2
 xlwt-future>=0.8.0
+django-celery>=3.2.1

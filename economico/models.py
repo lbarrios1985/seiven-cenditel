@@ -210,7 +210,7 @@ class Precios(models.Model):
 
         return {'fields': fields, 'output': 'precios'}
 
-    def gestion_process(self, file, user, *args, **kwargs):
+    def gestion_process(self, user, *args, **kwargs):
         """!
         Método que permite cargar y gestionar datos
 
@@ -224,7 +224,7 @@ class Precios(models.Model):
         @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
         @return Devuelve el resultado de la acción con su correspondiente mensaje
         """
-        load_file = pyexcel.get_sheet(file_name=file)
+        load_file = pyexcel.get_book(bookdict=kwargs['file_content'])[0]
         anho_base, i, col_ini, errors, result, message = '', 0, 2, '', True, ''
         load_data_msg = str(_("Datos Cargados"))
 
@@ -735,7 +735,7 @@ class PIB(models.Model):
         ## Devuelve los datos correspondientes al archivo a descargar y el nombre de ese archivo
         return {'fields': fields, 'output': nombre_archivo}
 
-    def gestion_process(self, file, user, *args, **kwargs):
+    def gestion_process(self, user, *args, **kwargs):
         """!
         Método que permite cargar y gestionar datos
 
@@ -752,7 +752,7 @@ class PIB(models.Model):
         @return Devuelve el resultado de la acción con su correspondiente mensaje
         """
 
-        load_file = pyexcel.get_sheet(file_name=file)
+        load_file = pyexcel.get_book(bookdict=kwargs['file_content'])[0]
         anho_base, i, col_ini, errors, result, message, is_nominal = '', 0, 2, '', False, '', False
         is_demanda, is_produccion, is_actividad, is_sector = False, False, False, False
         load_data_msg = str(_("Datos Cargados"))
@@ -1150,7 +1150,7 @@ class DemandaGlobal(models.Model):
 
         return {'fields': fields, 'output': 'demanda'}
 
-    def gestion_process(self, file, user, *args, **kwargs):
+    def gestion_process(self,user, *args, **kwargs):
         """!
         Método que permite cargar y gestionar datos
 
@@ -1166,30 +1166,27 @@ class DemandaGlobal(models.Model):
         """
         
         ## aqui debo recorrer todo el archivo excel y verificar las celdas
-        load_file = pyexcel.get_sheet(file_name=file)
+        load_file = pyexcel.get_book(bookdict=kwargs['file_content'])[0]
         anho_base, errors, result, message = '', '', True, ''
         load_data_msg = str(_("Datos Cargados"))
-
-        
-        for row in load_file.row[1:]:
+        for row in range(1,len(load_file.row_range())):
+            
             try:
-
-                real_demanda , created = DemandaGlobal.objects.update_or_create(anho=row[0], anho_base=kwargs['anho_base'], trimestre=row[1], demanda_global= row[2]+row[7])
-                
+                real_demanda , created = DemandaGlobal.objects.update_or_create(anho=load_file[row,0], anho_base=kwargs['anho_base'], trimestre=load_file[row,1], demanda_global= load_file[row,2]+load_file[row,7])
                 ## Se crea  o actualiza el objeto de Demanda Agregada Interna luego de validar el valor en la hoja de calculo
 
                 DemandaAgregadaInterna.objects.update_or_create(demanda_global=real_demanda, defaults={
-                    'demanda_agregada_interna': check_val_data(row[2]),
-                    'gasto_consumo_final_gobierno': check_val_data(row[3]),
-                    'gasto_consumo_final_privado': check_val_data(row[4]),
-                    'formacion_bruta_capital_fijo': check_val_data(row[5]),
-                    'variación_existencias': check_val_data(row[6]),
+                    'demanda_agregada_interna': check_val_data(load_file[row,2]),
+                    'gasto_consumo_final_gobierno': check_val_data(load_file[row,3]),
+                    'gasto_consumo_final_privado': check_val_data(load_file[row,4]),
+                    'formacion_bruta_capital_fijo': check_val_data(load_file[row,5]),
+                    'variación_existencias': check_val_data(load_file[row,6]),
                 })
                 
                 #Se crea  o actualiza el objeto de Demanda Agregada Externa luego de validar el valor en la hoja de calculo
 
                 DemandaAgregadaExterna.objects.update_or_create(demanda_global=real_demanda, defaults={
-                    'exportacion_bienes_servicios':check_val_data(row[7])
+                    'exportacion_bienes_servicios':check_val_data(load_file[row,7])
                 })
                
             except Exception as e:
@@ -1201,7 +1198,7 @@ class DemandaGlobal(models.Model):
 
 
         ## Envia correo electronico al usuario indicando el estatus de la carga de datos
-        enviar_correo(user.email, 'gestion.informacion.load.mail', EMAIL_SUBJECT_LOAD_DATA, {
+        enviar_correo(user.email, 'gestion.informacion.load.mail', EMAIL_SUBJECT_CM_RESULT, {
             'load_data_msg': load_data_msg, 'administrador': administrador, 'admin_email': admin_email,
             'errors': errors
         })
@@ -1296,7 +1293,7 @@ class OfertaGlobal(models.Model):
 
         return {'fields': fields, 'output': 'oferta'}
 
-    def gestion_process(self, file, user, *args, **kwargs):
+    def gestion_process(self, user, *args, **kwargs):
         """!
         Método que permite cargar y gestionar datos
 
@@ -1310,7 +1307,7 @@ class OfertaGlobal(models.Model):
         @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
         @return Devuelve el resultado de la acción con su correspondiente mensaje
         """
-        load_file = pyexcel.get_sheet(file_name=file)
+        load_file = pyexcel.get_book(bookdict=kwargs['file_content'])[0]
         anho_base, i, col_ini, errors, result, message = '', 0, 2, '', True, ''
         load_data_msg = str(_("Datos Cargados"))
 
@@ -1486,7 +1483,7 @@ class AgregadosBase(models.Model):
         ## Devuelve los datos correspondientes al archivo a descargar y el nombre de ese archivo    
         return {'fields': fields, 'output': nombre_archivo}
 
-    def gestion_process(self, file, user, *args, **kwargs):
+    def gestion_process(self, user, *args, **kwargs):
         """!
         Método que permite cargar y gestionar datos
 
@@ -1501,7 +1498,7 @@ class AgregadosBase(models.Model):
         @return Devuelve el resultado de la acción con su correspondiente mensaje
         """
 
-        load_file = pyexcel.get_sheet(file_name=file)
+        load_file = pyexcel.get_book(bookdict=kwargs['file_content'])[0]
         errors, result, message = '', False, ''
         is_reservas_bancarias, is_liquidez_monetaria, is_monetaria_usos, is_monetaria_fuentes = True, True, True, True
         load_data_msg = str(_("Datos Cargados"))
@@ -1889,7 +1886,7 @@ class TasasInteres(models.Model):
         ## Devuelve los datos correspondientes al archivo a descargar y el nombre de ese archivo
         return {'fields': fields, 'output': nombre_archivo}
 
-    def gestion_process(self, file, user, *args, **kwargs):
+    def gestion_process(self, user, *args, **kwargs):
         """!
         Método que permite cargar y gestionar datos
 
@@ -1904,7 +1901,7 @@ class TasasInteres(models.Model):
         @return Devuelve el resultado de la acción con su correspondiente mensaje
         """
 
-        load_file = pyexcel.get_sheet(file_name=file)
+        load_file = pyexcel.get_book(bookdict=kwargs['file_content'])[0]
         errors, result, message = '', False, ''
         is_tasa_pb, is_tasa_activa, is_tasa_pasiva = False, False, False
         load_data_msg = str(_("Datos Cargados"))
@@ -2270,7 +2267,7 @@ class TipoCambio(models.Model):
         return {'fields': fields, 'output': 'tipo-cambio'}
 
 
-    def gestion_process(self, file, user, *args, **kwargs):
+    def gestion_process(self, user, *args, **kwargs):
         """!
         Método que permite cargar y gestionar datos
 
@@ -2286,7 +2283,7 @@ class TipoCambio(models.Model):
         """
         ## aqui debo recorrer todo el archivo excel y verificar las celdas
         
-        load_file = pyexcel.get_sheet(file_name=file)
+        load_file = pyexcel.get_book(bookdict=kwargs['file_content'])[0]
         errors, result, message = '', True, ''
         load_data_msg = str(_("Datos Cargados"))
 
@@ -2369,7 +2366,7 @@ class ReservasInternacionales(models.Model):
 
         return {'fields': fields, 'output': 'ReservasInternacionales'}
 
-    def gestion_process(self, file, user, *args, **kwargs):
+    def gestion_process(self, user, *args, **kwargs):
         """!
         Método que permite cargar y gestionar datos
 
@@ -2384,7 +2381,7 @@ class ReservasInternacionales(models.Model):
         @return Devuelve el resultado de la acción con su correspondiente mensaje
         """
 
-        load_file = pyexcel.get_sheet(file_name=file)
+        load_file = pyexcel.get_book(bookdict=kwargs['file_content'])[0]
         errors, result, message = '', True, ''
         load_data_msg = str(_("Datos Cargados"))
 
@@ -2664,7 +2661,7 @@ class BalanzaComercialBase(models.Model):
         ## Devuelve los datos correspondientes al archivo a descargar y el nombre de ese archivo
         return {'fields': fields, 'output': nombre_archivo}
     
-    def gestion_process(self, file, user, *args, **kwargs):
+    def gestion_process(self, user, *args, **kwargs):
         """!
         Método que permite cargar y gestionar datos
 
@@ -2679,7 +2676,7 @@ class BalanzaComercialBase(models.Model):
         @return Devuelve el resultado de la acción con su correspondiente mensaje
         """
         
-        load_file = pyexcel.get_sheet(file_name=file)
+        load_file = pyexcel.get_book(bookdict=kwargs['file_content'])[0]
         anho_base, errors, result, message = '', '', True, ''
         load_data_msg = str(_("Datos Cargados"))
 
@@ -3193,7 +3190,7 @@ class CuentaCapitalBalanzaBase(models.Model):
         
         return {'fields': fields, 'output': nombre_archivo}
     
-    def gestion_process(self, file, user, *args, **kwargs):
+    def gestion_process(self, user, *args, **kwargs):
         """!
         Método que permite cargar y gestionar datos
 
@@ -3208,7 +3205,7 @@ class CuentaCapitalBalanzaBase(models.Model):
         @return Devuelve el resultado de la acción con su correspondiente mensaje
         """
         
-        load_file = pyexcel.get_sheet(file_name=file)
+        load_file = pyexcel.get_book(bookdict=kwargs['file_content'])[0]
         errors, result, message = '', True, ''
         load_data_msg = str(_("Datos Cargados"))
 

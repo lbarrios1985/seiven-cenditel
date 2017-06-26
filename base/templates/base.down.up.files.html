@@ -4,7 +4,7 @@
         <h2>
             <a href="#" class="download-file"
                {% if url_down and app and mod %}
-                    onclick="descargar_archivo('{{ url_down }}', '{{ app }}', '{{ mod }}', '{' + $('#filters').val() + '}')"
+                    onclick="cm_descargar_archivo('{{ app }}', '{{ mod }}', '{' + $('#filters').val() + '}')"
                {% endif %}>
                 <i class="fa fa-download"></i> {% trans 'Descargar archivo' %}
             </a>
