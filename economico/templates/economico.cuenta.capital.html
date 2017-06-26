@@ -123,6 +123,7 @@
             periodo_anho_ini.on('change', function() { set_filters() });
             periodo_anho_fin.on('change', function() { set_filters() });
 			
+			// Función ajax para la carga masiva
 			$('.fileinput-upload-button').click(function(event){
                 event.preventDefault();
                 var fdata = new FormData();
