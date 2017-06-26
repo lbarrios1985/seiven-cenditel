@@ -152,7 +152,7 @@ def olvido_clave(request):
 
             ## Asigna un enlace de verificación para el olvido de clave
             link = request.build_absolute_uri("%s?userid=%s&key=%s" % (
-                urlresolvers.reverse('usuario.views.confirmar_modificar_clave'),
+                urlresolvers.reverse('confirmar_modificar_clave'),
                 username, hash_user(usr, is_reset=True).decode()
             ))
 
