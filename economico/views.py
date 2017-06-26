@@ -54,7 +54,7 @@ def precios(request):
     form = RealPreciosForm()
 
     return render(request, 'economico.precios.html', {
-        'form': form, 'url_down': reverse('descargar_archivo'), 'url_up': reverse('cargar_archivo')
+        'form': form, 'url_down': reverse('cm_descargar_archivo'), 'url_up': reverse('cm_cargar_datos')
     })
 
 
@@ -74,7 +74,7 @@ def pib(request):
     form = PIBForm()
 
     return render(request, 'economico.pib.html', {
-        'form': form, 'url_down': reverse('descargar_archivo'), 'url_up': reverse('cargar_archivo')
+        'form': form, 'url_down': reverse('cm_descargar_archivo'), 'url_up': reverse('cm_cargar_datos')
     })
 
 
@@ -129,7 +129,7 @@ def agregados_monetarios(request):
     form = MonetarioAgregadosForm()
 
     return render(request, 'economico.agregados.monetarios.html', {
-        'form': form, 'url_down': reverse('descargar_archivo'), 'url_up': reverse('cargar_archivo')
+        'form': form, 'url_down': reverse('cm_descargar_archivo'), 'url_up': reverse('cm_cargar_datos')
     })
 
 
@@ -165,7 +165,7 @@ def tasas_interes(request):
     form = MonetarioTasasInteresForm()
 
     return render(request, 'economico.tasas.interes.html', {
-        'form': form, 'url_down': reverse('descargar_archivo'), 'url_up': reverse('cargar_archivo')
+        'form': form, 'url_down': reverse('cm_descargar_archivo'), 'url_up': reverse('cm_cargar_datos')
     })
 
 
@@ -216,7 +216,7 @@ def reservas_tipo_cambio(request):
     form = ExternoReservaCambioForm()
 
     return render(request, 'economico.reservas.tipo.cambio.html', {
-        'form': form, 'url_down': reverse('descargar_archivo'), 'url_up': reverse('cargar_archivo')
+        'form': form, 'url_down': reverse('cm_descargar_archivo'), 'url_up': reverse('cm_cargar_datos')
     })
 
 
