@@ -28,7 +28,7 @@ from base.constant import (
     DOMINIO_COMERCIAL, DOMINIO_CAMBIO, DOMINIO_CUENTA_CAPITAL, TIPO_BALANZA_COMERCIAL, DOMINIO_BALANZA_COMERCIAL, DOMINIO_TASAS_INTERES,
     PERIODICIDAD
 )
-from base.functions import cargar_anho_base
+from base.functions import cargar_anho_base, cargar_anho
 
 
 """!
@@ -102,7 +102,7 @@ class AnhoBaseForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(AnhoBaseForm, self).__init__(*args, **kwargs)
-        self.fields['anho_base'].choices = cargar_anho_base(anho_inicial='2007')
+        self.fields['anho_base'].choices = cargar_anho
 
 @python_2_unicode_compatible
 class PeriodicidadForm(forms.Form):

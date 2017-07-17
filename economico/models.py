@@ -26,6 +26,7 @@ from base.constant import (
     TIPO_BALANZA_COMERCIAL, DOMINIO_BALANZA_COMERCIAL, BALANZA_DATOS, INVERSION_CARTERA, SECTOR_DEUDA
 )
 from base.functions import enviar_correo, check_val_data
+from base.models import AnhoBase
 
 import pyexcel
 
@@ -42,7 +43,7 @@ if settings.ADMINS:
 @python_2_unicode_compatible
 class Precios(models.Model):
     ## Año base del registro
-    anho_base = models.CharField(max_length=4, null=True)
+    anho_base = models.ForeignKey(AnhoBase, null=True)
 
     ## Año al que pertenece el(los) registro(s)
     anho = models.CharField(max_length=4, verbose_name=_("Año"))
@@ -564,7 +565,7 @@ class PIB(models.Model):
     """
 
     ## Año base del registro
-    anho_base =  models.CharField(max_length=4, null=True)
+    anho_base = models.ForeignKey(AnhoBase, null=True)
 
     ## Año al que pertenece el(los) registro(s)
     anho = models.CharField(max_length=4, verbose_name=_("Año"))
@@ -1087,7 +1088,7 @@ class PIBInstitucion(models.Model):
 class DemandaGlobal(models.Model):
     
     ## Año base del registro
-    anho_base = models.CharField(max_length=4, null=True)
+    anho_base = models.ForeignKey(AnhoBase, null=True)
 
     ## Año al que pertenece el(los) registro(s)
     anho = models.CharField(max_length=4, verbose_name=_("Año"))
@@ -1254,7 +1255,7 @@ class DemandaAgregadaExterna(models.Model):
 class OfertaGlobal(models.Model):
     
     ## Año base del registro
-    anho_base = models.CharField(max_length=4, null=True)
+    anho_base = models.ForeignKey(AnhoBase, null=True)
 
     ## Año al que pertenece el(los) registro(s)
     anho = models.CharField(max_length=4, verbose_name=_("Año"))
@@ -2419,7 +2420,7 @@ class BalanzaComercialBase(models.Model):
     """
     
     ## Año base del registro
-    anho_base = models.CharField(max_length=4, null=True)
+    anho_base = models.ForeignKey(AnhoBase, null=True)
 
     ## Año al que pertenece el(los) registro(s)
     anho = models.CharField(max_length=4, verbose_name=_("Año"))

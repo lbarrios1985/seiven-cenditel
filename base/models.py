@@ -87,3 +87,40 @@ class Estado(models.Model):
         @return Devuelve los datos del Estado
         """
         return self.nombre
+
+@python_2_unicode_compatible
+class AnhoBase(models.Model):
+    """!
+    Clase que contiene los años base del sistema
+
+    @author William Páez (wpaez at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 14-07-2017
+    @version 1.0.0
+    """
+
+    anho = models.CharField(max_length=4, unique=True)
+
+    class Meta:
+        """!
+        Metaclase que permite establecer las propiedades de la clase Anho
+
+        @author William Páez (wpaez at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 14-07-2017
+        @version 1.0.0
+        """
+        verbose_name = _("Año Base")
+        verbose_name_plural = _("Años Base")
+        ordering = ("anho",)
+
+    def __str__(self):
+        """!
+        Método que muestra la información sobre el año base
+
+        @author William Páez (wpaez at cenditel.gob.ve)
+        @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+        @date 14-07-2017
+        @version 1.0.0
+        """
+        return self.anho

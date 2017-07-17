@@ -23,6 +23,7 @@ from django.template import Context
 from django.template.loader import get_template
 from django.utils.translation import ugettext_lazy as _
 from decimal import Decimal
+from .models import AnhoBase
 
 logger = logging.getLogger('base')
 
@@ -103,6 +104,26 @@ def cargar_anho_base(anho_inicial=None, anho_final=None):
     try:
         for year in range(int(anho_inicial), int(anho_final) + 1):
             lista += (year, year),
+    except Exception as e:
+        pass
+
+    return lista
+
+def cargar_anho():
+    """!
+    Función que permite cargar el año base
+
+    @author Rodrigo Boet (rboet at cenditel.gob.ve) / William Páez (wpaez at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 14-07-2017
+    @return Devuelve una tupla con años de registro
+    """
+
+    lista = ('', str(_('Seleccione...'))),
+
+    try:
+        for anho in AnhoBase.objects.all():
+            lista += (anho.id, anho.anho),
     except Exception as e:
         pass
 
