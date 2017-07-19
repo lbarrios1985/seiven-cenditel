@@ -662,7 +662,7 @@ class PIB(models.Model):
                     {'tag': str(_('Año')), 'cabecera': True},                    
                     {'tag': str(PIBActividad._meta.get_field('total_consolidado').verbose_name), 'color': 'indigo', 'text_color': 'white', 'cabecera': True},
                     {'tag': str(PIBActividad._meta.get_field('total_petrolera').verbose_name), 'color': 'green', 'text_color': 'white', 'cabecera': True},
-                    {'tag': str(PIBActividad._meta.get_field('total_no_petrolera').verbose_name), 'color': 'ocean_blue', 'text_color': 'white', 'combine': 2, 'cabecera': True},
+                    {'tag': str(PIBActividad._meta.get_field('total_no_petrolera').verbose_name), 'color': 'ocean_blue', 'text_color': 'white', 'cabecera': True},
                     {'tag': str(PIBActividad._meta.get_field('mineria').verbose_name), 'color': 'gray25', 'text_color': 'white', 'cabecera': True},
                     {'tag': str(PIBActividad._meta.get_field('manufactura').verbose_name), 'cabecera': True},
                     {'tag': str(PIBActividad._meta.get_field('electricidad_agua').verbose_name), 'cabecera': True},
@@ -754,7 +754,7 @@ class PIB(models.Model):
         """
 
         load_file = pyexcel.get_book(bookdict=kwargs['file_content'])[0]
-        anho_base, i, col_ini, errors, result, message, is_nominal = '', 0, 2, '', False, '', False
+        anhos_base, anho_b, errors, result, message, is_nominal = None, None, '', False, '', False
         is_demanda, is_produccion, is_actividad, is_sector = False, False, False, False
         load_data_msg = str(_("Datos Cargados"))
 
@@ -794,20 +794,21 @@ class PIB(models.Model):
                 'result': False,
                 'message': str(_("El documento a cargar no es válido o no corresponde a los parámetros seleccionados"))
             }
-
-        
+ 
+        if not is_nominal:
+            # Se crea una lista con los años base del modelo
+            anhos_base = [int(anhos.anho) for anhos in AnhoBase.objects.all()]
+            #Se almacena el año base suministrado en el formulario
+            anho_b = AnhoBase.objects.get(id=kwargs['anho_base'])
         ## En base al archivo cargado, se validan y cargan a la base de datos los valores contenidos en el archivo
         for row in load_file.row[2:]:
             try:
-                # Asigna el año base del registro
-                anho_b = int(kwargs['anho_base'])
-
-                # Posición inicial desde la cual se van a comenzar a registrar los datos en los modelos asociados
+                # Obtención del año a registrar
                 anho = row[0]
 
                 # Condición que indica si el registro corresponde al año base
-                base = True if i == 0 else False
-
+                base = True if anho in anhos_base else False
+                
                 # Almacena el valor en caso de tratarse del archivo PIB-Nominal_demanda o False en caso contrario
                 nominal = row[1] if (is_nominal and is_demanda) else None
 
@@ -865,7 +866,6 @@ class PIB(models.Model):
 
             except Exception as e:
                 errors += "- %s\n" % str(e)
-            i += 1
 
         if errors:
             message = str(_("Error procesando datos. Verifique su correo para detalles del error"))
@@ -1373,7 +1373,7 @@ class OfertaExterna(models.Model):
 @python_2_unicode_compatible
 class AgregadosBase(models.Model):
     """!
-    Clase que contiene los registros comunes de los modelos relacionados con la Sub-área Agregados Monetarios
+    Clase que contiene los registros comunes de los modelos relacionados con el Sub-área Agregados Monetarios
 
     @author Edgar A. Linares (elinares at cenditel.gob.ve)
     @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>

@@ -74,6 +74,7 @@
 {% block extra_footer %}
     <script>
         var dominio = $("#{{ form.dominio.auto_id }}");
+        var fecha = $(".fecha");
         var fecha_ini = $("#{{ form.start_date.auto_id }}");
         var fecha_fin = $("#{{ form.end_date.auto_id }}");
         var semana_ini = $("#{{ form.periodo_semana_ini.auto_id }}");
@@ -93,6 +94,8 @@
             * @copyright GNU/GPLv2
             * @date 30-05-2017
             */ 
+            var f_ini = fecha_ini.val().split("/");
+            var f_fin = fecha_fin.val().split("/");
             var filters = $("#filters"), json_filter = '';
 
             if (dominio.val()) {
@@ -111,16 +114,23 @@
                 }
             }
             if (dominio.val()){
-                $('.enlaces').show();
+                if (fecha_ini.val() && fecha_fin.val())
+                    if (f_ini[2] <= f_fin[2] && f_ini[1] <= f_fin[1])
+                        if (f_ini[1] == f_fin[1] && f_ini[0] <= f_fin[0])
+                            $('.enlaces').show();
+                        else if (f_ini[1] != f_fin[1])
+                            $('.enlaces').show();
+                        else
+                            $('.enlaces').hide();
+                    else
+                        $('.enlaces').hide();
             }
-            else {
-                $('.enlaces').hide();
-            }
+            
             if (fecha_ini.val()) {
-                json_filter += "\"dia__gte\": \"" + fecha_ini.val() + "\",";
+                json_filter += "\"fecha__gte\": \"" + fecha_ini.val() + "\",";
             }
             if (fecha_fin.val()) {
-                json_filter += "\"dia__lte\": \"" + fecha_fin.val() + "\",";
+                json_filter += "\"fecha__lte\": \"" + fecha_fin.val() + "\",";
             }
             if (semana_ini.val()) {
                 json_filter += "\"semana__gte\": \"" + semana_ini.val() + "\",";
@@ -166,6 +176,13 @@
             mes_fin.on('change', function() { set_filters() });
             anho_ini.on('change', function() { set_filters() });
             anho_fin.on('change', function() { set_filters() });
+            fecha.on('changeDate', function() { set_filters() });
+        });
+
+        $(".fecha").datepicker( {
+            format: "dd/mm/yyyy"
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
         });
     </script>
 {% endblock %}
