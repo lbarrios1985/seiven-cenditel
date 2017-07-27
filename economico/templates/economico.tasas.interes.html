@@ -22,80 +22,88 @@
                     </p>
                 </div>
             </div>
-            <div class="row separador-row">
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+            <div class="row separador-row col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2">
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2" align="right">
                     <label for="{{ form.dominio.auto_id }}" class="control-label">{{ form.dominio.label }}</label>
                 </div>
                 <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.dominio }}</div>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                <!-- Descomentar para implementar diferentes periodicidades
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2" align="right">
                     <label for="{{ form.periodicidad.auto_id }}" class="control-label">{{ form.periodicidad.label }}</label>
                 </div>
                 <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.periodicidad }}</div>
+                -->
             </div>
-            <div class="row separador-row ver-periodo" style='display:none;'>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xs-offset-5 col-sm-offset-5 col-md-offset-5 col-lg-offset-5 text-center">
+            <div class="row separador-row col-xs-offset-4 col-sm-offset-4 col-md-offset-4 col-lg-offset-4 ver_periodo" style='display:none;'>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1">
                 </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 text-center ver-fecha" style='display:none;'>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 text-center ver_fecha" style='display:none;'>
                     <label class="control-label">{% trans 'Fecha' %}</label>
                 </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 text-center ver-semana" style='display:none;'>
+                <!-- Descomentar para implementar diferentes periodicidades
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 text-center ver_semana" style='display:none;'>
                     <label class="control-label">{% trans 'Semana' %}</label>
                 </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 text-center ver-mes" style='display:none;'>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 text-center ver_mes" style='display:none;'>
                     <label class="control-label">{% trans 'Mes' %}</label>
                 </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 text-center ver-anho" style='display:none;'>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 text-center ver_anho" style='display:none;'>
                     <label class="control-label">{% trans 'Año' %}</label>
                 </div>
+                -->
             </div>
-            <div class="row separador-row ver-periodo" style='display:none;'>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xs-offset-4 col-sm-offset-4 col-md-offset-4 col-lg-offset-4">
+            <div class="row separador-row ver_periodo" style='display:none;'>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xs-offset-3 col-sm-offset-3 col-md-offset-3 col-lg-offset-3" align="right">
                     <label class="control-label">{% trans 'Período' %}</label>
                 </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1" align="right">
                     <label for="{{ form.start_date.auto_id }}" class="control-label">
                         {{ form.start_date.label }}
                     </label>
                 </div>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 ver-fecha" style='display:none;'>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 ver_fecha" style='display:none;'>
                     <div class="input-group">
                         {{ form.start_date }}
                         <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                     </div>
                 </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 ver-semana" style='display:none;'>
+                <!-- Descomentar para implementar diferentes periodicidades
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 ver_semana" style='display:none;'>
                     {{ form.periodo_semana_ini }}
                 </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 ver-mes" style='display:none;'>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 ver_mes" style='display:none;'>
                     {{ form.periodo_mes_ini }}
                 </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 ver-anho" style='display:none;'>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 ver_anho" style='display:none;'>
                     {{ form.periodo_anho_ini }}
                 </div>
+                -->
             </div>
-            <div class="row separador-row ver-periodo" style='display:none;'>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xs-offset-5 col-sm-offset-5 col-md-offset-5 col-lg-offset-5">
+            <div class="row separador-row ver_periodo" style='display:none;'>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xs-offset-4 col-sm-offset-4 col-md-offset-4 col-lg-offset-4" align="right">
                     <label for="{{ form.end_date.auto_id }}" class="control-label">
                         {{ form.end_date.label }}
                     </label>
                 </div>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 ver-fecha" style='display:none;'>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 ver_fecha" style='display:none;'>
                     <div class="input-group">
                         {{ form.end_date }}
                         <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                     </div>
                 </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 ver-semana" style='display:none;'>
+                <!-- Descomentar para implementar diferentes periodicidades
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 ver_semana" style='display:none;'>
                     {{ form.periodo_semana_fin }}
                 </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 ver-mes" style='display:none;'>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 ver_mes" style='display:none;'>
                     {{ form.periodo_mes_fin }}
                 </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 ver-anho" style='display:none;'>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 ver_anho" style='display:none;'>
                     {{ form.periodo_anho_fin }}
                 </div>
+                -->
             </div>
-            <div class="enlaces" style='display:block;'>
+            <div class="enlaces" style='display:none;'>
                 {% include 'base.down.up.files.html' with app='economico' mod='TasasInteres' %}
             </div>
         </div>
@@ -104,17 +112,23 @@
 {% block extra_footer %}
     <script>
         var dominio = $("#{{ form.dominio.auto_id }}");
-        var periodicidad = $("#{{ form.periodicidad.auto_id }}");
+        var fecha = $(".fecha");
         var fecha_ini = $("#{{ form.start_date.auto_id }}");
         var fecha_fin = $("#{{ form.end_date.auto_id }}");
+        /** Descomentar para implementar diferentes periodicidades
+        var periodicidad = $("#{{ form.periodicidad.auto_id }}");
         var semana_ini = $("#{{ form.periodo_semana_ini.auto_id }}");
         var semana_fin = $("#{{ form.periodo_semana_fin.auto_id }}");
         var mes_ini = $("#{{ form.periodo_mes_ini.auto_id }}");
         var mes_fin = $("#{{ form.periodo_mes_fin.auto_id }}");
         var anho_ini = $("#{{ form.periodo_anho_ini.auto_id }}");
         var anho_fin = $("#{{ form.periodo_anho_fin.auto_id }}");
+        var select_periodicidad = $('#id_periodicidad');
+        var options_periodicidad = select_periodicidad.html();
+        var dominio_ant = "";
 
         $("#id_periodicidad option[value='T']").remove();
+        */
         function set_filters() {
             /**
             * @brief Realiza cambios en la vista ocasionados por modificaciones
@@ -127,10 +141,23 @@
             * @date 26-04-2017
             */
 
+            var f_ini = fecha_ini.val().split("/");
+            var f_fin = fecha_fin.val().split("/");
             var filters = $("#filters"), json_filter = '';
-            if (dominio.val()) {                
+            if (dominio.val()) {
+                /** Descomentar para implementar diferentes periodicidades
+                Adapta el formulario periodicidad en base al dominio
+                
+                if (dominio_ant != dominio.val()){
+                    select_periodicidad.html(options_periodicidad);
+                    $("#id_periodicidad option[value='T']").remove();
+                }
+                */
                 if (dominio.val() == 'PB') {
                     json_filter += "\"tasa_pb__isnull\": \"false\",";
+                    /** Descomentar para implementar diferentes periodicidades
+                    $("#id_periodicidad option[value='D']").remove();
+                    */
                 }
                 else if (dominio.val() == 'TA'){
                     json_filter += "\"tasa_activa__isnull\": \"false\",";
@@ -139,46 +166,81 @@
                     json_filter += "\"tasa_pasiva__isnull\": \"false\",";
                 }
             }
-            if (dominio.val() && periodicidad.val()) {
-                $('.ver-periodo').show();
+            if (dominio.val()) {
+                $('.ver_periodo').show();
+                $('.ver_fecha').show();
             }
             else {
-                $('.ver-periodo').hide();
+                $('.ver_periodo').hide();
+                $('.ver_fecha').hide();
             }
+            /** Descomentar para implementar diferentes periodicidades
             if (periodicidad.val()) {
                 if(periodicidad.val() == 'D') {
-                    $('.ver-fecha').show();
-                    $('.ver-semana').hide();
-                    $('.ver-mes').hide();
-                    $('.ver-anho').hide();
+                    json_filter += "\"diaria__isnull\": \"false\",";
+                    $('.ver_fecha').show();
+                    $('.ver_semana').hide();
+                    $('.ver_mes').hide();
+                    $('.ver_anho').hide();
                 }
                 else if(periodicidad.val() == 'S') {
-                    $('.ver-fecha').hide();
-                    $('.ver-semana').show();
-                    $('.ver-mes').show();
-                    $('.ver-anho').show();
+                    json_filter += "\"semanal__isnull\": \"false\",";
+                    $('.ver_fecha').show();
+                    $('.ver_semana').hide();
+                    $('.ver_mes').hide();
+                    $('.ver_anho').hide();
                 }
                 else if(periodicidad.val() == 'M') {
-                    $('.ver-fecha').hide();
-                    $('.ver-semana').hide();
-                    $('.ver-mes').show();
-                    $('.ver-anho').show();
+                    json_filter += "\"mensual__isnull\": \"false\",";
+                    $('.ver_fecha').hide();
+                    $('.ver_semana').hide();
+                    $('.ver_mes').show();
+                    $('.ver_anho').show();
                 }
                 else if(periodicidad.val() == 'A') {
-                    $('.ver-fecha').hide();
-                    $('.ver-semana').hide();
-                    $('.ver-mes').hide();
-                    $('.ver-anho').show();
+                    json_filter += "\"anual__isnull\": \"false\",";
+                    $('.ver_fecha').hide();
+                    $('.ver_semana').hide();
+                    $('.ver_mes').hide();
+                    $('.ver_anho').show();
                 }
             }
+            */
+            if (dominio.val()){
+                if (fecha_ini.val() && fecha_fin.val())
+                    if (f_ini[2] <= f_fin[2] && f_ini[1] <= f_fin[1])
+                        if (f_ini[1] == f_fin[1] && f_ini[0] <= f_fin[0])
+                            $('.enlaces').show();
+                        else if (f_ini[1] != f_fin[1])
+                            $('.enlaces').show();
+                        else
+                            $('.enlaces').hide();
+                    else
+                        $('.enlaces').hide();
+            /** Descomentar para implementar diferentes periodicidades
+                else if (anho_ini.val() && anho_fin.val())
+                    if (periodicidad.val() == 'M' && anho_ini.val() <= anho_fin.val() && mes_ini.val() && mes_fin.val())
+                        if (anho_ini.val() == anho_fin.val() && mes_ini.val() <= mes_fin.val())
+                            $('.enlaces').show();
+                        else if (anho_ini.val() < anho_fin.val())
+                            $('.enlaces').show();
+                        else
+                            $('.enlaces').hide();
+                    else if (periodicidad.val() == 'A' && anho_ini.val() <= anho_fin.val())
+                        $('.enlaces').show();
+                    else
+                        $('.enlaces').hide();
+                else
+                    $('.enlaces').hide();
+            */
+            }
             if (fecha_ini.val()) {
-                console.log("Fecha inicial: " + fecha_ini.val());
                 json_filter += "\"fecha__gte\": \"" + fecha_ini.val() + "\",";
             }
             if (fecha_fin.val()) {
-                console.log("Fecha final: " + fecha_fin.val());
                 json_filter += "\"fecha__lte\": \"" + fecha_fin.val() + "\",";
             }
+            /** Descomentar para implementar diferentes periodicidades
             if (semana_ini.val()) {
                 json_filter += "\"semana__gte\": \"" + semana_ini.val() + "\",";
             }
@@ -197,6 +259,8 @@
             if (anho_fin.val()) {
                 json_filter += "\"anho__lte\": \"" + anho_fin.val() + "\",";
             }
+            dominio_ant = dominio.val();
+            */
             if (json_filter) {
                 json_filter = json_filter.slice(0, -1);
                 filters.val(json_filter);
@@ -205,15 +269,24 @@
 
         $(document).ready(function() {
             dominio.on('change', function() { set_filters() });
-            periodicidad.on('change', function() { set_filters() });
             fecha_ini.on('change', function() { set_filters() });
             fecha_fin.on('change', function() { set_filters() });
+            /** Descomentar para implementar diferentes periodicidades
+            periodicidad.on('change', function() { set_filters() });
             semana_ini.on('change', function() { set_filters() });
             semana_fin.on('change', function() { set_filters() });
             mes_ini.on('change', function() { set_filters() });
             mes_fin.on('change', function() { set_filters() });
             anho_ini.on('change', function() { set_filters() });
             anho_fin.on('change', function() { set_filters() });
+            */
+            fecha.on('changeDate', function() { set_filters() });
+        });
+
+        fecha.datepicker( {
+            format: "dd/mm/yyyy"
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
         });
     </script>
 {% endblock %}
