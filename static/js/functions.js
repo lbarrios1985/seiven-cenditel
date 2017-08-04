@@ -85,8 +85,7 @@ function edit_dom_bc(value,element_id) {
  * @param condicion Booleano que indica si el campo se debe deshabilitar o no
  */
 function disable(element_id,condicion) {
-    //condicion = (typeof condicion != "undefined");
-    condicion = (typeof condicion == "undefined") ? true:condicion;
+    condicion = (typeof condicion == "undefined");
     var element = $("#" + element_id);
     if (condicion) {
         element.attr('disabled',true);
