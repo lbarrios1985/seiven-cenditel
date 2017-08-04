@@ -2547,17 +2547,18 @@ class BalanzaComercialBase(models.Model):
         fields.append(sub_header);
         
         ## Se asigna el año base (si existe)
-        anho_base = kwargs['anho_base'] if 'anho_base' in kwargs else ''
+        anho_base = kwargs['anho_base'] if 'anho_base' in kwargs else 0
         
         ## Almacena los datos de año y trimestre inicial provenientes del formulario
         anho_ini = int(kwargs['anho__gte'])
         trimestre_ini = int(kwargs['trimestre__gte'])
-
+        
         ## Genera los años y trimestres correspondientes a los parámetros del formulario
         registros = []
         while True:
             registros = [({'tag': trimestre_ini})]
             registros.append({'tag': anho_ini})
+            print(anho_base)
             ## Se intenta búscar el registro base
             balanza_base = BalanzaComercialBase.objects.filter(
                     anho_base=anho_base,
@@ -2696,11 +2697,11 @@ class BalanzaComercialBase(models.Model):
         """
         
         load_file = pyexcel.get_book(bookdict=kwargs['file_content'])[0]
-        anho_base, errors, result, message = '', '', True, ''
+        anho_base, errors, result, message = None, '', True, ''
         load_data_msg = str(_("Datos Cargados"))
 
         ## Se asigna un valor al año base
-        anho_base = kwargs['anho_base'] if 'anho_base' in kwargs else ''
+        anho_base = kwargs['anho_base'] if 'anho_base' in kwargs else None
         
         for row in load_file.row[2:]:
             try:
@@ -2735,6 +2736,7 @@ class BalanzaComercialBase(models.Model):
                         'exportacion_servicio': check_val_data(row[6]),
                         'importacion_servicio': check_val_data(row[11]),
                     })
+                    print("finalizo?")
                 ## Se crea la balanza para el índice de precios implícitos
                 elif(kwargs['tipo']=='PI'):
                     ## Se crea el registro para los precios implícitos

@@ -85,7 +85,8 @@ function edit_dom_bc(value,element_id) {
  * @param condicion Booleano que indica si el campo se debe deshabilitar o no
  */
 function disable(element_id,condicion) {
-    condicion = (typeof condicion != "undefined");
+    //condicion = (typeof condicion != "undefined");
+    condicion = (typeof condicion == "undefined") ? true:condicion;
     var element = $("#" + element_id);
     if (condicion) {
         element.attr('disabled',true);
@@ -122,16 +123,16 @@ function validar_anho_trimestre() {
  */
 function enable_periodo_bc(value) {
     if (value) {
+        disable('id_periodo_trimestre_ini',false);
+        disable('id_periodo_trimestre_fin',false);
+        disable('id_periodo_anho_ini',false);
+        disable('id_periodo_anho_fin',false);
+    }
+    else{
         disable('id_periodo_trimestre_ini');
         disable('id_periodo_trimestre_fin');
         disable('id_periodo_anho_ini');
         disable('id_periodo_anho_fin');
-    }
-    else{
-        disable('id_periodo_trimestre_ini',true);
-        disable('id_periodo_trimestre_fin',true);
-        disable('id_periodo_anho_ini',true);
-        disable('id_periodo_anho_fin',true);
     }
 }
 
