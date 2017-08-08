@@ -156,7 +156,7 @@ class Precios(models.Model):
                             else:
                                 aux1=lolo+tmp
                             aux=aux+1
-                            fields.append([ {'tag': str(_(str(aux1)))}, {'tag': str(_(str(a)))}])
+                            fields.append([ {'tag': str(_(str(aux1))),'cabecera': True}, {'tag': str(_(str(a))),'cabecera': True}])
 
             else:
                 dominio, data_type = str(_('Ciudad')), 'C'
@@ -186,9 +186,9 @@ class Precios(models.Model):
                             aux=aux+1
                             for q in range(0,11):
                                 if lst1[q] == 'Caracas':
-                                    fields.append([ {'tag': str(_(str(aux1))),'combine_row':11 }, {'tag': str(_(str(a))), 'combine_row1':11},{'tag': str(_(str(lst1[q])))}])
+                                    fields.append([ {'tag': str(_(str(aux1))),'combine_row':11 ,'cabecera': True}, {'tag': str(_(str(a))), 'combine_row1':11,'cabecera': True},{'tag': str(_(str(lst1[q]))),'cabecera': True}])
                                 else:
-                                    fields.append([{'tag':''},{'tag':''},{'tag': str(_(str(lst1[q])))}])
+                                    fields.append([{'tag':''},{'tag':''},{'tag': str(_(str(lst1[q]))),'cabecera': True}])
 
 
 

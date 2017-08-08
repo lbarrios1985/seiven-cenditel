@@ -86,14 +86,13 @@ def descargar_archivo(request):
                     style += 'font: color %s, bold True;' % cabecera['text_color']
                 font_bold = xlwt.easyxf(style)
                 sheet.write(i, index_col, cabecera['tag'], font_bold)
-                sheet.set_shrink()
                 
                 if 'cabecera' in cabecera:
-                    sheet.col(i).width = int (333 * (len(cabecera['tag']) + 1))
+                    sheet.col(i).width = int (250 * (len(cabecera['tag']) + 1))
                 
                 if 'combine' in cabecera and cabecera['combine'] > 0:
                     sheet.merge(i, i, index_col, (index_col + (cabecera['combine']-1)), font_bold)
-                    index_col = cabecera['combine'] + index_col
+                    index_col = cabecera['combine'] + index_col-1
 
                 if 'dominio'in cabecera:
                     sheet.write(i, 2, cabecera['tag'], font_bold)
