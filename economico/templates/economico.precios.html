@@ -59,7 +59,9 @@
                 <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.periodo_mes_fin }}</div>
                 <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.periodo_anho_fin }}</div>
             </div>
-            {% include 'base.down.up.files.html' with app='economico' mod='Precios' %}
+            <div id='oculto' style='display:none;'>
+                {% include 'base.down.up.files.html' with app='economico' mod='Precios' %}
+            </div>
         </div>
     </div>
 {% endblock %}
@@ -100,6 +102,20 @@
             if (json_filter) {
                 json_filter = json_filter.slice(0, -1);
                 filters.val(json_filter);
+            }
+
+            if (dominio.val()!='' && anho_base.val()!='' && periodo_mes_ini.val()!='' && periodo_mes_fin.val()!='' && periodo_anho_ini.val()!='' && periodo_anho_fin.val()!=''){
+
+                if (parseInt(periodo_anho_fin.val()) == parseInt(periodo_anho_ini.val()) && parseInt(periodo_mes_ini.val()) <= parseInt(periodo_mes_fin.val())){
+                    
+                    document.getElementById('oculto').style.display = 'block';
+                }
+                else if (parseInt(periodo_anho_fin.val()) > parseInt(periodo_anho_ini.val())){
+                    document.getElementById('oculto').style.display = 'block';  
+                }
+                else{
+                    document.getElementById('oculto').style.display = 'none';
+                }
             }
         }
 

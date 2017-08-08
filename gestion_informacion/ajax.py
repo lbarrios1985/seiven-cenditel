@@ -100,8 +100,7 @@ def descargar_archivo(request):
                     sheet.write_merge(i, i+10, 0,0, cabecera['tag'],font_bold)
                 if 'combine_row1' in cabecera:
                     sheet.write_merge(i, i+10, 1,1, cabecera['tag'],font_bold)
-                else:
-                    index_col += 1            
+                index_col += 1            
             i += 1
 
         nombre = app + "_" + datos['output']
