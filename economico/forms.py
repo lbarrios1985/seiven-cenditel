@@ -188,7 +188,7 @@ class AnhoIniForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(AnhoIniForm, self).__init__(*args, **kwargs)
-        self.fields['periodo_anho_ini'].choices = cargar_anho_base(anho_inicial='2007')
+        self.fields['periodo_anho_ini'].choices = cargar_anho_base(anho_inicial='1970')
 
 
 @python_2_unicode_compatible
@@ -213,7 +213,7 @@ class AnhoFinForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(AnhoFinForm, self).__init__(*args, **kwargs)
-        self.fields['periodo_anho_fin'].choices = cargar_anho_base(anho_inicial='2007')
+        self.fields['periodo_anho_fin'].choices = cargar_anho_base(anho_inicial='1970')
 
 
 @python_2_unicode_compatible

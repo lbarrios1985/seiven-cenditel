@@ -18,15 +18,17 @@ from django.conf import settings
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
-from datetime import datetime, timedelta
+from datetime import datetime, date, time, timedelta
 from itertools import islice , cycle
 
 from base.constant import (
-    DOMINIO, PERIODICIDAD, TRIMESTRES, MESES, ECONOMICO_SUB_AREA, CONVERT_MES, EMAIL_SUBJECT_LOAD_DATA,
+    DOMINIO, PERIODICIDAD, TRIMESTRES, MESES, ECONOMICO_SUB_AREA, CONVERT_MES, EMAIL_SUBJECT_LOAD_DATA,EMAIL_SUBJECT_CM_RESULT,
     TIPO_BALANZA_COMERCIAL, DOMINIO_BALANZA_COMERCIAL, BALANZA_DATOS, INVERSION_CARTERA, SECTOR_DEUDA
 )
 from base.functions import enviar_correo, check_val_data
 from base.models import AnhoBase
+
+import calendar
 
 import pyexcel
 
@@ -90,6 +92,7 @@ class Precios(models.Model):
             ],
             [
                 {'tag': str(_('Año')), 'cabecera': True}, {'tag': str(_('Mes')), 'cabecera': True}, {'tag': str(_('INPC')), 'cabecera': True},
+                
                 {'tag': str(_('(1) Alimentos y Bebidas no Alcoholicas')), 'cabecera': True},
                 {'tag': str(_('(2) Bebidas Alcoholicas y Tabaco')), 'cabecera': True},
                 {'tag': str(_('(3) Vestido y Calzado')), 'cabecera': True},
@@ -103,22 +106,27 @@ class Precios(models.Model):
                 {'tag': str(_('(11) Servicios de Educación')), 'cabecera': True},
                 {'tag': str(_('(12) Restaurant y Hotel')), 'cabecera': True},
                 {'tag': str(_('(13) Bienes y Servicios Diversos')), 'cabecera': True},
+
                 {'tag': str(_('Bienes durables')), 'cabecera': True},
                 {'tag': str(_('Bienes semidurables')), 'cabecera': True},
                 {'tag': str(_('Bienes no durables')), 'cabecera': True},
+
                 {'tag': str(_('Bienes')), 'cabecera': True},
                 {'tag': str(_('Agrícolas')), 'cabecera': True},
                 {'tag': str(_('Productos pesqueros')), 'cabecera': True},
                 {'tag': str(_('Agroindustrial')), 'cabecera': True},
                 {'tag': str(_('Otros manufacturados')), 'cabecera': True},
+
                 {'tag': str(_('Total Servicios')), 'cabecera': True},
                 {'tag': str(_('Servicios Básicos')), 'cabecera': True},
                 {'tag': str(_('Otros Servicios')), 'cabecera': True},
+
                 {'tag': str(_('Núcleo Inflacionario (NI)')), 'cabecera': True},
                 {'tag': str(_('Alimentos Elaborados')), 'cabecera': True},
                 {'tag': str(_('Textiles y Prendas de Vestir')), 'cabecera': True},
                 {'tag': str(_('Bienes industriales excepto alimentos y textiles')), 'cabecera': True},
                 {'tag': str(_('Servicios no administrados')), 'cabecera': True},
+
                 {'tag': str(_('Controlados')), 'cabecera': True},
                 {'tag': str(_('No Controlados')), 'cabecera': True}
             ]
@@ -132,6 +140,24 @@ class Precios(models.Model):
             if kwargs['dominio'] == 'N':
                 kwargs['dominio'] = None
                 kwargs['ciudad'] = kwargs.pop('dominio')
+                lst=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
+                x = int (kwargs['fecha__month__lte']) - int (kwargs['fecha__month__gte']) + 1 +  12 * (int(kwargs['fecha__year__lte']) - int(kwargs['fecha__year__gte']))
+                for i, val in enumerate(lst):
+                    if lst[int(kwargs['fecha__month__gte'])-1] in val:
+                        desired = list( islice( cycle( lst), i, i+x)) 
+                        tmp=0
+                        lolo=int (kwargs['fecha__year__gte'])
+                        aux=1
+                        for a in desired:
+                            aux1=''
+                            if a == 'Diciembre':
+                                aux1=lolo+tmp
+                                tmp=tmp+1
+                            else:
+                                aux1=lolo+tmp
+                            aux=aux+1
+                            fields.append([ {'tag': str(_(str(aux1)))}, {'tag': str(_(str(a)))}])
+
             else:
                 dominio, data_type = str(_('Ciudad')), 'C'
                 kwargs['ciudad__in'] = kwargs.pop('dominio')
@@ -139,6 +165,32 @@ class Precios(models.Model):
                 # Agrega la columna correspondiente a las ciudades
                 fields[0].insert(2, {'tag': '', 'cabecera': True})
                 fields[1].insert(2, {'tag': dominio, 'cabecera': True})
+
+                lst=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
+                lst1=['Caracas','Maracay','Ciudad Guayana','Barcelona -Pto la Cruz','Valencia','Barquisimeto','Maracaibo','Mérida','Maturín','San Cristóbal','Resto Nacional']
+
+                x = int (kwargs['fecha__month__lte']) - int (kwargs['fecha__month__gte']) + 1 +  12 * (int(kwargs['fecha__year__lte']) - int(kwargs['fecha__year__gte']))
+                for i, val in enumerate(lst):
+                    if lst[int(kwargs['fecha__month__gte'])-1] in val:
+                        desired = list( islice( cycle( lst), i, i+x)) 
+                        tmp=0
+                        lolo=int (kwargs['fecha__year__gte'])
+                        aux,aux2=1,0
+                        for a in desired:
+                            aux1=''
+                            if a == 'Diciembre':
+                                aux1=lolo+tmp
+                                tmp=tmp+1
+                            else:
+                                aux1=lolo+tmp
+                            aux=aux+1
+                            for q in range(0,11):
+                                if lst1[q] == 'Caracas':
+                                    fields.append([ {'tag': str(_(str(aux1))),'combine_row':11 }, {'tag': str(_(str(a))), 'combine_row1':11},{'tag': str(_(str(lst1[q])))}])
+                                else:
+                                    fields.append([{'tag':''},{'tag':''},{'tag': str(_(str(lst1[q])))}])
+
+
 
         elif not 'dominio' in kwargs or not kwargs['dominio'] == 'C':
             exclude_fields.append('ciudad')
@@ -1170,10 +1222,13 @@ class DemandaGlobal(models.Model):
         load_file = pyexcel.get_book(bookdict=kwargs['file_content'])[0]
         anho_base, errors, result, message = '', '', True, ''
         load_data_msg = str(_("Datos Cargados"))
+
+        self.anho_base=AnhoBase.objects.get(id=kwargs['anho_base'])
+        
         for row in range(1,len(load_file.row_range())):
             
             try:
-                real_demanda , created = DemandaGlobal.objects.update_or_create(anho=load_file[row,0], anho_base=kwargs['anho_base'], trimestre=load_file[row,1], demanda_global= load_file[row,2]+load_file[row,7])
+                real_demanda , created = DemandaGlobal.objects.update_or_create(anho=load_file[row,0], anho_base=self.anho_base, trimestre=load_file[row,1], demanda_global= load_file[row,2]+load_file[row,7])
                 ## Se crea  o actualiza el objeto de Demanda Agregada Interna luego de validar el valor en la hoja de calculo
 
                 DemandaAgregadaInterna.objects.update_or_create(demanda_global=real_demanda, defaults={
@@ -1199,7 +1254,7 @@ class DemandaGlobal(models.Model):
 
 
         ## Envia correo electronico al usuario indicando el estatus de la carga de datos
-        enviar_correo(user.email, 'gestion.informacion.load.mail', EMAIL_SUBJECT_CM_RESULT, {
+        enviar_correo(user.email, 'gestion.informacion.load.mail', EMAIL_SUBJECT_LOAD_DATA, {
             'load_data_msg': load_data_msg, 'administrador': administrador, 'admin_email': admin_email,
             'errors': errors
         })

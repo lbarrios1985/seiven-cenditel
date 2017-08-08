@@ -72,13 +72,13 @@ def descargar_archivo(request):
     if app and mod:
         modelo = apps.get_model(app, mod)
         workbook = xlwt.Workbook()
-        sheet = workbook.add_sheet("Datos")
+        sheet = workbook.add_sheet("Datos",cell_overwrite_ok=True)
         instance = modelo()
         datos = instance.gestion_init(**filter)
         i = 0
         for con in datos['fields']:
-            index_col = 0
-            style='align: horiz center;'
+            index_col= 0
+            style='align: horiz center; align: vert center;'
             for cabecera in con:
                 if 'color' in cabecera:    
                     style += 'pattern: pattern solid, fore_colour %s;' % cabecera['color']
@@ -86,9 +86,23 @@ def descargar_archivo(request):
                     style += 'font: color %s, bold True;' % cabecera['text_color']
                 font_bold = xlwt.easyxf(style)
                 sheet.write(i, index_col, cabecera['tag'], font_bold)
+                sheet.set_shrink()
+                
                 if 'cabecera' in cabecera:
                     sheet.col(i).width = int (333 * (len(cabecera['tag']) + 1))
-                index_col += 1
+                
+                if 'combine' in cabecera and cabecera['combine'] > 0:
+                    sheet.merge(i, i, index_col, (index_col + (cabecera['combine']-1)), font_bold)
+                    index_col = cabecera['combine'] + index_col
+
+                if 'dominio'in cabecera:
+                    sheet.write(i, 2, cabecera['tag'], font_bold)
+                if 'combine_row' in cabecera:
+                    sheet.write_merge(i, i+10, 0,0, cabecera['tag'],font_bold)
+                if 'combine_row1' in cabecera:
+                    sheet.write_merge(i, i+10, 1,1, cabecera['tag'],font_bold)
+                else:
+                    index_col += 1            
             i += 1
 
         nombre = app + "_" + datos['output']
