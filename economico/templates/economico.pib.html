@@ -22,38 +22,40 @@
                 </div>
             </div>
             <div class="row separador-row">
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2" align="right">
                     <label for="{{ form.tipo.auto_id }}" class="control-label">
-                    {{ form.tipo.label }}</label>
+                    {{ form.tipo.label }}:</label>
                 </div>
                 <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"> {{ form.tipo }}</div>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2" align="right">
                     <label for="{{ form.dominio.auto_id }}" class="control-label">
-                    {{ form.dominio.label }}</label>
+                    {{ form.dominio.label }}:</label>
                 </div>
                 <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.dominio }}</div>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 anho_base" align="right">
                     <label for="{{ form.anho_base.auto_id }}" class="control-label">
-                    {{ form.anho_base.label }}</label>
+                    {{ form.anho_base.label }}:</label>
                 </div>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.anho_base }}</div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 anho_base">{{ form.anho_base }}</div>
             </div>
             <div class="row separador-row periodo" style='display:none;'>
                 <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-4 col-sm-offset-4 col-md-offset-4 col-lg-offset-4">                        
                 </div>
                 <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 trimestral" style='display:none;'>
-                    <label class="control-label">{% trans 'Trimestral' %}</label>
+                    <label class="control-label">{% trans 'Trimestral' %}:</label>
                 </div>
                 <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                    <label class="control-label">{% trans 'Año' %}</label>
+                    <label class="control-label">{% trans 'Año' %}:</label>
                 </div>
             </div>
             <div class="row separador-row periodo" style='display:none;'>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2">
-                    <label class="control-label">{% trans 'Período' %}</label>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2" align="right">
                 </div>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                    <label class="control-label">{{ form.periodo_trimestre_ini.label }}</label>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                    <label class="control-label">{% trans 'Período' %}:</label>
+                </div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1" align="right">
+                    <label class="control-label">{{ form.periodo_trimestre_ini.label }}:</label>
                 </div>
                 <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 trimestral" style='display:none;'>
                     {{ form.periodo_trimestre_ini }}
@@ -61,8 +63,8 @@
                 <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.periodo_anho_ini }}</div>
             </div>
             <div class="row separador-row periodo" style='display:none;'>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-4 col-sm-offset-4 col-md-offset-4 col-lg-offset-4">
-                    <label class="control-label">{{ form.periodo_trimestre_fin.label }}</label>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-4 col-sm-offset-4 col-md-offset-4 col-lg-offset-4" align="right">
+                    <label class="control-label">{{ form.periodo_trimestre_fin.label }}:</label>
                 </div>
                 <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 trimestral" style='display:none;'>
                     {{ form.periodo_trimestre_fin }}
@@ -105,11 +107,13 @@
             if (tipo.val()) {                
                 if (tipo.val() == 'R') {
                     json_filter += "\"real__isnull\": \"false\",";
+                    $('.anho_base').show();
                     if (tipo_ant != tipo.val())
                         select_dominio.html(options_dominio);
                 }
                 else {
                     json_filter += "\"nominal__isnull\": \"false\",";
+                    $('.anho_base').hide();
                     if (tipo_ant != tipo.val()){
                         $("#id_dominio option[value='AE']").remove();
                         $("#id_dominio option[value='SI']").remove();
@@ -131,11 +135,17 @@
                     json_filter += "\"pibsector__isnull\": \"false\",";
                 }
             }
-            if (tipo.val() == 'R' && (dominio.val() == 'AE' || dominio.val() == 'SI')) {
-                $('.periodo').show();
-                $('.trimestral').show();
+            if (tipo.val() == 'R' && dominio.val() && anho_base.val()) {
+                if ((dominio.val() == 'AE' || dominio.val() == 'SI')){
+                    $('.periodo').show();
+                    $('.trimestral').show();
+                }
+                else{
+                    $('.periodo').show();
+                    $('.trimestral').hide();    
+                }
             }
-            else if (tipo.val() && dominio.val()) {
+            else if (tipo.val() == 'N' && dominio.val()) {
                 $('.periodo').show();
                 $('.trimestral').hide();
             }
@@ -193,6 +203,28 @@
             anho_fin.on('change', function() { set_filters() });
             trimestre_ini.on('change', function() { set_filters() });
             trimestre_fin.on('change', function() { set_filters() });
+
+            // Función para procesar el archivo de carga masiva
+            $('.fileinput-upload-button').click(function(event){
+                event.preventDefault();
+                var fdata = new FormData();
+                fdata.append('file',file.files[0]);
+                $.ajax({
+                    url: URL_CARGAR_ARCHIVO_CM+models,
+                    data: fdata,
+                    contentType: false,
+                    processData: false,
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function(data){
+                        var msg = data.message ? data.result : data.error;
+                        bootbox.alert(msg);
+                    },
+                    error: function(error){
+                        console.log(error);
+                    }
+                });
+            });
         });
     </script>
 {% endblock %}

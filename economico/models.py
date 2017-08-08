@@ -135,7 +135,7 @@ class Precios(models.Model):
 
         dominio, data_type = str(_('INPC')), 'N'
 
-        # Condición para filtrar y mostrar la información según la selección del usuario
+        ## Condición para filtrar y mostrar la información según la selección del usuario
         if 'dominio' in kwargs:
             if kwargs['dominio'] == 'N':
                 kwargs['dominio'] = None
@@ -162,10 +162,11 @@ class Precios(models.Model):
                 dominio, data_type = str(_('Ciudad')), 'C'
                 kwargs['ciudad__in'] = kwargs.pop('dominio')
                 kwargs['ciudad__in'] = [d for d in DOMINIO[1:][0]]
-                # Agrega la columna correspondiente a las ciudades
+                ## Agrega la columna correspondiente a las ciudades
                 fields[0].insert(2, {'tag': '', 'cabecera': True})
                 fields[1].insert(2, {'tag': dominio, 'cabecera': True})
 
+<<<<<<< HEAD
                 lst=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
                 lst1=['Caracas','Maracay','Ciudad Guayana','Barcelona -Pto la Cruz','Valencia','Barquisimeto','Maracaibo','Mérida','Maturín','San Cristóbal','Resto Nacional']
 
@@ -189,6 +190,76 @@ class Precios(models.Model):
                                     fields.append([ {'tag': str(_(str(aux1))),'combine_row':11 ,'cabecera': True}, {'tag': str(_(str(a))), 'combine_row1':11,'cabecera': True},{'tag': str(_(str(lst1[q]))),'cabecera': True}])
                                 else:
                                     fields.append([{'tag':''},{'tag':''},{'tag': str(_(str(lst1[q]))),'cabecera': True}])
+=======
+        elif not 'dominio' in kwargs or not kwargs['dominio'] == 'C':
+            exclude_fields.append('ciudad')
+
+        if 'anho_base' in kwargs:
+            precios_base = {'anho': kwargs['anho_base']}
+            if 'ciudad__in' in kwargs:
+                precios_base.update({'ciudad__in': kwargs['ciudad__in']})
+        else:
+            precios_base = {}
+
+        ## Estrae los registros asociados a descargar en archivo
+        for p in Precios.objects.filter(Q(**kwargs) | Q(**precios_base)):
+            mes = str(_("Enero"))
+            for m in CONVERT_MES:
+                if CONVERT_MES[m] == p.mes:
+                    mes = str(m)
+
+            ## Registros de Año y Mes
+            registros = [{'tag': p.anho}, {'tag': mes}]
+
+            ## Registros por ciudad si es solicitado
+            if data_type == 'C':
+                for d in DOMINIO[1:]:
+                    if d[0] == p.ciudad:
+                        registros.append({'tag': str(d[1])})
+
+            ## Índice Nacional de Precios al Consumidor
+            registros.append({'tag': str(p.inpc)})
+
+            #Asigna los índices por grupo
+            grp = p.preciosgrupo_set.get()
+            for g in grp._meta.get_fields():
+                if not g.attname in exclude_fields:
+                    registros.append({'tag': str(grp.__getattribute__(g.attname))})
+
+            ## Asigna los indices por sector de origen
+            sec = p.preciossector_set.get()
+            for s in sec._meta.get_fields():
+                if not s.attname in exclude_fields:
+                    registros.append({'tag': str(sec.__getattribute__(s.attname))})
+
+            ## Asigna los indices por naturaleza y durabilidad
+            nat = p.preciosnaturaleza_set.get()
+            for n in nat._meta.get_fields():
+                if not n.attname in exclude_fields:
+                    registros.append({'tag': str(nat.__getattribute__(n.attname))})
+
+            ## Asigna los ínidces por servicio
+            ser = p.preciosservicios_set.get()
+            for sv in ser._meta.get_fields():
+                if not sv.attname in exclude_fields:
+                    registros.append({'tag': str(ser.__getattribute__(sv.attname))})
+
+            ## Asigna los ínidces por núcleo inflacionario
+            inf = p.preciosinflacionario_set.get()
+            for ni in inf._meta.get_fields():
+                if not ni.attname in exclude_fields:
+                    registros.append({'tag': str(inf.__getattribute__(ni.attname))})
+
+
+            ## Asigna los ínidces por productos controlados y no controlados
+            prd = p.preciosproductos_set.get()
+            for pr in prd._meta.get_fields():
+                if not pr.attname in exclude_fields:
+                    registros.append({'tag': str(prd.__getattribute__(pr.attname))})
+
+            ## Agrega los datos a la nueva fila del archivo a generar
+            fields.append(registros)
+>>>>>>> 9d4a531468a17c3a50746f1631474cf00c90d5ef
 
         return {'fields': fields, 'output': 'precios'}
 
@@ -220,28 +291,28 @@ class Precios(models.Model):
 
         for row in load_file.row[2:]:
             try:
-                # Asigna el año base del registro
+                ## Asigna el año base del registro
                 anho_b = anho_base = row[0] if i == 0 else anho_base
 
-                # Asigna el año de la fila que se esta procesando
+                ## Asigna el año de la fila que se esta procesando
                 anho = row[0]
 
-                # Asigna el número de mes
+                ## Asigna el número de mes
                 mes = [CONVERT_MES[m] for m in CONVERT_MES if m.find(row[1]) >= 0][0]
 
-                # Asigna la ciudad si el dominio no es nacional
+                ## Asigna la ciudad si el dominio no es nacional
                 ciudad = row[2] if 'dominio' in kwargs and kwargs['dominio'] == 'C' else None
 
-                # Asigna el INPC total para el año base
+                ## Asigna el INPC total para el año base
                 inpc = row[3] if ciudad else row[2]
 
-                # Condición que indica si el registro corresponde al año base
+                ## Condición que indica si el registro corresponde al año base
                 base = True if i == 0 else False
 
-                # Registro de año y mes para los filtros
+                ## Registro de año y mes para los filtros
                 fecha = datetime(int(anho), int(mes), 1)
 
-                # Condiciones para filtrar la información a cargar según las especificaciones del usuario
+                ## Condiciones para filtrar la información a cargar según las especificaciones del usuario
                 if 'anho_base' in kwargs and kwargs['anho_base'] != load_file.row[2][0]:
                     continue
                 if 'fecha__month__gte' in kwargs and 'fecha__month__lte' in kwargs and kwargs[
@@ -259,14 +330,14 @@ class Precios(models.Model):
                 elif 'fecha__year__lte' in kwargs and anho > kwargs['fecha__year__lte']:
                     continue
 
-                # Gestión para los datos básicos de precios
+                ## Gestión para los datos básicos de precios
                 real_p, created = Precios.objects.update_or_create(
                     anho=anho, mes=mes, ciudad=ciudad, fecha=fecha,
                     defaults={ 'anho_base': anho_b, 'inpc': inpc }
                 )
 
 
-                # Gestión de datos para el Índice por Grupos
+                ## Gestión de datos para el Índice por Grupos
                 PreciosGrupo.objects.update_or_create(real_precios=real_p, defaults={
                     'base': base,
                     'alimento_bebida': check_val_data(row[4] if self.ciudad else row[3]),
@@ -284,7 +355,7 @@ class Precios(models.Model):
                     'bienes_servicios': check_val_data(row[16] if self.ciudad else row[15])
                 })
 
-                # Gestión de datos para el Índice por Sector de Origen
+                ## Gestión de datos para el Índice por Sector de Origen
                 PreciosSector.objects.update_or_create(real_precios=real_p, defaults={
                     'base': base,
                     'durables': check_val_data(row[17] if self.ciudad else row[16]),
@@ -292,7 +363,7 @@ class Precios(models.Model):
                     'no_durables': check_val_data(row[19] if self.ciudad else row[18])
                 })
 
-                # Gestión de datos para el Índice por Naturaleza y Durabilidad
+                ## Gestión de datos para el Índice por Naturaleza y Durabilidad
                 PreciosNaturaleza.objects.update_or_create(real_precios=real_p, defaults={
                     'base': base,
                     'bienes': check_val_data(row[20] if self.ciudad else row[19]),
@@ -302,7 +373,7 @@ class Precios(models.Model):
                     'otros': check_val_data(row[24] if self.ciudad else row[23])
                 })
 
-                # Gestión de datos para el Índice por Servicios
+                ## Gestión de datos para el Índice por Servicios
                 PreciosServicios.objects.update_or_create(real_precios=real_p, defaults={
                     'base': base,
                     'total': check_val_data(row[25] if self.ciudad else row[24]),
@@ -310,7 +381,7 @@ class Precios(models.Model):
                     'otros': check_val_data(row[27] if self.ciudad else row[26])
                 })
 
-                # Gestion de datos para el Índice por Núcleo Inflacionario
+                ## Gestion de datos para el Índice por Núcleo Inflacionario
                 PreciosInflacionario.objects.update_or_create(real_precios=real_p, defaults={
                     'base': base,
                     'nucleo': check_val_data(row[28] if self.ciudad else row[27]),
@@ -320,7 +391,7 @@ class Precios(models.Model):
                     'servicios': check_val_data(row[32] if self.ciudad else row[31])
                 })
 
-                # Gestión de datos para el Índice de Productos Controlados y No Controlados
+                ## Gestión de datos para el Índice de Productos Controlados y No Controlados
                 PreciosProductos.objects.update_or_create(real_precios=real_p, defaults={
                     'base': base,
                     'controlados': check_val_data(row[33] if self.ciudad else row[32]),
@@ -551,6 +622,9 @@ class PIB(models.Model):
     ## Año al que pertenece el(los) registro(s)
     anho = models.CharField(max_length=4, verbose_name=_("Año"))
 
+    ## Número del trimestre al que pertenece el registro
+    trimestre = models.CharField(max_length=1, null=True, blank=True, verbose_name=_('Trimestre'))
+
     ## Valor de los registros si son nominales, en caso contrario almacena False
     nominal = models.DecimalField(
         max_digits=18, decimal_places=2, default=None, null=True, blank=True, verbose_name=_("PIB Nominal")
@@ -637,13 +711,13 @@ class PIB(models.Model):
                 [
                     {'tag': '', 'cabecera': True},
                     {'tag': '', 'cabecera': True},
-                    {'tag': str(PIBActividad._meta.verbose_name), 'color': 'orange', 'text_color': 'white', 'combine': 18, 'cabecera': True}
+                    {'tag': str(PIBActividad._meta.verbose_name), 'color': 'orange', 'text_color': 'white', 'combine': 17, 'cabecera': True}
                 ],
                 [
                     {'tag': str(_('Año')), 'cabecera': True},                    
                     {'tag': str(PIBActividad._meta.get_field('total_consolidado').verbose_name), 'color': 'indigo', 'text_color': 'white', 'cabecera': True},
                     {'tag': str(PIBActividad._meta.get_field('total_petrolera').verbose_name), 'color': 'green', 'text_color': 'white', 'cabecera': True},
-                    {'tag': str(PIBActividad._meta.get_field('total_no_petrolera').verbose_name), 'color': 'ocean_blue', 'text_color': 'white', 'combine': 2, 'cabecera': True},
+                    {'tag': str(PIBActividad._meta.get_field('total_no_petrolera').verbose_name), 'color': 'ocean_blue', 'text_color': 'white', 'cabecera': True},
                     {'tag': str(PIBActividad._meta.get_field('mineria').verbose_name), 'color': 'gray25', 'text_color': 'white', 'cabecera': True},
                     {'tag': str(PIBActividad._meta.get_field('manufactura').verbose_name), 'cabecera': True},
                     {'tag': str(PIBActividad._meta.get_field('electricidad_agua').verbose_name), 'cabecera': True},
@@ -660,7 +734,7 @@ class PIB(models.Model):
                     {'tag': str(PIBActividad._meta.get_field('neto_producto').verbose_name), 'color': 'aqua', 'text_color': 'black', 'cabecera': True}
                 ]
             ]
-            # Asigna el nombre del archivo a descargar
+            ## Asigna el nombre del archivo a descargar
             nombre_archivo = 'PIB-Actividad_economica'
 
         ## Sección para la selección de los datos del dominio Actividad Económica
@@ -677,7 +751,7 @@ class PIB(models.Model):
                     {'tag': str(PIBInstitucion._meta.get_field('privado').verbose_name), 'color': 'green', 'text_color': 'white', 'cabecera': True},
                 ]
             ]
-            # Asigna el nombre del archivo a descargar
+            ## Asigna el nombre del archivo a descargar
             nombre_archivo = 'PIB-Institucional'
 
         """!
@@ -690,17 +764,17 @@ class PIB(models.Model):
         """
         diff_anhos = int(kwargs['anho__lte']) - int(kwargs['anho__gte']) + 1        
         if any('trimestre' in index for index in kwargs):
-            fields[1].insert(1, {'tag': str(PIBActividad._meta.get_field('trimestre').verbose_name), 'cabecera': True})
-            # Almacena los datos de año y trimestre inicial provenientes del formulario
+            fields[1].insert(1, {'tag': str(PIB._meta.get_field('trimestre').verbose_name), 'cabecera': True})
+            ## Almacena los datos de año y trimestre inicial provenientes del formulario
             anho_ini = int(kwargs['anho__gte'])
             trimestre_ini = int(kwargs['trimestre__gte'])
 
-            # Genera los años y trimestres correspondientes a los parámetros del formulario
+            ## Genera los años y trimestres correspondientes a los parámetros del formulario
             registros = []
             while True:
                 registros = [({'tag': anho_ini})]
                 registros.append({'tag': trimestre_ini})
-                # Agrega los datos a la nueva fila del archivo a generar
+                ## Agrega los datos a la nueva fila del archivo a generar
                 fields.append(registros)
                 if (anho_ini == int(kwargs['anho__lte']) and trimestre_ini == int(kwargs['trimestre__lte'])):
                     break
@@ -709,10 +783,10 @@ class PIB(models.Model):
                     anho_ini += 1
                 trimestre_ini += 1
         else:
-            # Almacena los años de los registros a descargar
+            ## Almacena los años de los registros a descargar
             for i in range(diff_anhos):
                 registros = [({'tag': int(kwargs['anho__gte']) + i})]
-                # Agrega los datos a la nueva fila del archivo a generar
+                ## Agrega los datos a la nueva fila del archivo a generar
                 fields.append(registros)
         ## Devuelve los datos correspondientes al archivo a descargar y el nombre de ese archivo
         return {'fields': fields, 'output': nombre_archivo}
@@ -735,7 +809,7 @@ class PIB(models.Model):
         """
 
         load_file = pyexcel.get_book(bookdict=kwargs['file_content'])[0]
-        anho_base, i, col_ini, errors, result, message, is_nominal = '', 0, 2, '', False, '', False
+        anhos_base, anho_b, errors, result, message, is_nominal = [], None, '', False, '', False
         is_demanda, is_produccion, is_actividad, is_sector = False, False, False, False
         load_data_msg = str(_("Datos Cargados"))
 
@@ -775,28 +849,33 @@ class PIB(models.Model):
                 'result': False,
                 'message': str(_("El documento a cargar no es válido o no corresponde a los parámetros seleccionados"))
             }
+ 
+        if not is_nominal:
+            ## Se crea una lista con los años base del modelo
+            anhos_base = [int(anhos.anho) for anhos in AnhoBase.objects.all()]
+            #Se almacena el año base suministrado en el formulario
+            anho_b = AnhoBase.objects.get(id=kwargs['anho_base'])
 
-        
         ## En base al archivo cargado, se validan y cargan a la base de datos los valores contenidos en el archivo
         for row in load_file.row[2:]:
             try:
-                # Asigna el año base del registro
-                anho_b = int(kwargs['anho_base'])
-
-                # Posición inicial desde la cual se van a comenzar a registrar los datos en los modelos asociados
+                ## Obtención del año a registrar
                 anho = row[0]
 
-                # Condición que indica si el registro corresponde al año base
-                base = True if i == 0 else False
+                ## Condición que indica si el registro corresponde al año base
+                base = True if anho in anhos_base else False
 
-                # Almacena el valor en caso de tratarse del archivo PIB-Nominal_demanda o False en caso contrario
+                ## Almacena el valor en caso de tratarse del archivo PIB-Nominal_demanda o False en caso contrario
                 nominal = row[1] if (is_nominal and is_demanda) else None
 
-                # Gestión para los datos básicos de pib
-                real_pib, created = PIB.objects.update_or_create(anho=anho, anho_base=anho_b, nominal=nominal)
+                ## Almacena el valor del trimestre en caso de contener esta columna
+                trimestre = row[1] if (is_actividad or is_sector) else None
+
+                ## Gestión para los datos básicos de pib
+                real_pib, created = PIB.objects.update_or_create(anho=anho, anho_base=anho_b, trimestre=trimestre, nominal=nominal)
 
                 if is_demanda:
-                    # Gestión de datos para el Índice por Demanda
+                    ## Gestión de datos para el Índice por Demanda
                     PIBDemanda.objects.update_or_create(pib=real_pib, defaults={
                         'base': base,
                         'gasto_consumo': check_val_data(row[2] if is_nominal else row[1]),
@@ -805,7 +884,7 @@ class PIB(models.Model):
                         'importacion_bienes': check_val_data(row[5] if is_nominal else row[4])
                     })
                 elif is_produccion:
-                    # Gestión de datos para el Índice por Producción
+                    ## Gestión de datos para el Índice por Producción
                     PIBProduccion.objects.update_or_create(pib=real_pib, defaults={
                         'base': base,
                         'valor_agregado': check_val_data(row[1]),
@@ -813,10 +892,9 @@ class PIB(models.Model):
                         'subvencion_productos': check_val_data(row[3]),
                     })
                 elif is_actividad:
-                    # Gestión de datos para el ïndice por Actividad Económica
+                    ## Gestión de datos para el ïndice por Actividad Económica
                     PIBActividad.objects.update_or_create(pib=real_pib, defaults={
                         'base': base,
-                        'trimestre': check_val_data(row[1]),
                         'total_consolidado': check_val_data(row[2]),
                         'total_petrolera': check_val_data(row[3]),
                         'total_no_petrolera': check_val_data(row[4]),
@@ -836,17 +914,15 @@ class PIB(models.Model):
                         'neto_producto': check_val_data(row[18])
                     })
                 elif is_sector:
-                    # Gestión de datos para el Índice por Sector Institucional
+                    ## Gestión de datos para el Índice por Sector Institucional
                     PIBInstitucion.objects.update_or_create(pib=real_pib, defaults={
                         'base': base,
-                        'trimestre': check_val_data(row[1]),
                         'publico': check_val_data(row[2]),
                         'privado': check_val_data(row[3])
                         })
 
             except Exception as e:
                 errors += "- %s\n" % str(e)
-            i += 1
 
         if errors:
             message = str(_("Error procesando datos. Verifique su correo para detalles del error"))
@@ -946,8 +1022,6 @@ class PIBActividad(models.Model):
     @version 1.0.0
     """
 
-    trimestre = models.CharField(max_length=1, null=True, blank=True, verbose_name=_('Trimestre'))
-
     total_consolidado = models.DecimalField(
         max_digits=18, decimal_places=2, default=0.0, verbose_name=_("PIB Consolidado")
     )
@@ -1045,8 +1119,6 @@ class PIBInstitucion(models.Model):
     @date 05-04-2017
     @version 1.0.0
     """
-    
-    trimestre = models.CharField(max_length=1, null=True, blank=True, verbose_name=_('Trimestre'))
 
     publico = models.DecimalField(
         max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Publico")
@@ -1357,7 +1429,7 @@ class OfertaExterna(models.Model):
 @python_2_unicode_compatible
 class AgregadosBase(models.Model):
     """!
-    Clase que contiene los registros comunes de los modelos relacionados con la Sub-área Agregados Monetarios
+    Clase que contiene los registros comunes de los modelos relacionados con el Sub-área Agregados Monetarios
 
     @author Edgar A. Linares (elinares at cenditel.gob.ve)
     @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
@@ -1365,14 +1437,17 @@ class AgregadosBase(models.Model):
     @version 1.0.0
     """
 
+    ## Fecha a la que pertenece el registro
+    fecha = models.DateField(null=True, verbose_name=_("Fecha"))
+
     ## Semana a la que pertenece el registro
-    semana = models.CharField(max_length=2, verbose_name=_("Semana"))
+    semana = models.CharField(null=True, max_length=2, verbose_name=_("Semana"))
 
     ## Mes al que pertenece el registro
-    mes = models.CharField(max_length=2, choices=MESES[1:], verbose_name=_("Mes"))
+    mes = models.CharField(null=True, max_length=2, choices=MESES[1:], verbose_name=_("Mes"))
 
     ## Año al que pertenece el registro
-    anho = models.CharField(max_length=4, verbose_name=_("Año"))
+    anho = models.CharField(null=True, max_length=4, verbose_name=_("Año"))
 
     class Meta:
         verbose_name = _('Agregados Base')
@@ -1414,11 +1489,11 @@ class AgregadosBase(models.Model):
             fields = [
                 [
                     {'tag': '', 'cabecera': True},
-                    {'tag': str(ReservasBancarias._meta.verbose_name), 'color': 'orange', 'text_color': 'white', 'combine': 1,'cabecera': True}
+                    {'tag': str(AgregadosReservas._meta.verbose_name), 'color': 'orange', 'text_color': 'white', 'combine': 1,'cabecera': True}
                 ],
                 [
-                    {'tag': str(ReservasBancarias._meta.get_field('fecha').verbose_name), 'cabecera': True},
-                    {'tag': str(ReservasBancarias._meta.get_field('reservas_bancarias').verbose_name), 'cabecera': True}
+                    {'tag': str(AgregadosBase._meta.get_field('fecha').verbose_name), 'cabecera': True},
+                    {'tag': str(AgregadosReservas._meta.get_field('reservas_bancarias').verbose_name), 'cabecera': True}
                 ]
             ]
             nombre_archivo = 'Reservas_bancarias'
@@ -1427,14 +1502,14 @@ class AgregadosBase(models.Model):
             fields = [
                 [
                     {'tag': '', 'cabecera': True},
-                    {'tag': str(MonetariaUsos._meta.verbose_name), 'color': 'orange', 'text_color': 'white', 'combine': 4,'cabecera': True}
+                    {'tag': str(AgregadosUsos._meta.verbose_name), 'color': 'orange', 'text_color': 'white', 'combine': 4,'cabecera': True}
                 ],
                 [
                     {'tag': str(AgregadosBase._meta.get_field('semana').verbose_name), 'cabecera': True},
-                    {'tag': str(MonetariaUsos._meta.get_field('depositos_bcu').verbose_name), 'cabecera': True},
-                    {'tag': str(MonetariaUsos._meta.get_field('depositos_rsb').verbose_name), 'cabecera': True},
-                    {'tag': str(MonetariaUsos._meta.get_field('depositos_ep').verbose_name), 'cabecera': True},
-                    {'tag': str(MonetariaUsos._meta.get_field('monedas_billetes').verbose_name), 'cabecera': True}
+                    {'tag': str(AgregadosUsos._meta.get_field('depositos_bcu').verbose_name), 'cabecera': True},
+                    {'tag': str(AgregadosUsos._meta.get_field('depositos_rsb').verbose_name), 'cabecera': True},
+                    {'tag': str(AgregadosUsos._meta.get_field('depositos_ep').verbose_name), 'cabecera': True},
+                    {'tag': str(AgregadosUsos._meta.get_field('monedas_billetes').verbose_name), 'cabecera': True}
                 ]
             ]
             nombre_archivo = 'Base_monetaria_usos'
@@ -1443,29 +1518,41 @@ class AgregadosBase(models.Model):
             fields = [
                 [
                     {'tag': '', 'cabecera': True},
-                    {'tag': str(MonetariaFuentes._meta.verbose_name), 'color': 'orange', 'text_color': 'white', 'combine': 6,'cabecera': True}
+                    {'tag': str(AgregadosFuentes._meta.verbose_name), 'color': 'orange', 'text_color': 'white', 'combine': 6,'cabecera': True}
                 ],
                 [
                     {'tag': str(AgregadosBase._meta.get_field('semana').verbose_name), 'cabecera': True},
-                    {'tag': str(MonetariaFuentes._meta.get_field('reservas_internacionales').verbose_name), 'cabecera': True},
-                    {'tag': str(MonetariaFuentes._meta.get_field('sector_publico').verbose_name), 'cabecera': True},
-                    {'tag': str(MonetariaFuentes._meta.get_field('sector_financiero').verbose_name), 'cabecera': True},
-                    {'tag': str(MonetariaFuentes._meta.get_field('credito_bcv').verbose_name), 'cabecera': True},
-                    {'tag': str(MonetariaFuentes._meta.get_field('otras_cuentas').verbose_name), 'cabecera': True},
-                    {'tag': str(MonetariaFuentes._meta.get_field('capital_pagado_reservas').verbose_name), 'cabecera': True}
+                    {'tag': str(AgregadosFuentes._meta.get_field('reservas_internacionales').verbose_name), 'cabecera': True},
+                    {'tag': str(AgregadosFuentes._meta.get_field('sector_publico').verbose_name), 'cabecera': True},
+                    {'tag': str(AgregadosFuentes._meta.get_field('sector_financiero').verbose_name), 'cabecera': True},
+                    {'tag': str(AgregadosFuentes._meta.get_field('credito_bcv').verbose_name), 'cabecera': True},
+                    {'tag': str(AgregadosFuentes._meta.get_field('otras_cuentas').verbose_name), 'cabecera': True},
+                    {'tag': str(AgregadosFuentes._meta.get_field('capital_pagado_reservas').verbose_name), 'cabecera': True}
                 ]
             ]
             nombre_archivo = 'Base_monetaria_fuentes'    
-        ## Colocar en el archivo de salida las fechas excepto fines de semana segun la selección del usuario
-        if any('fecha' in index for index in kwargs):
-            inicio=datetime.strptime(kwargs['fecha__gte'], "%d/%m/%Y")
-            fin=datetime.strptime(kwargs['fecha__lte'], "%d/%m/%Y")
+        if any('reservas_bancarias' in index for index in kwargs):
+            ## Si el dominio es reservas bancarias, se agregan al archivo las fechas por días excepto fines de semana
+            inicio = datetime.strptime(kwargs['fecha__gte'], "%d/%m/%Y")
+            fin = datetime.strptime(kwargs['fecha__lte'], "%d/%m/%Y")
             delta = timedelta(days=1)
             while inicio <= fin:
                 if inicio.weekday() < 5:
-                    fields.append([ {'tag': str(_(str(inicio.strftime('%d/%m/%Y'))))}])
-                inicio+= delta        
-        ## Devuelve los datos correspondientes al archivo a descargar y el nombre de ese archivo    
+                    fields.append([{'tag': str(_(str(inicio.strftime('%d/%m/%Y'))))}])
+                inicio += delta
+        else:
+            ## Para los demás dominios, se agregan al archivo las fechas por semanas dentro de las fechas indicadas
+            inicio = datetime.strptime(kwargs['fecha__gte'], "%d/%m/%Y")
+            if inicio.weekday() != 4:
+                inicio = inicio - timedelta(inicio.weekday()) + timedelta(days=4)
+            fin = datetime.strptime(kwargs['fecha__lte'], "%d/%m/%Y")
+            if fin.weekday() != 4:
+                fin = fin - timedelta(fin.weekday()) + timedelta(days=4)
+            
+            while inicio <= fin:
+                fields.append([{'tag': str(_(str(inicio.strftime("%d/%m/%Y"))))}])
+                inicio += timedelta(weeks=1)
+        ## Devuelve los datos correspondientes al archivo a descargar y el nombre de ese archivo
         return {'fields': fields, 'output': nombre_archivo}
 
     def gestion_process(self, user, *args, **kwargs):
@@ -1485,7 +1572,7 @@ class AgregadosBase(models.Model):
 
         load_file = pyexcel.get_book(bookdict=kwargs['file_content'])[0]
         errors, result, message = '', False, ''
-        is_reservas_bancarias, is_liquidez_monetaria, is_monetaria_usos, is_monetaria_fuentes = True, True, True, True
+        is_reservas_bancarias, is_liquidez_monetaria, is_monetaria_usos, is_monetaria_fuentes = False, False, False, False
         load_data_msg = str(_("Datos Cargados"))
 
         """!
@@ -1504,11 +1591,11 @@ class AgregadosBase(models.Model):
         ## Valida que el archivo corresponde a lo indicado en los parámetros del formulario
         if is_liquidez_monetaria and (load_file.row[0][1] == str(AgregadosMonetarios._meta.verbose_name)):
             result = True
-        elif is_reservas_bancarias and (load_file.row[0][1] == str(ReservasBancarias._meta.verbose_name)):
+        elif is_reservas_bancarias and (load_file.row[0][1] == str(AgregadosReservas._meta.verbose_name)):
             result = True
-        elif is_monetaria_usos and (load_file.row[0][1] == str(MonetariaUsos._meta.verbose_name)):
+        elif is_monetaria_usos and (load_file.row[0][1] == str(AgregadosUsos._meta.verbose_name)):
             result = True
-        elif is_monetaria_fuentes and (load_file.row[0][1] == str(MonetariaFuentes._meta.verbose_name)):
+        elif is_monetaria_fuentes and (load_file.row[0][1] == str(AgregadosFuentes._meta.verbose_name)):
             result = True
 
         ## Comprueba si el archivo está vacio
@@ -1525,55 +1612,50 @@ class AgregadosBase(models.Model):
         ## En base al archivo cargado, se validan y cargan a la base de datos los valores contenidos en el archivo
         for row in load_file.row[2:]:
             try:
-                # Asigna la semana del registro
-                semana = row[0] if not is_reservas_bancarias else None
+                ## Asigna la fecha del registro
+                fecha = datetime.strptime(row[0], "%d/%m/%Y")
 
-                # Asigna el mes del registro
-                mes = 10
+                ## Separa la fecha para obtener mes y año
+                f = row[0].split('/')
 
-                # Asigna el año del registro
-                anho = 100
-
-                # Asigna la fecha del registro
-                fecha = fecha=datetime.strptime(row[0], "%d/%m/%Y")
-                #datetime(int(anho), int(mes), 1) if is_reservas_bancarias else 1000
-
-                # Gestión para los datos básicos de Agregados Monetarios
-                agregados, created = AgregadosBase.objects.update_or_create(semana=semana, mes=mes, anho=anho)
+                ## Obtiene la semana respecto al año
+                semana = fecha.isocalendar()[1]
+                
+                ## Gestión para los datos básicos de Agregados Monetarios
+                agregados, created = AgregadosBase.objects.update_or_create(fecha=fecha, semana=semana, mes=f[1], anho=f[2])
 
                 if is_liquidez_monetaria:
                     ## Gestión de datos para la categoría Agregados Monetarios
-                    AgregadosMonetarios.objects.update_or_create(agregados = agregados, default={
-                        'monedas_billetes': chek_val_data(row[1]),
-                        'depositos_vista': chek_val_data(row[2]),
-                        'depositos_ahorro': chek_val_data(row[3]),
-                        'depositos_plazo': chek_val_data(row[4]),
-                        'cuasidinero': chek_val_data(row[5]),
-                        'cedulas_hipotecarias': chek_val_data(row[6])
+                    AgregadosMonetarios.objects.update_or_create(agregados = agregados, defaults={
+                        'monedas_billetes': check_val_data(row[1]),
+                        'depositos_vista': check_val_data(row[2]),
+                        'depositos_ahorro': check_val_data(row[3]),
+                        'depositos_plazo': check_val_data(row[4]),
+                        'cuasidinero': check_val_data(row[5]),
+                        'cedulas_hipotecarias': check_val_data(row[6])
                     })
                 elif is_reservas_bancarias:
                     ## Gestión de datos para la categoría Reservas Bancarias
-                    ReservasBancarias.objects.update_or_create(agregados = agregados, default={
-                        'fecha': fecha,
-                        'reservas_bancarias': chek_val_data(row[1])
+                    AgregadosReservas.objects.update_or_create(agregados = agregados, defaults={
+                        'reservas_bancarias': check_val_data(row[1])
                     })
                 elif is_monetaria_usos:
                     ## Gestión de datos para la categoría Base Monetaria Usos
-                    MonetariaUsos.objects.update_or_create(agregados = agregados, default={
-                        'depositos_bcu': chek_val_data(row[1]),
-                        'depositos_rsb': chek_val_data(row[2]),
-                        'depositos_ep': chek_val_data(row[3]),
-                        'monedas_billetes': chek_val_data(row[4])
+                    AgregadosUsos.objects.update_or_create(agregados = agregados, defaults={
+                        'depositos_bcu': check_val_data(row[1]),
+                        'depositos_rsb': check_val_data(row[2]),
+                        'depositos_ep': check_val_data(row[3]),
+                        'monedas_billetes': check_val_data(row[4])
                     })
                 elif is_monetaria_fuentes:
                     ## Gestión de datos para la categoría Base Monetaria Fuentes
-                    MonetariaFuentes.objects.update_or_create(agregados = agregados, default={
-                        'reservas_internacionales': chek_val_data(row[1]),
-                        'sector_publico': chek_val_data(row[2]),
-                        'sector_financiero': chek_val_data(row[3]),
-                        'credito_bcv': chek_val_data(row[4]),
-                        'otras_cuentas': chek_val_data(row[5]),
-                        'capital_pagado_reservas': chek_val_data(row[6])
+                    AgregadosFuentes.objects.update_or_create(agregados = agregados, defaults={
+                        'reservas_internacionales': check_val_data(row[1]),
+                        'sector_publico': check_val_data(row[2]),
+                        'sector_financiero': check_val_data(row[3]),
+                        'credito_bcv': check_val_data(row[4]),
+                        'otras_cuentas': check_val_data(row[5]),
+                        'capital_pagado_reservas': check_val_data(row[6])
                     })
             except Exception as e:
                 errors += "- %s\n" % str(e)
@@ -1638,7 +1720,7 @@ class AgregadosMonetarios(models.Model):
         verbose_name = _('Agregados Monetarios')
 
 @python_2_unicode_compatible
-class ReservasBancarias(models.Model):
+class AgregadosReservas(models.Model):
     """!
     Clase que contiene los registros de la categoría reservas bancarias de la sub-área Agregados Monetarios
 
@@ -1647,9 +1729,6 @@ class ReservasBancarias(models.Model):
     @date 30-05-2017
     @version 1.0.0
     """
-    
-    ## Fecha a la que pertenece el registro
-    fecha = models.DateField(null=True, verbose_name=_("Fecha"))
 
     ## Reservas Bancarias 
     reservas_bancarias = models.DecimalField(
@@ -1663,7 +1742,7 @@ class ReservasBancarias(models.Model):
         verbose_name = _('Reservas Bancarias')
 
 @python_2_unicode_compatible
-class MonetariaUsos(models.Model):
+class AgregadosUsos(models.Model):
     """!
     Clase que contiene los registros de la categoría base monetaria usos de la sub-área Agregados Monetarios
 
@@ -1700,7 +1779,7 @@ class MonetariaUsos(models.Model):
         verbose_name = _('Base Monetaria Usos')
 
 @python_2_unicode_compatible
-class MonetariaFuentes(models.Model):
+class AgregadosFuentes(models.Model):
     """!
     Clase que contiene los registros de la categoría base monetaria fuentes de la sub-área Agregados Monetarios
 
@@ -1762,13 +1841,13 @@ class TasasInteres(models.Model):
     fecha = models.DateField(null=True, verbose_name=_("Fecha"))
     
     ## Semana a la que pertenece el registro
-    semana = models.CharField(max_length=2, verbose_name=_("Semana"))
+    semana = models.CharField(null=True, max_length=2, verbose_name=_("Semana"))
 
     ## Mes al que pertenece el registro
-    mes = models.CharField(max_length=2, choices=MESES[1:], verbose_name=_("Mes"))
+    mes = models.CharField(null=True, max_length=2, choices=MESES[1:], verbose_name=_("Mes"))
 
     ## Año al que pertenece el registro
-    anho = models.CharField(max_length=4, verbose_name=_("Año"))
+    anho = models.CharField(null=True, max_length=4, verbose_name=_("Año"))
 
     class Meta:
         verbose_name = _('Tasas de Interés')
@@ -1792,13 +1871,13 @@ class TasasInteres(models.Model):
             fields = [
                 [
                     {'tag': '', 'cabecera': True},
-                    {'tag': str(PrincipalesBancos._meta.verbose_name), 'color': 'orange', 'text_color': 'white', 'combine': 3, 'cabecera': True}
+                    {'tag': str(TasasBancos._meta.verbose_name), 'color': 'orange', 'text_color': 'white', 'combine': 3, 'cabecera': True}
                 ],
                 [
                     {'tag': str(TasasInteres._meta.get_field('semana').verbose_name), 'cabecera': True},
-                    {'tag': str(PrincipalesBancos._meta.get_field('operaciones_activas').verbose_name), 'cabecera': True},
-                    {'tag': str(PrincipalesBancos._meta.get_field('depositos_90_dias').verbose_name), 'cabecera': True},
-                    {'tag': str(PrincipalesBancos._meta.get_field('depositos_ahorro').verbose_name), 'cabecera': True}
+                    {'tag': str(TasasBancos._meta.get_field('operaciones_activas').verbose_name), 'cabecera': True},
+                    {'tag': str(TasasBancos._meta.get_field('depositos_90_dias').verbose_name), 'cabecera': True},
+                    {'tag': str(TasasBancos._meta.get_field('depositos_ahorro').verbose_name), 'cabecera': True}
                 ]
             ]
             ## Asigna el nombre del archivo a descargar
@@ -1808,7 +1887,7 @@ class TasasInteres(models.Model):
             fields = [
                 [
                     {'tag': '', 'cabecera': True},
-                    {'tag': str(_('Tasas de Bancos Comerciales y Universales')), 'color': 'orange', 'text_color': 'white', 'combine': 4, 'cabecera': True},
+                    {'tag': str(TasaActiva._meta.verbose_name), 'color': 'orange', 'text_color': 'white', 'combine': 4, 'cabecera': True},
                     {'tag': str(_('Por Actividad Económica')), 'color': 'green', 'text_color': 'white', 'combine': 13, 'cabecera': True},
                     {'tag': str(_('Condición Jurídica')), 'color': 'ocean_blue', 'text_color': 'white', 'combine': 2, 'cabecera': True}
                 ],
@@ -1859,15 +1938,29 @@ class TasasInteres(models.Model):
             ]
             ## Asigna el nombre del archivo a descargar
             nombre_archivo = 'Tasas_pasiva'
-        ## Colocar en el archivo de salida las fechas excepto fines de semana segun la selección del usuario
-        if any('fecha' in index for index in kwargs):
-            inicio=datetime.strptime(kwargs['fecha__gte'], "%d/%m/%Y")
-            fin=datetime.strptime(kwargs['fecha__lte'], "%d/%m/%Y")
+
+        if any('tasa_pb' in index for index in kwargs):
+            ## Para el dominio Principales Bancos, se agregan al archivo las fechas por semanas dentro de las fechas indicadas
+            inicio = datetime.strptime(kwargs['fecha__gte'], "%d/%m/%Y")
+            if inicio.weekday() != 4:
+                inicio = inicio - timedelta(inicio.weekday()) + timedelta(days=4)
+            fin = datetime.strptime(kwargs['fecha__lte'], "%d/%m/%Y")
+            if fin.weekday() != 4:
+                fin = fin - timedelta(fin.weekday()) + timedelta(days=4)
+            
+            while inicio <= fin:
+                fields.append([{'tag': str(_(str(inicio.strftime("%d/%m/%Y"))))}])
+                inicio += timedelta(weeks=1)
+        else:
+            ## Para los demás dominios, se agregan al archivo las fechas por días excepto fines de semana
+            inicio = datetime.strptime(kwargs['fecha__gte'], "%d/%m/%Y")
+            fin = datetime.strptime(kwargs['fecha__lte'], "%d/%m/%Y")
             delta = timedelta(days=1)
             while inicio <= fin:
                 if inicio.weekday() < 5:
-                    fields.append([ {'tag': str(_(str(inicio.strftime('%d/%m/%Y'))))}])
-                inicio+= delta
+                    fields.append([{'tag': str(_(str(inicio.strftime('%d/%m/%Y'))))}])
+                inicio += delta
+
         ## Devuelve los datos correspondientes al archivo a descargar y el nombre de ese archivo
         return {'fields': fields, 'output': nombre_archivo}
 
@@ -1903,9 +1996,9 @@ class TasasInteres(models.Model):
             is_tasa_pasiva = True
 
         ## Valida que el archivo corresponde a lo indicado en los parámetros del formulario
-        if is_tasa_pb and (load_file.row[0][1] == str(PrincipalesBancos._meta.verbose_name)):
+        if is_tasa_pb and (load_file.row[0][1] == str(TasasBancos._meta.verbose_name)):
             result = True
-        elif is_tasa_activa and (load_file.row[0][1] == str(_('Tasas de Bancos Comerciales y Universales'))):
+        elif is_tasa_activa and (load_file.row[0][1] == str(TasaActiva._meta.verbose_name)):
             result = True
         elif is_tasa_pasiva and (load_file.row[0][1] == str(TasaPasiva._meta.verbose_name)):
             result = True
@@ -1924,25 +2017,21 @@ class TasasInteres(models.Model):
         ## En base al archivo cargado, se validan y cargan a la base de datos los valores contenidos en el archivo
         for row in load_file.row[2:]:
             try:
-                ## Asigna la semana del registro
-                semana = 1
-                #row[0] if is_tasa_pb else None
-
-                ## Asigna el mes del registro
-                mes = None
-
-                ## Asigna el año del registro
-                anho = None
-
                 ## Asigna la fecha del registro
                 fecha = datetime.strptime(row[0], "%d/%m/%Y")
 
+                ## Separa la fecha para obtener mes y año
+                f = row[0].split('/')
+
+                ## Obtiene la semana respecto al año
+                semana = fecha.isocalendar()[1]
+
                 ## Gestión para los datos básicos de Tasas de Interés
-                tasas, created = TasasInteres.objects.update_or_create(fecha=fecha, semana=semana, mes=mes, anho=anho)
+                tasas, created = TasasInteres.objects.update_or_create(fecha=fecha, semana=semana, mes=f[1], anho=f[2])
 
                 if is_tasa_pb:
                     ## Gestión de datos para la categoría Seis Principales Bancos
-                    PrincipalesBancos.objects.update_or_create(tasas=tasas, defaults={
+                    TasasBancos.objects.update_or_create(tasas=tasas, defaults={
                         'operaciones_activas': check_val_data(row[1]),
                         'depositos_90_dias': check_val_data(row[2]),
                         'depositos_ahorro': check_val_data(row[3])
@@ -1959,7 +2048,7 @@ class TasasInteres(models.Model):
                         'comercio': check_val_data(row[7]),
                         'servicios': check_val_data(row[8]),
                         'creditos_hipotecarios': check_val_data(row[9]),
-                        'transporte_alimento': check_val_data(row[10]),
+                        'transporte_almacenamiento': check_val_data(row[10]),
                         'turismo': check_val_data(row[11]),
                         'comunicaciones': check_val_data(row[12]),
                         'adquisicion_vehiculos': check_val_data(row[13]),
@@ -1999,7 +2088,7 @@ class TasasInteres(models.Model):
         return {'result': result, 'message': message}
 
 @python_2_unicode_compatible
-class PrincipalesBancos(models.Model):
+class TasasBancos(models.Model):
     """!
     Clase que contiene los registros de la categoría Seis Principales Bancos de la sub-área Tasas de Interés
 
@@ -2140,7 +2229,7 @@ class TasaActiva(models.Model):
     tasas = models.ForeignKey(TasasInteres, verbose_name=_('Tasas de Interés'))
 
     class Meta:
-        verbose_name = _('Tasa de Interés Activa')
+        verbose_name = _('Tasas de Bancos Comerciales y Universales')
 
 @python_2_unicode_compatible
 class TasaPasiva(models.Model):
@@ -2202,7 +2291,7 @@ class TasaPasiva(models.Model):
     tasas = models.ForeignKey(TasasInteres, verbose_name=_('Tasas de Interés'))
 
     class Meta:
-        verbose_name = _('Tasa de Interés Activa')
+        verbose_name = _('Tasa de Interés Pasiva')
 
 #-----------------------------Economía - Externo - Reservas, Tipo de Cambio
 @python_2_unicode_compatible
@@ -2513,17 +2602,18 @@ class BalanzaComercialBase(models.Model):
         fields.append(sub_header);
         
         ## Se asigna el año base (si existe)
-        anho_base = kwargs['anho_base'] if 'anho_base' in kwargs else ''
+        anho_base = kwargs['anho_base'] if 'anho_base' in kwargs else 0
         
-        # Almacena los datos de año y trimestre inicial provenientes del formulario
+        ## Almacena los datos de año y trimestre inicial provenientes del formulario
         anho_ini = int(kwargs['anho__gte'])
         trimestre_ini = int(kwargs['trimestre__gte'])
-
-        # Genera los años y trimestres correspondientes a los parámetros del formulario
+        
+        ## Genera los años y trimestres correspondientes a los parámetros del formulario
         registros = []
         while True:
             registros = [({'tag': trimestre_ini})]
             registros.append({'tag': anho_ini})
+            print(anho_base)
             ## Se intenta búscar el registro base
             balanza_base = BalanzaComercialBase.objects.filter(
                     anho_base=anho_base,
@@ -2626,7 +2716,7 @@ class BalanzaComercialBase(models.Model):
                     registros.append({'tag':balanza_datos_is.publico_no_petroleo})
                     registros.append({'tag':balanza_datos_is.privado_petroleo})
                     registros.append({'tag':balanza_datos_is.privado_no_petroleo})
-            # Agrega los datos a la nueva fila del archivo a generar
+            ## Agrega los datos a la nueva fila del archivo a generar
             fields.append(registros)
             if (anho_ini == int(kwargs['anho__lte']) and trimestre_ini == int(kwargs['trimestre__lte'])):
                 break
@@ -2662,11 +2752,11 @@ class BalanzaComercialBase(models.Model):
         """
         
         load_file = pyexcel.get_book(bookdict=kwargs['file_content'])[0]
-        anho_base, errors, result, message = '', '', True, ''
+        anho_base, errors, result, message = None, '', True, ''
         load_data_msg = str(_("Datos Cargados"))
 
         ## Se asigna un valor al año base
-        anho_base = kwargs['anho_base'] if 'anho_base' in kwargs else ''
+        anho_base = kwargs['anho_base'] if 'anho_base' in kwargs else None
         
         for row in load_file.row[2:]:
             try:
@@ -2701,6 +2791,7 @@ class BalanzaComercialBase(models.Model):
                         'exportacion_servicio': check_val_data(row[6]),
                         'importacion_servicio': check_val_data(row[11]),
                     })
+                    print("finalizo?")
                 ## Se crea la balanza para el índice de precios implícitos
                 elif(kwargs['tipo']=='PI'):
                     ## Se crea el registro para los precios implícitos
@@ -2780,7 +2871,7 @@ class BalanzaComercialBase(models.Model):
             load_data_msg = str(_("Error al procesar datos del área Económica - Externo"))
 
 
-        # Envia correo electronico al usuario indicando el estatus de la carga de datos
+        ## Envia correo electronico al usuario indicando el estatus de la carga de datos
         enviar_correo(user.email, 'gestion.informacion.load.mail', EMAIL_SUBJECT_LOAD_DATA, {
             'load_data_msg': load_data_msg, 'administrador': administrador, 'admin_email': admin_email,
             'errors': errors
@@ -3043,14 +3134,14 @@ class CuentaCapitalBalanzaBase(models.Model):
             ## Se añade la subcabecera
             fields.append(sub_header)
         
-        # Almacena los datos de año y trimestre inicial provenientes del formulario
+        ## Almacena los datos de año y trimestre inicial provenientes del formulario
         anho_ini = int(kwargs['anho__gte'])
         trimestre_ini = int(kwargs['trimestre__gte'])
         
         while True:
             registros = [({'tag': anho_ini})]
             registros.append({'tag': trimestre_ini})
-            # Agrega los datos a la nueva fila del archivo a generar
+            ## Agrega los datos a la nueva fila del archivo a generar
             if(kwargs['dominio']=='BP'):
                 cuenta_capital_base = CuentaCapitalBalanzaBase.objects.filter(anho=anho_ini,trimestre=trimestre_ini)
                 if(cuenta_capital_base):
@@ -3341,7 +3432,7 @@ class CuentaCapitalBalanzaBase(models.Model):
             load_data_msg = str(_("Error al procesar datos del área Económica - Externo"))
 
 
-        # Envia correo electronico al usuario indicando el estatus de la carga de datos
+        ## Envia correo electronico al usuario indicando el estatus de la carga de datos
         enviar_correo(user.email, 'gestion.informacion.load.mail', EMAIL_SUBJECT_LOAD_DATA, {
             'load_data_msg': load_data_msg, 'administrador': administrador, 'admin_email': admin_email,
             'errors': errors
