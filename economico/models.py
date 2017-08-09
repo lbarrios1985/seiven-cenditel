@@ -23,7 +23,7 @@ from itertools import islice , cycle
 
 from base.constant import (
     DOMINIO, PERIODICIDAD, TRIMESTRES, MESES, ECONOMICO_SUB_AREA, CONVERT_MES, EMAIL_SUBJECT_LOAD_DATA,EMAIL_SUBJECT_CM_RESULT,
-    TIPO_BALANZA_COMERCIAL, DOMINIO_BALANZA_COMERCIAL, BALANZA_DATOS, INVERSION_CARTERA, SECTOR_DEUDA
+    TIPO_BALANZA_COMERCIAL, DOMINIO_BALANZA_COMERCIAL, BALANZA_DATOS, INVERSION_CARTERA, SECTOR_DEUDA,CONVERT_DOMINIO
 )
 from base.functions import enviar_correo, check_val_data
 from base.models import AnhoBase
@@ -62,16 +62,15 @@ class Precios(models.Model):
     ## Registro del mes y año
     fecha = models.DateField(null=True, verbose_name=_("Fecha"))
 
-    class Meta:
-        unique_together = ("anho", "mes")
-
     def gestion_init(self, *args, **kwargs):
         """!
         Método que permite descargar un archivo con los datos a gestionar
 
         @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+        @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
         @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
         @date 05-12-2016
+        @date 09-08-2017
         @param self <b>{object}</b> Objeto que instancia la clase
         @param args <b>{tupla}</b> Tupla con argumentos opcionales
         @param kwargs <b>{dic}</b> Diccionario con filtros opcionales
@@ -164,10 +163,10 @@ class Precios(models.Model):
                 kwargs['ciudad__in'] = [d for d in DOMINIO[1:][0]]
                 ## Agrega la columna correspondiente a las ciudades
                 fields[0].insert(2, {'tag': '', 'cabecera': True})
-                fields[1].insert(2, {'tag': dominio, 'cabecera': True})
+                fields[1].insert(2, {'tag': dominio, 'cabecera': True, 'row':2})
 
                 lst=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
-                lst1=['Caracas','Maracay','Ciudad Guayana','Barcelona -Pto la Cruz','Valencia','Barquisimeto','Maracaibo','Mérida','Maturín','San Cristóbal','Resto Nacional']
+                lst1=['Caracas','Maracay','Ciudad Guayana','Barcelona - Pto la Cruz','Valencia','Barquisimeto','Maracaibo','Mérida','Maturín','San Cristóbal','Resto Nacional']
 
                 x = int (kwargs['fecha__month__lte']) - int (kwargs['fecha__month__gte']) + 1 +  12 * (int(kwargs['fecha__year__lte']) - int(kwargs['fecha__year__gte']))
                 for i, val in enumerate(lst):
@@ -186,7 +185,7 @@ class Precios(models.Model):
                             aux=aux+1
                             for q in range(0,11):
                                 if lst1[q] == 'Caracas':
-                                    fields.append([ {'tag': str(_(str(aux1))),'combine_row':11 ,'cabecera': True}, {'tag': str(_(str(a))), 'combine_row1':11,'cabecera': True},{'tag': str(_(str(lst1[q]))),'cabecera': True}])
+                                    fields.append([ {'tag': str(_(str(aux1))),'combine_row':11 ,'cabecera': True, 'row':0}, {'tag': str(_(str(a))), 'combine_row':11,'cabecera': True,'row':1},{'tag': str(_(str(lst1[q]))),'cabecera': True}])
                                 else:
                                     fields.append([{'tag':''},{'tag':''},{'tag': str(_(str(lst1[q]))),'cabecera': True}])
 
@@ -197,8 +196,10 @@ class Precios(models.Model):
         Método que permite cargar y gestionar datos
 
         @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+        @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
         @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
         @date 05-12-2016
+        @date 09-08-2017
         @param self <b>{object}</b> Objeto que instancia la clase
         @param file <b>{string}</b> Ruta y nombre del archivo a gestionar
         @param user <b>{object}</b> Objeto que contiene los datos del usuario que realiza la acción
@@ -207,64 +208,38 @@ class Precios(models.Model):
         @return Devuelve el resultado de la acción con su correspondiente mensaje
         """
         load_file = pyexcel.get_book(bookdict=kwargs['file_content'])[0]
-        anho_base, i, col_ini, errors, result, message = '', 0, 2, '', True, ''
+        anho_base, i, col_ini, errors, result, message = self.anho_base, 0, 2, '', True, ''
         load_data_msg = str(_("Datos Cargados"))
 
-        if 'dominio' in kwargs:
-            if (kwargs['dominio'] == 'C' and load_file.row[1][2] == 'INPC') or (kwargs['dominio'] == 'N' and load_file.row[1][2] != 'INPC'):
-                result = False
-        if 'anho_base' in kwargs and kwargs['anho_base'] != load_file.row[2][0]:
-            result = False
-        if not result:
-            return {'result': False, 'message': str(_("El documento a cargar no es válido o no corresponde a los parámetros seleccionados"))}
+        self.anho_base=AnhoBase.objects.get(id=kwargs['anho_base'])
 
         for row in load_file.row[2:]:
             try:
-                ## Asigna el año base del registro
-                anho_b = anho_base = row[0] if i == 0 else anho_base
-
                 ## Asigna el año de la fila que se esta procesando
-                anho = row[0]
+                if row[0]!= '':
+                    anho = row[0] 
 
                 ## Asigna el número de mes
-                mes = [CONVERT_MES[m] for m in CONVERT_MES if m.find(row[1]) >= 0][0]
-
-                ## Asigna la ciudad si el dominio no es nacional
-                ciudad = row[2] if 'dominio' in kwargs and kwargs['dominio'] == 'C' else None
-
-                ## Asigna el INPC total para el año base
-                inpc = row[3] if ciudad else row[2]
-
+                if row[1]!= '':
+                    mes = CONVERT_MES[row[1]]
+                
                 ## Condición que indica si el registro corresponde al año base
                 base = True if i == 0 else False
+
+                ## Asigna la ciudad si el dominio no es nacional
+                ciudad = CONVERT_DOMINIO[row[2]] if 'dominio' in kwargs and kwargs['dominio'] == 'C' else None
+                
+                ## Asigna el INPC total para el año base
+                inpc = row[3] if ciudad else row[2]
 
                 ## Registro de año y mes para los filtros
                 fecha = datetime(int(anho), int(mes), 1)
 
-                ## Condiciones para filtrar la información a cargar según las especificaciones del usuario
-                if 'anho_base' in kwargs and kwargs['anho_base'] != load_file.row[2][0]:
-                    continue
-                if 'fecha__month__gte' in kwargs and 'fecha__month__lte' in kwargs and kwargs[
-                    'fecha__month__lte'] < mes < kwargs['fecha__month__gte']:
-                    continue
-                elif 'fecha__month__gte' in kwargs and mes < kwargs['fecha__month__gte']:
-                    continue
-                elif 'fecha__month__lte' in kwargs and mes > kwargs['fecha__month__lte']:
-                    continue
-                if 'fecha__year__gte' in kwargs and 'fecha__year__lte' in kwargs and kwargs[
-                    'fecha__year__lte'] < anho < kwargs['fecha__year__gte']:
-                    continue
-                elif 'fecha__year__gte' in kwargs and anho < kwargs['fecha__year__gte']:
-                    continue
-                elif 'fecha__year__lte' in kwargs and anho > kwargs['fecha__year__lte']:
-                    continue
-
                 ## Gestión para los datos básicos de precios
                 real_p, created = Precios.objects.update_or_create(
                     anho=anho, mes=mes, ciudad=ciudad, fecha=fecha,
-                    defaults={ 'anho_base': anho_b, 'inpc': inpc }
+                    defaults={ 'anho_base': self.anho_base, 'inpc': inpc }
                 )
-
 
                 ## Gestión de datos para el Índice por Grupos
                 PreciosGrupo.objects.update_or_create(real_precios=real_p, defaults={
@@ -393,7 +368,7 @@ class PreciosGrupo(models.Model):
         max_digits=18, decimal_places=2, default=0.0, verbose_name=_("(11) Servicios de Educación")
     )
 
-    retaurant_hotel = models.DecimalField(
+    restaurant_hotel = models.DecimalField(
         max_digits=18, decimal_places=2, default=0.0, verbose_name=_("(12) Restaurant y Hotel")
     )
 

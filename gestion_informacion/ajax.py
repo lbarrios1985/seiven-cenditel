@@ -50,8 +50,10 @@ def descargar_archivo(request):
     Función que permite construir y descargar un archivo de procesamiento de datos por lostes
 
     @author Ing. Roldan Vargas (rvargas at cenditel.gob.ve)
+    @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
     @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
     @date 25-05-2017
+    @date 09-08-2017   
     @param request <b>{object}</b> Objeto que contiene la petición
     @return Devuelve un HttpResponse con el JSON correspondiente al archivo a descargar
     """
@@ -90,16 +92,18 @@ def descargar_archivo(request):
                 if 'cabecera' in cabecera:
                     sheet.col(i).width = int (250 * (len(cabecera['tag']) + 1))
                 
+                #Combina Columnas
                 if 'combine' in cabecera and cabecera['combine'] > 0:
                     sheet.merge(i, i, index_col, (index_col + (cabecera['combine']-1)), font_bold)
                     index_col = cabecera['combine'] + index_col-1
-
+                
+                #Establece los Dominios
                 if 'dominio'in cabecera:
-                    sheet.write(i, 2, cabecera['tag'], font_bold)
+                    sheet.write(i, cabecera['row'], cabecera['tag'], font_bold)
+                
+                #Combina Filas
                 if 'combine_row' in cabecera:
-                    sheet.write_merge(i, i+10, 0,0, cabecera['tag'],font_bold)
-                if 'combine_row1' in cabecera:
-                    sheet.write_merge(i, i+10, 1,1, cabecera['tag'],font_bold)
+                    sheet.write_merge(i, i+10, cabecera['row'],cabecera['row'], cabecera['tag'],font_bold)
                 index_col += 1            
             i += 1
 

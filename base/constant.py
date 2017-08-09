@@ -235,6 +235,12 @@ CONVERT_MES = {
     _('Diciembre') : '12',
 }
 
+CONVERT_DOMINIO ={
+    _("Caracas") : "CRA", _("Maracay") : "MAR", _("Ciudad Guayana") : "CGY", _("Barcelona - Pto la Cruz") : "BPC",
+    _("Valencia") : "VAL", _("Barquisimeto") : "BAR", _("Maracaibo") : "MCB", _("Mérida") : "MRD", _("Maturín") : "MAT",
+    _("San Cristóbal") : "SCR", _("Resto Nacional") : "RNC",
+}
+
 ## Tipos de registro de balanza_datos
 BALANZA_DATOS = (
     ("EB",_("Exportaciones de bienes FOB")),
