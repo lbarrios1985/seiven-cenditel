@@ -3,7 +3,10 @@
 {% load i18n %}
 {% get_current_language as LANGUAGE_CODE %}
 <html lang="{{ LANGUAGE_CODE|default:"es-ve" }}">
-	{% include 'base.head.template.html' %}
+    <head>
+	    {% include 'base.head.template.html' %}
+        {% block extra_head %}{% endblock %}
+    </head>
 	<body class="hold-transition skin-blue-dark sidebar-mini">
 		<div class="wrapper">
 			{% include 'base.navbar.template.html' %}
@@ -25,6 +28,18 @@
 
                     <!-- seccion para el contenido del sistema -->
                     <section class="content" style="padding:auto 0;">
+                        {% for message in messages %}
+                            {% if message %}
+                                <div class="row">
+                                    <div class="col-md-12 box-half-center">
+                                        <div class="alert alert-warning">
+                                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                            <strong>{% trans 'Alerta' %}!</strong> {{ message }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
                         <div class="row">
                             {% if request.user.is_authenticated %}
                                 {% block content %}{% include 'base.menu.gral.html' %}{% endblock %}

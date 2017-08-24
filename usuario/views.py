@@ -21,7 +21,7 @@ from django.contrib import messages
 from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.models import User
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core import urlresolvers
+from django.core import urlresolvers, signing
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -31,12 +31,14 @@ from django.utils.translation import ugettext_lazy as _
 
 from base.constant import REGISTRO_MESSAGE, UPDATE_MESSAGE, EMAIL_SUBJECT_REGISTRO, CADUCIDAD_LINK_REGISTRO
 from base.functions import enviar_correo, calcular_diferencia_fechas
+from base.models import Institucion
 from .forms import AutenticarForm, RegistroForm, OlvidoClaveForm, ModificarClaveForm, PerfilForm
 
 import logging
 
 from .models import UserProfile
 
+date_now = datetime.now()
 logger = logging.getLogger("usuario")
 
 def hash_user(user, is_new_user=False, is_reset=False):
@@ -52,7 +54,7 @@ def hash_user(user, is_new_user=False, is_reset=False):
     @return Devuelve un enlace cifrado
     """
 
-    if is_new_user:
+    if is_new_user or not user.last_login:
         date_to_hash = user.date_joined.isoformat()
     else:
         date_to_hash = user.last_login.isoformat()
@@ -150,10 +152,13 @@ def olvido_clave(request):
 
             usr = User.objects.get(username=username)
 
-            ## Asigna un enlace de verificación para el olvido de clave
-            link = request.build_absolute_uri("%s?userid=%s&key=%s" % (
+            ## Fecha (cifrada) en la que se genero el enlace para la modificacion de contraseña
+            date_link_signed = signing.dumps("%s-%s-%s" % (date_now.year, date_now.month, date_now.day))
+
+            link = request.build_absolute_uri("%s?userid=%s&key=%s&date=%s" % (
                 urlresolvers.reverse('confirmar_modificar_clave'),
-                username, hash_user(usr, is_reset=True).decode()
+                username, hash_user(usr, is_reset=True).decode(),
+                date_link_signed
             ))
 
             administrador, admin_email = '', ''
@@ -194,13 +199,18 @@ def confirmar_modificar_clave(request):
     """
     userid = request.GET.get('userid', None)
     key = request.GET.get('key', None)
+    date_link_generate = request.GET.get('date', None)
     verificado = False
     mensaje = str(_("El usuario ha sido verificado"))
     modificar_clave_url = None
 
-    if userid and key and User.objects.filter(username=userid):
+    if userid and key and date_link_generate and User.objects.filter(username=userid):
         user = User.objects.get(username=userid)
-        if calcular_diferencia_fechas(user.date_joined) <= CADUCIDAD_LINK_REGISTRO:
+
+        ## Fecha (descifrada) en la que se genero el enlace para la modificacion de contraseña
+        link_date = datetime.strptime(signing.loads(date_link_generate), "%Y-%m-%d")
+
+        if calcular_diferencia_fechas(link_date) <= CADUCIDAD_LINK_REGISTRO:
             if key.strip() == hash_user(user, is_reset=True).decode():
                 modificar_clave_url = "%s?userid=%s&key=%s" % (
                     urlresolvers.reverse('modificar_clave'), user.username, hash_user(user, is_reset=True)
@@ -234,6 +244,7 @@ def modificar_clave(request):
         form = ModificarClaveForm(data=request.POST)
 
         if form.is_valid():
+            username = username if username else request.POST['username']
             user = User.objects.get(username=username)
             user.set_password(request.POST['clave'])
             user.save()
@@ -242,11 +253,13 @@ def modificar_clave(request):
                 perfil.fecha_modpass = datetime.now()
                 perfil.save()
             messages.info(request, _("Su contraseña ha sido modificada correctamente"))
-
+            alert = str(_("La contraseña fue modificada satisfactoriamente"))
             logger.info(str(_("El usuario [%s] modificó su contraseña por olvido") % username))
-            return HttpResponseRedirect(urlresolvers.reverse("acceso"))
+            form = AutenticarForm()
+            return render(request, 'base.template.html', {'form': form, 'alert': alert})
+            #return HttpResponseRedirect(urlresolvers.reverse("acceso"))
 
-    return render(request, 'usuario.modificar.clave.html', {'form': form, 'fortaleza_clave': True})
+    return render(request, 'usuario.modificar.clave.html', {'form': form, 'fortaleza_clave': True, 'username': username})
 
 
 def confirmar_registro(request):
@@ -370,7 +383,7 @@ class ModificarPerfilView(SuccessMessageMixin, UpdateView):
     @date 02-12-2016
     @version 1.0.0
     """
-    model = UserProfile
+    model = User #UserProfile
     form_class = PerfilForm
     template_name = 'usuario.update.html'
     success_url = reverse_lazy('inicio')
@@ -401,23 +414,27 @@ class ModificarPerfilView(SuccessMessageMixin, UpdateView):
         @date @date 02-12-2016
         @return Retorna el formulario validado y modifica los datos de perfil del usuario
         """
-        """
+
         self.object = form.save(commit=False)
-        usuario = self.request.user
-        usr = User.objects.get(username=usuario)
-        institucion = Institucion.objects.get(nombre=form.cleaned_data['institucion'])
-        cargo = Cargo.objects.get(nombre=form.cleaned_data['cargo'])
-        correo = form.cleaned_data['correo'].lower()
-        nombre, apellido = form.cleaned_data['nombre'], form.cleaned_data['apellido']
-        if usr.first_name!=nombre: usr.first_name = nombre
-        if usr.last_name!=apellido: usr.last_name = apellido
-        if usr.email!=correo: usr.email = correo
-        usr.save()
-        form.instance.user = usr
-        form.instance.institucion = institucion
-        form.instance.cargo = cargo
+        usr = User.objects.get(username=self.object.username)
+        self.object.password = usr.password
+        if self.object.first_name != form.cleaned_data['nombre']:
+            self.object.first_name = form.cleaned_data['nombre']
+        if self.object.last_name != form.cleaned_data['apellido']:
+            self.object.last_name = form.cleaned_data['apellido']
+        if self.object.email != form.cleaned_data['correo']:
+            self.object.email = form.cleaned_data['correo']
+        if form.cleaned_data.get('password', None):
+            self.object.set_password(form.cleaned_data['password'])
+
         self.object.save()
 
-        logger.info(u"Se han actualizado los datos del usuario [%s]" % usuario)
-        """
-        return super(ModificarPerfilView, self).form_valid(form)
+        if UserProfile.objects.filter(user__username=str(self.object.username)):
+            perfil = UserProfile.objects.get(user__username=str(self.object.username))
+            perfil.ocupacion = form.cleaned_data['ocupacion']
+            perfil.institucion = Institucion.objects.get(nombre=form.cleaned_data['institucion'])
+            perfil.save()
+
+        messages.info(self.request, UPDATE_MESSAGE)
+
+        return HttpResponseRedirect(self.get_success_url())

@@ -39,7 +39,6 @@ def cargar_datos(request):
     """
     return render(request, 'economico.menu.area.html', {})
 
-
 @login_required
 def precios(request):
     """!
@@ -300,3 +299,218 @@ def capital(request):
     return render(request, 'economico.cuenta.capital.html', {'form': form,
             'url_down': reverse('cm_descargar_archivo'), 'url_up': reverse('cm_cargar_datos'),
             'title': _('Cuenta Capital')})
+
+## CONSULTA AREA ECONOMICA
+
+@login_required
+def consultar_datos(request):
+    """!
+    Función que permite cargar el menú consulta del área económica
+
+    @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 22-08-2017
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con la página del sub-menu de consulta para el área económica
+    """
+    return render(request, 'economico.consulta.menu.area.html', {})
+
+
+@login_required
+def consultar_precios(request):
+    """!
+    Función que permite cargar el menú consulta del área económica
+
+    @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 22-08-2017
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con la página del sub-menu de consulta para el área económica
+    """
+    form = RealPreciosForm()
+
+    return render(request, 'economico.consulta.precios.html', {
+        'form':form
+        })
+
+@login_required
+def consultar_pib(request):
+    """!
+    Función que permite cargar el menú consulta del área económica
+
+    @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 22-08-2017
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con la página del sub-menu de consulta para el área económica
+    """
+    return render(request, 'economico.consulta.pib.html', {})
+
+@login_required
+def consultar_demanda_global(request):
+    """!
+    Función que permite cargar el menú consulta del área económica
+
+    @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 22-08-2017
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con la página del sub-menu de consulta para el área económica
+    """
+    return render(request, 'economico.consulta.demanda.global.html', {})
+
+@login_required
+def consultar_agregados_monetarios(request):
+    """!
+    Función que permite cargar el menú consulta del área económica
+
+    @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 22-08-2017
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con la página del sub-menu de consulta para el área económica
+    """
+    return render(request, 'economico.consulta.agregados.monetarios.html', {})
+
+@login_required
+def consultar_operaciones_interbancarias(request):
+    """!
+    Función que permite cargar el menú consulta del área económica
+
+    @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 22-08-2017
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con la página del sub-menu de consulta para el área económica
+    """
+    return render(request, 'economico.consulta.operaciones.interbancarias.html', {})
+
+@login_required
+def consultar_tasas_interes(request):
+    """!
+    Función que permite cargar el menú consulta del área económica
+
+    @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 22-08-2017
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con la página del sub-menu de consulta para el área económica
+    """
+    return render(request, 'economico.consulta.tasas.interes.html', {})
+
+@login_required
+def consultar_instrumento_politica(request):
+    """!
+    Función que permite cargar el menú consulta del área económica
+
+    @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 22-08-2017
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con la página del sub-menu de consulta para el área económica
+    """
+    return render(request, 'economico.consulta.instrumento.politica.html', {})
+
+@login_required
+def consultar_balanza_comercial(request):
+    """!
+    Función que permite cargar el menú consulta del área económica
+
+    @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 22-08-2017
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con la página del sub-menu de consulta para el área económica
+    """
+    return render(request, 'economico.consulta.balanza.comercial.html', {})
+
+@login_required
+def consultar_reservas_tipo_cambio(request):
+    """!
+    Función que permite cargar el menú consulta del área económica
+
+    @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 22-08-2017
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con la página del sub-menu de consulta para el área económica
+    """
+    return render(request, 'economico.consulta.reservas.tipo.cambio.html', {})
+
+@login_required
+def consultar_tributos(request):
+    """!
+    Función que permite cargar el menú consulta del área económica
+
+    @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 22-08-2017
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con la página del sub-menu de consulta para el área económica
+    """
+    return render(request, 'economico.consulta.tributos.html', {})
+
+@login_required
+def consultar_ingresos(request):
+    """!
+    Función que permite cargar el menú consulta del área económica
+
+    @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 22-08-2017
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con la página del sub-menu de consulta para el área económica
+    """
+    return render(request, 'economico.consulta.ingresos.html', {})
+
+@login_required
+def consultar_gastos(request):
+    """!
+    Función que permite cargar el menú consulta del área económica
+
+    @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 22-08-2017
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con la página del sub-menu de consulta para el área económica
+    """
+    return render(request, 'economico.consulta.gastos.html', {})
+
+@login_required
+def consultar_endeudamiento(request):
+    """!
+    Función que permite cargar el menú consulta del área económica
+
+    @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 22-08-2017
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con la página del sub-menu de consulta para el área económica
+    """
+    return render(request, 'economico.consulta.endeudamiento.html', {})
+
+@login_required
+def consultar_oferta_global(request):
+    """!
+    Función que permite cargar el menú consulta del área económica
+
+    @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 22-08-2017
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con la página del sub-menu de consulta para el área económica
+    """
+    return render(request, 'economico.consulta.oferta.global.html', {})
+
+@login_required
+def consultar_capital(request):
+    """!
+    Función que permite cargar el menú consulta del área económica
+
+    @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 22-08-2017
+    @param request <b>{object}</b> Objeto que obtiene la petición
+    @return Devuelve el response con la página del sub-menu de consulta para el área económica
+    """
+    return render(request, 'economico.consulta.capital.html', {})

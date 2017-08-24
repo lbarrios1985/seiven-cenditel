@@ -1,0 +1,74 @@
+{% extends 'base.template.html' %}
+{% load static from staticfiles %}
+{% load i18n %}
+{% block box_acceso_campos %}
+    {% include 'base.clave.input.html' %}
+    <div class="form-group {% if form.verificar_contrasenha.errors %}has-error{% endif %}">
+        <div>{{ form.verificar_contrasenha.label_tag }}</div>
+        <div class="form-inline">
+            {{ form.verificar_contrasenha }}<i class="ion ion-ios-medical item-requerido"></i>
+        </div>
+        {% include 'base.form.errors.html' with form_errors=form.verificar_contrasenha.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
+    </div>
+    {% include 'base.captcha.input.html' %}
+{% endblock %}
+{% block box_acceso_botones %}
+    <button type="submit" class="btn btn-info btn-sm" data-toggle="tooltip"
+            title="{% trans 'Presione el botón para ingresar al sistema' %}">
+        {% trans 'Ingresar' %}
+    </button>
+{% endblock %}
+
+
+{% block contenido %}
+    <div class="row content-login">
+        {% if alert %}
+            <div class="col-md-12 box-half-center">
+                <div class="alert alert-success">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <strong>{% trans 'Éxito' %}!</strong> {{ alert }}
+                </div>
+            </div>
+        {% endif %}
+        <div class="col-md-12 box-half-center">
+            <div class="box box-primary">
+                <div class="box-header with-border"><h3 class="box-title">{% trans 'Modificar contraseña' %}</h3></div>
+                <form action="{% url 'modificar_clave' %}" method="post" class="form-horizontal" role="form">
+                    {% csrf_token %}
+                    <div class="panel-body separador-lateral">
+
+                       <div class="row">
+                           <div class="col-md-12">
+                               {% include 'base.clave.input.html' %}
+                           </div>
+                       </div>
+                       <div class="row">
+                           <div class="col-md-12">
+                               <div class="form-group {% if form.verificar_contrasenha.errors %}has-error{% endif %}">
+                                    <div>{{ form.verificar_contrasenha.label_tag }}</div>
+                                    <div class="form-inline">
+                                        {{ form.verificar_contrasenha }}<i class="ion ion-ios-medical item-requerido"></i>
+                                    </div>
+                                    {% include 'base.form.errors.html' with form_errors=form.verificar_contrasenha.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
+                                </div>
+                           </div>
+                       </div>
+                       <div class="row">
+                           <div class="col-md-12">
+                               {% include 'base.captcha.input.html' %}
+                           </div>
+                       </div>
+                        <input type="hidden" name="username" id="username" class="form-control" value="{{ username }}" style="display:none">
+
+
+                    </div>
+                    <div class="panel-footer text-right separador-lateral">
+                        <div class="form-group">
+                           <button type="submit" class="btn btn-primary">{% trans 'Modificar' %}</button>
+                       </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -100,7 +100,7 @@ ROOT_TEMPLATES = os.path.join(BASE_DIR, "templates")
 BASE_TEMPLATES = os.path.join(BASE_DIR, "base/templates")
 
 ## Directorio en donde se encuentran las plantillas del módulo económico
-ECONOMICO_TEMPLATES = os.path.join(BASE_DIR, "economico/templates")
+ECONOMICO_TEMPLATES = os.path.join(BASE_DIR, "economico/templates","consulta")
 
 ## Directorio en donde se encuentran las plantillas del módulo económico
 PRODUCTIVO_TEMPLATES = os.path.join(BASE_DIR, "productivo/templates")

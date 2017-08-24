@@ -1,0 +1,21 @@
+{% load i18n %}
+<div class="form-group {% if form.clave.errors %}has-error{% endif %}">
+    <div>{{ form.clave.label_tag }}</div>
+    <div class="form-inline">
+        {{ form.clave }}<i class="ion ion-ios-medical item-requerido" data-toggle="tooltip"
+                           title="{% trans 'Este campo es obligatorio' %}"></i>
+    </div>
+    {% if fortaleza_clave %}
+        <label for="passwordStrength">Fortaleza de contraseña</label>
+        <div id="passwordDescription">Contraseña no introducida</div>
+        <div id="passwordStrength" class="strength0 text-center" style="margin: 0 auto; float: none;"></div>
+        <input type="hidden" id="passwordMeterId" name="passwordMeterId" style="display:none;">
+    {% else %}
+        {% block extra_footer %}
+            <script type="text/javascript">
+                document.getElementById("{{ form.clave.auto_id }}").onkeyup = function() {return ''};
+            </script>
+        {% endblock %}
+    {% endif %}
+    {% include 'base.form.errors.html' with form_errors=form.clave.errors col_title_error='col-sm-2' col_msg_error='col-sm-10' %}
+</div>

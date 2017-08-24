@@ -26,7 +26,7 @@ from django.forms import (
 from base.constant import (
     DOMINIO_PRECIOS, DOMINIO_PIB, DOMINIO_AGREGADO_MONETARIO, TIPO_PIB, TIPO_DEMANDA_GLOBAL, TIPO_OFERTA_GLOBAL, TRIMESTRES, MESES,
     DOMINIO_COMERCIAL, DOMINIO_CAMBIO, DOMINIO_CUENTA_CAPITAL, TIPO_BALANZA_COMERCIAL, DOMINIO_BALANZA_COMERCIAL, DOMINIO_TASAS_INTERES,
-    PERIODICIDAD
+    PERIODICIDAD,ELEMENTOS
 )
 from base.functions import cargar_anho_base, cargar_anho
 
@@ -54,7 +54,7 @@ class DominioForm(forms.Form):
         label=_(u"Dominio"), choices=(),
         widget=Select(attrs={
             'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
-            'title': _(u"Seleccione el dominio a registrar")
+            'title': _(u"Seleccione el dominio")
         })
     )
 
@@ -121,6 +121,26 @@ class PeriodicidadForm(forms.Form):
         widget=Select(attrs={
             'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
             'title': _(u"Seleccione la periodicidad")
+        })
+    )
+
+@python_2_unicode_compatible
+class ElementosForm(forms.Form):
+    """!
+    Clase que contiene el campo común para la selección de elementos
+
+    @author Ing. Luis Barrios (lbarrios at cenditel.gob.ve)
+    @copyright <a href='http://www.gnu.org/licenses/gpl-2.0.html'>GNU Public License versión 2 (GPLv2)</a>
+    @date 23-08-2017
+    @version 1.0.0
+    """
+
+    ## Opciones de elementos
+    elementos = ChoiceField(
+        label=_(u"Elementos"), choices=(),
+        widget=Select(attrs={
+            'class': 'select2 select2-offscreen form-control', 'data-toggle': 'tooltip',
+            'title': _(u"Seleccione los elementos")
         })
     )
 
@@ -331,7 +351,7 @@ class EndDateForm(forms.Form):
 
 
 @python_2_unicode_compatible
-class RealPreciosForm(AnhoBaseForm, DominioForm, MesIniForm, MesFinForm, AnhoIniForm, AnhoFinForm):
+class RealPreciosForm(AnhoBaseForm, DominioForm, MesIniForm, MesFinForm, AnhoIniForm, AnhoFinForm,PeriodicidadForm, ElementosForm):
     """!
     Clase que contiene el formulario para la carga de datos de precios
 
@@ -344,6 +364,8 @@ class RealPreciosForm(AnhoBaseForm, DominioForm, MesIniForm, MesFinForm, AnhoIni
     def __init__(self, *args, **kwargs):
         super(RealPreciosForm, self).__init__(*args, **kwargs)
         self.fields['dominio'].choices = DOMINIO_PRECIOS
+        self.fields['periodicidad'].choices = [PERIODICIDAD[0],PERIODICIDAD[3],PERIODICIDAD[4],PERIODICIDAD[5]]
+        self.fields['elementos'].choices = ELEMENTOS
 
 
 @python_2_unicode_compatible

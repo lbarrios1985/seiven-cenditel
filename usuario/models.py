@@ -52,7 +52,7 @@ class UserProfile(models.Model):
     fecha_modpass = models.DateTimeField(null=True, blank=True, help_text=_("Fecha en la que se modificó la contraseña"))
 
     ## Contiene datos sobre la institucion a la cual pertenece el usuario
-    institucion = models.ForeignKey(Institucion, help_text=_("Institucion de la cual proviene el usuario"))
+    institucion = models.ForeignKey(Institucion, on_delete=models.CASCADE, help_text=_("Institucion de la cual proviene el usuario"))
 
     ## Indica el nivel de acceso que tiene el usuario
     nivel_acceso = models.PositiveSmallIntegerField(choices=NIVELES_ACCESO, null=True, blank=True)
@@ -60,7 +60,7 @@ class UserProfile(models.Model):
 
     ## Establece la relación entre el usuario y el perfil
     user = models.OneToOneField(
-        User, related_name="profile",
+        User, on_delete=models.CASCADE, related_name="profile",
         help_text=_("Relación entre el perfil y el usuario con acceso al sistema")
     )
 

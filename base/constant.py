@@ -220,6 +220,15 @@ PERIODICIDAD = (
     ('A', _('Anual')),
 )
 
+##Elementos para la consulta del modulo Economico
+ELEMENTOS=(
+    ('', _('Seleccione...')),
+    ('IN', _('Indice')),
+    ('MM', _('V. Mensual (%)')),
+    ('AN', _('V. Anualizada (%)')),
+    ('AC', _('V. Acumulada')),
+)
+
 ## Sub área de registro
 ECONOMICO_SUB_AREA = [
     (('PRE'), _('Precios')),

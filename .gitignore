@@ -12,5 +12,7 @@ seiven.sublime-project
 migrations
 *.sql
 *.log
+*.log.*
 venv/
 *~
+gestion_informacion/files/*

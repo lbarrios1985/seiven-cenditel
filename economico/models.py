@@ -45,7 +45,7 @@ if settings.ADMINS:
 @python_2_unicode_compatible
 class Precios(models.Model):
     ## Año base del registro
-    anho_base = models.ForeignKey(AnhoBase, null=True)
+    anho_base = models.ForeignKey(AnhoBase, on_delete=models.CASCADE, null=True)
 
     ## Año al que pertenece el(los) registro(s)
     anho = models.CharField(max_length=4, verbose_name=_("Año"))
@@ -378,7 +378,7 @@ class PreciosGrupo(models.Model):
 
     base = models.BooleanField(default=False, verbose_name=_("Indicador base"))
 
-    real_precios = models.ForeignKey(Precios, verbose_name=_("Sector Real"))
+    real_precios = models.ForeignKey(Precios, on_delete=models.CASCADE, verbose_name=_("Sector Real"))
 
     class Meta:
         verbose_name = _("Índice por Grupo")
@@ -401,7 +401,7 @@ class PreciosSector(models.Model):
 
     base = models.BooleanField(default=False, verbose_name=_("Indicador base"))
 
-    real_precios = models.ForeignKey(Precios, verbose_name=_("Sector Real"))
+    real_precios = models.ForeignKey(Precios, on_delete=models.CASCADE, verbose_name=_("Sector Real"))
 
     class Meta:
         verbose_name = _("Índice por Sector de Origen")
@@ -432,7 +432,7 @@ class PreciosNaturaleza(models.Model):
 
     base = models.BooleanField(default=False, verbose_name=_("Indicador base"))
 
-    real_precios = models.ForeignKey(Precios, verbose_name=_("Sector Real"))
+    real_precios = models.ForeignKey(Precios, on_delete=models.CASCADE, verbose_name=_("Sector Real"))
 
     class Meta:
         verbose_name = _("Índice por Naturaleza y Durabilidad")
@@ -454,7 +454,7 @@ class PreciosServicios(models.Model):
 
     base = models.BooleanField(default=False, verbose_name=_("Indicador base"))
 
-    real_precios = models.ForeignKey(Precios, verbose_name=_("Sector Real"))
+    real_precios = models.ForeignKey(Precios, on_delete=models.CASCADE, verbose_name=_("Sector Real"))
 
     class Meta:
         verbose_name = _("Índice de Servicios")
@@ -483,7 +483,7 @@ class PreciosInflacionario(models.Model):
 
     base = models.BooleanField(default=False, verbose_name=_("Indicador base"))
 
-    real_precios = models.ForeignKey(Precios, verbose_name=_("Sector Real"))
+    real_precios = models.ForeignKey(Precios, on_delete=models.CASCADE, verbose_name=_("Sector Real"))
 
     class Meta:
         verbose_name = _("Índice del Núcleo Inflacionario")
@@ -500,7 +500,7 @@ class PreciosProductos(models.Model):
 
     base = models.BooleanField(default=False, verbose_name=_("Indicador base"))
 
-    real_precios = models.ForeignKey(Precios, verbose_name=_("Sector Real"))
+    real_precios = models.ForeignKey(Precios, on_delete=models.CASCADE, verbose_name=_("Sector Real"))
 
     class Meta:
         verbose_name = _("Índice de Productos Controlados y no Controlados")
@@ -521,7 +521,7 @@ class PIB(models.Model):
     """
 
     ## Año base del registro
-    anho_base = models.ForeignKey(AnhoBase, null=True)
+    anho_base = models.ForeignKey(AnhoBase, on_delete=models.CASCADE, null=True)
 
     ## Año al que pertenece el(los) registro(s)
     anho = models.CharField(max_length=4, verbose_name=_("Año"))
@@ -873,7 +873,7 @@ class PIBDemanda(models.Model):
 
     base = models.BooleanField(default=False, verbose_name=_("Indicador base"))
 
-    pib = models.ForeignKey(PIB, verbose_name=_('Producto Interno Bruto'))
+    pib = models.ForeignKey(PIB, on_delete=models.CASCADE, verbose_name=_('Producto Interno Bruto'))
 
     class Meta:
         verbose_name = _('PIB sobre demanda')
@@ -907,7 +907,7 @@ class PIBProduccion(models.Model):
 
     base = models.BooleanField(default=False, verbose_name=_("Indicador base"))
 
-    pib = models.ForeignKey(PIB, verbose_name=_('Producto Interno Bruto'))
+    pib = models.ForeignKey(PIB, on_delete=models.CASCADE, verbose_name=_('Producto Interno Bruto'))
 
     class Meta:
         verbose_name = _('PIB sobre oferta')
@@ -998,7 +998,7 @@ class PIBActividad(models.Model):
 
     base = models.BooleanField(default=False, verbose_name=_("Indicador base"))
 
-    pib = models.ForeignKey(PIB, verbose_name=_('Producto Interno Bruto'))
+    pib = models.ForeignKey(PIB, on_delete=models.CASCADE, verbose_name=_('Producto Interno Bruto'))
 
     class Meta:
         verbose_name = _('PIB sobre la Actividad')
@@ -1034,7 +1034,7 @@ class PIBInstitucion(models.Model):
 
     base = models.BooleanField(default=False, verbose_name=_("Indicador base"))
 
-    pib = models.ForeignKey(PIB, verbose_name=_('Producto Interno Bruto'))
+    pib = models.ForeignKey(PIB, on_delete=models.CASCADE, verbose_name=_('Producto Interno Bruto'))
 
     class Meta:
         verbose_name = _('PIB sobre las Instituciones')
@@ -1045,7 +1045,7 @@ class PIBInstitucion(models.Model):
 class DemandaGlobal(models.Model):
     
     ## Año base del registro
-    anho_base = models.ForeignKey(AnhoBase, null=True)
+    anho_base = models.ForeignKey(AnhoBase, on_delete=models.CASCADE, null=True)
 
     ## Año al que pertenece el(los) registro(s)
     anho = models.CharField(max_length=4, verbose_name=_("Año"))
@@ -1078,7 +1078,7 @@ class DemandaGlobal(models.Model):
                 {'tag': str(_("Gasto de consumo final del gobierno")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
                 {'tag': str(_("Gasto de consumo final privado")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
                 {'tag': str(_("Formación bruta de capital fijo")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
-                {'tag': str(_("Variación de existencias")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
+                {'tag': str(_("Variacion de existencias")), 'color': 'orange', 'text_color': 'white', 'cabecera': True},
                 {'tag': str(_("Exportaciones de bienes y servicios")), 'color': 'black', 'text_color': 'white', 'cabecera': True}
             ]
         ]
@@ -1141,7 +1141,7 @@ class DemandaGlobal(models.Model):
                     'gasto_consumo_final_gobierno': check_val_data(load_file[row,3]),
                     'gasto_consumo_final_privado': check_val_data(load_file[row,4]),
                     'formacion_bruta_capital_fijo': check_val_data(load_file[row,5]),
-                    'variación_existencias': check_val_data(load_file[row,6]),
+                    'variacion_existencias': check_val_data(load_file[row,6]),
                 })
                 
                 #Se crea  o actualiza el objeto de Demanda Agregada Externa luego de validar el valor en la hoja de calculo
@@ -1185,26 +1185,26 @@ class DemandaAgregadaInterna(models.Model):
         max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Formacion Bruta de Capital Fijo")
     )
 
-    variación_existencias = models.DecimalField(
+    variacion_existencias = models.DecimalField(
         max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Variacion de Existencias")
     )
 
-    demanda_global = models.ForeignKey(DemandaGlobal, verbose_name=_('Demanda Global'))
+    demanda_global = models.ForeignKey(DemandaGlobal, on_delete=models.CASCADE, verbose_name=_('Demanda Global'))
 
     class Meta:
         verbose_name = _('Demanda Agragada Interna')
 
     def save(self, *args, **kwargs):
         self.demanda_agregada_interna = self.gasto_consumo_final_gobierno + self.gasto_consumo_final_privado + \
-                                        self.formacion_bruta_capital_fijo + self.variación_existencias
+                                        self.formacion_bruta_capital_fijo + self.variacion_existencias
         super(DemandaAgregadaInterna, self).save(*args, **kwargs)
 
 class DemandaAgregadaExterna(models.Model):
     exportacion_bienes_servicios = models.DecimalField(
-        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Exportación de bienes y servicios")
+        max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Exportacion de bienes y servicios")
     )
 
-    demanda_global = models.ForeignKey(DemandaGlobal, verbose_name=_('Demanda GLobal'))
+    demanda_global = models.ForeignKey(DemandaGlobal, on_delete=models.CASCADE, verbose_name=_('Demanda GLobal'))
 
     class Meta:
         verbose_name = _('Demanda Agregada Externa')
@@ -1215,7 +1215,7 @@ class DemandaAgregadaExterna(models.Model):
 class OfertaGlobal(models.Model):
     
     ## Año base del registro
-    anho_base = models.ForeignKey(AnhoBase, null=True)
+    anho_base = models.ForeignKey(AnhoBase, on_delete=models.CASCADE, null=True)
 
     ## Año al que pertenece el(los) registro(s)
     anho = models.CharField(max_length=4, verbose_name=_("Año"))
@@ -1309,7 +1309,7 @@ class OfertaInterna(models.Model):
         max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Impuestos Netos sobre los Productos")
     )
 
-    oferta_global = models.ForeignKey(OfertaGlobal, verbose_name=_('Oferta Global'))
+    oferta_global = models.ForeignKey(OfertaGlobal, on_delete=models.CASCADE, verbose_name=_('Oferta Global'))
 
     class Meta:
         verbose_name = _('Oferta Interna')
@@ -1324,7 +1324,7 @@ class OfertaExterna(models.Model):
         max_digits=18, decimal_places=2, default=0.0, verbose_name=_("Importaciones de bienes y servicios")
     )
 
-    oferta_global = models.ForeignKey(OfertaGlobal, verbose_name=_('Oferta GLobal'))
+    oferta_global = models.ForeignKey(OfertaGlobal, on_delete=models.CASCADE, verbose_name=_('Oferta GLobal'))
 
     class Meta:
         verbose_name = _('Oferta Externa')
@@ -1618,7 +1618,7 @@ class AgregadosMonetarios(models.Model):
     )
 
     ## Campo que crea la relacion con el modelo AgregadosBase
-    agregados = models.ForeignKey(AgregadosBase, verbose_name=_('Agregados Base'))
+    agregados = models.ForeignKey(AgregadosBase, on_delete=models.CASCADE, verbose_name=_('Agregados Base'))
 
     class Meta:
         verbose_name = _('Agregados Monetarios')
@@ -1640,7 +1640,7 @@ class AgregadosReservas(models.Model):
     )
 
     ## Campo que crea la relacion con el modelo AgregadosBase
-    agregados = models.ForeignKey(AgregadosBase, verbose_name=_('Agregados Base'))
+    agregados = models.ForeignKey(AgregadosBase, on_delete=models.CASCADE, verbose_name=_('Agregados Base'))
 
     class Meta:
         verbose_name = _('Reservas Bancarias')
@@ -1677,7 +1677,7 @@ class AgregadosUsos(models.Model):
     )
 
     ## Campo que crea la relacion con el modelo AgregadosBase
-    agregados = models.ForeignKey(AgregadosBase, verbose_name=_('Agregados Base'))
+    agregados = models.ForeignKey(AgregadosBase, on_delete=models.CASCADE, verbose_name=_('Agregados Base'))
 
     class Meta:
         verbose_name = _('Base Monetaria Usos')
@@ -1724,7 +1724,7 @@ class AgregadosFuentes(models.Model):
     )
 
     ## Campo que crea la relacion con el modelo AgregadosBase
-    agregados = models.ForeignKey(AgregadosBase, verbose_name=_('Agregados Base'))
+    agregados = models.ForeignKey(AgregadosBase, on_delete=models.CASCADE, verbose_name=_('Agregados Base'))
     
     class Meta:
         verbose_name = _('Base Monetaria Fuentes')
@@ -2018,7 +2018,7 @@ class TasasBancos(models.Model):
     )
 
     ## Campo que crea la relación con el modelo TasasInteres
-    tasas = models.ForeignKey(TasasInteres, verbose_name=_('Tasas de Interés'))
+    tasas = models.ForeignKey(TasasInteres, on_delete=models.CASCADE, verbose_name=_('Tasas de Interés'))
 
     class Meta:
         verbose_name = _('Tasa de Interés de los Seis Principales Bancos')
@@ -2130,7 +2130,7 @@ class TasaActiva(models.Model):
     )
 
     ## Campo que crea la relación con el modelo TasasInteres
-    tasas = models.ForeignKey(TasasInteres, verbose_name=_('Tasas de Interés'))
+    tasas = models.ForeignKey(TasasInteres, on_delete=models.CASCADE, verbose_name=_('Tasas de Interés'))
 
     class Meta:
         verbose_name = _('Tasas de Bancos Comerciales y Universales')
@@ -2192,7 +2192,7 @@ class TasaPasiva(models.Model):
     )
 
     ## Campo que crea la relación con el modelo TasasInteres
-    tasas = models.ForeignKey(TasasInteres, verbose_name=_('Tasas de Interés'))
+    tasas = models.ForeignKey(TasasInteres, on_delete=models.CASCADE, verbose_name=_('Tasas de Interés'))
 
     class Meta:
         verbose_name = _('Tasa de Interés Pasiva')
@@ -2397,7 +2397,7 @@ class BalanzaComercialBase(models.Model):
     """
     
     ## Año base del registro
-    anho_base = models.ForeignKey(AnhoBase, null=True)
+    anho_base = models.ForeignKey(AnhoBase, on_delete=models.CASCADE, null=True)
 
     ## Año al que pertenece el(los) registro(s)
     anho = models.CharField(max_length=4, verbose_name=_("Año"))
@@ -2506,18 +2506,17 @@ class BalanzaComercialBase(models.Model):
         fields.append(sub_header);
         
         ## Se asigna el año base (si existe)
-        anho_base = kwargs['anho_base'] if 'anho_base' in kwargs else 0
+        anho_base = kwargs['anho_base'] if 'anho_base' in kwargs else ''
         
         ## Almacena los datos de año y trimestre inicial provenientes del formulario
         anho_ini = int(kwargs['anho__gte'])
         trimestre_ini = int(kwargs['trimestre__gte'])
-        
+
         ## Genera los años y trimestres correspondientes a los parámetros del formulario
         registros = []
         while True:
             registros = [({'tag': trimestre_ini})]
             registros.append({'tag': anho_ini})
-            print(anho_base)
             ## Se intenta búscar el registro base
             balanza_base = BalanzaComercialBase.objects.filter(
                     anho_base=anho_base,
@@ -2656,11 +2655,11 @@ class BalanzaComercialBase(models.Model):
         """
         
         load_file = pyexcel.get_book(bookdict=kwargs['file_content'])[0]
-        anho_base, errors, result, message = None, '', True, ''
+        anho_base, errors, result, message = '', '', True, ''
         load_data_msg = str(_("Datos Cargados"))
 
         ## Se asigna un valor al año base
-        anho_base = kwargs['anho_base'] if 'anho_base' in kwargs else None
+        anho_base = kwargs['anho_base'] if 'anho_base' in kwargs else ''
         
         for row in load_file.row[2:]:
             try:
@@ -2695,7 +2694,6 @@ class BalanzaComercialBase(models.Model):
                         'exportacion_servicio': check_val_data(row[6]),
                         'importacion_servicio': check_val_data(row[11]),
                     })
-                    print("finalizo?")
                 ## Se crea la balanza para el índice de precios implícitos
                 elif(kwargs['tipo']=='PI'):
                     ## Se crea el registro para los precios implícitos
@@ -2818,7 +2816,7 @@ class BalanzaComercialDatos(models.Model):
     tipo = models.CharField(max_length=2, choices=BALANZA_DATOS)
     
     ## Relación con la balanza base
-    balanza = models.ForeignKey(BalanzaComercialBase)
+    balanza = models.ForeignKey(BalanzaComercialBase, on_delete=models.CASCADE)
     
 @python_2_unicode_compatible
 class BalanzaComercialServicios(models.Model):
@@ -2842,7 +2840,7 @@ class BalanzaComercialServicios(models.Model):
     )
     
     ## Relación con la balanza base
-    balanza = models.ForeignKey(BalanzaComercialBase)
+    balanza = models.ForeignKey(BalanzaComercialBase, on_delete=models.CASCADE)
     
 @python_2_unicode_compatible
 class BalanzaComercialPrecioImplicito(models.Model):
@@ -2885,7 +2883,7 @@ class BalanzaComercialPrecioImplicito(models.Model):
     )
     
     ## Relación con la balanza base
-    balanza = models.ForeignKey(BalanzaComercialBase)
+    balanza = models.ForeignKey(BalanzaComercialBase, on_delete=models.CASCADE)
     
 # ------------ Económico Externo - Cuenta Capital  --------------------
 # ---------------------  Balanza de Pagos  ----------------------------
@@ -3409,7 +3407,7 @@ class CuentaCapitalSaldos(models.Model):
     )
     
     ## Relación con el registro base de la cuenta capital
-    cuenta_capital = models.ForeignKey(CuentaCapitalBalanzaBase)
+    cuenta_capital = models.ForeignKey(CuentaCapitalBalanzaBase, on_delete=models.CASCADE)
     
 @python_2_unicode_compatible
 class CuentaCapitalOtros(models.Model):
@@ -3437,7 +3435,7 @@ class CuentaCapitalOtros(models.Model):
     ) 
     
     ## Relación con el registro base de la cuenta capital
-    cuenta_capital = models.ForeignKey(CuentaCapitalBalanzaBase)
+    cuenta_capital = models.ForeignKey(CuentaCapitalBalanzaBase, on_delete=models.CASCADE)
     
 @python_2_unicode_compatible
 class CuentaCapitalInversionCartera(models.Model):
@@ -3463,7 +3461,7 @@ class CuentaCapitalInversionCartera(models.Model):
     tipo = models.CharField(max_length=4, choices=INVERSION_CARTERA)
        
     ## Relación con el registro base de la cuenta capital
-    cuenta_capital = models.ForeignKey(CuentaCapitalBalanzaBase)
+    cuenta_capital = models.ForeignKey(CuentaCapitalBalanzaBase, on_delete=models.CASCADE)
     
 @python_2_unicode_compatible
 class CuentaCapitalInversionDirecta(models.Model):
@@ -3486,7 +3484,7 @@ class CuentaCapitalInversionDirecta(models.Model):
     )
        
     ## Relación con el registro base de la cuenta capital
-    cuenta_capital = models.ForeignKey(CuentaCapitalBalanzaBase)
+    cuenta_capital = models.ForeignKey(CuentaCapitalBalanzaBase, on_delete=models.CASCADE)
     
 @python_2_unicode_compatible
 class CuentaCapitalOtraInversion(models.Model):
@@ -3522,7 +3520,7 @@ class CuentaCapitalOtraInversion(models.Model):
     tipo = models.CharField(max_length=4, choices=INVERSION_CARTERA)
        
     ## Relación con el registro base de la cuenta capital
-    cuenta_capital = models.ForeignKey(CuentaCapitalBalanzaBase)
+    cuenta_capital = models.ForeignKey(CuentaCapitalBalanzaBase, on_delete=models.CASCADE)
     
     
 # ---------------------  Deudas  ----------------------------
@@ -3579,7 +3577,7 @@ class CuentaCapitalDeudaCapital(models.Model):
     tipo = models.CharField(max_length=3, choices=SECTOR_DEUDA)
        
     ## Relación con el registro base de la cuenta capital (deuda)
-    deuda = models.ForeignKey(CuentaCapitalDeudaBase)
+    deuda = models.ForeignKey(CuentaCapitalDeudaBase, on_delete=models.CASCADE)
     
     
 @python_2_unicode_compatible
@@ -3621,4 +3619,4 @@ class CuentaCapitalDeudaIntereses(models.Model):
     tipo = models.CharField(max_length=3, choices=SECTOR_DEUDA)
        
     ## Relación con el registro base de la cuenta capital (deuda)
-    deuda = models.ForeignKey(CuentaCapitalDeudaBase)
+    deuda = models.ForeignKey(CuentaCapitalDeudaBase, on_delete=models.CASCADE)
