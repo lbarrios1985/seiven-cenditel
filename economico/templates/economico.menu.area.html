@@ -13,66 +13,88 @@
                     <div class="col-md-3">
                         <img src="{% static 'img/area-economica/real.png' %}" alt="{% trans 'Área económica real' %}"
                              class="img-area img-responsive" data-list="list_real">
-                        <ul id="list_real" style="display: none">
+                        <ul id="list_real" class="menu-list">
                             <li>
-                                <a href="{% url 'economico-precios' %}">{% trans 'Precios' %}</a>
+                                <a id="url_precios" href="{% url 'economico-precios' %}">{% trans 'Precios' %}</a>
                             </li>
                             <li>
-                                <a href="{% url 'economico-pib' %}">{% trans 'Producto Interno Bruto' %}</a>
+                                <a id="url_pib" href="{% url 'economico-pib' %}">
+                                    {% trans 'Producto Interno Bruto' %}
+                                </a>
                             </li>
                             <li>
-                                <a href="{% url 'economico-demanda-global' %}">{% trans 'Demanda Global' %}</a>
+                                <a id="url_demanda_global" href="{% url 'economico-demanda-global' %}">
+                                    {% trans 'Demanda Global' %}
+                                </a>
                             </li>
                         </ul>
                     </div>
                     <div class="col-md-3">
-                        <img src="{% static 'img/area-economica/monetario-financiero.png' %}" alt="{% trans 'Área económica real' %}"
+                        <img src="{% static 'img/area-economica/monetario-financiero.png' %}"
+                             alt="{% trans 'Área económica real' %}"
                              class="img-area img-responsive" data-list="list_monetario_financiero">
-                        <ul id="list_monetario_financiero" style="display: none">
+                        <ul id="list_monetario_financiero" class="menu-list">
                             <li>
-                                <a href="{% url 'economico-agregados-monetarios' %}">{% trans 'Agregados Monetarios' %}</a>
+                                <a id="url_agregados_monetarios" href="{% url 'economico-agregados-monetarios' %}">
+                                    {% trans 'Agregados Monetarios' %}
+                                </a>
                             </li>
                             <li>
-                                <a href="{% url 'economico-operaciones-interbancarias' %}">{% trans 'Operaciones Interbancarias' %}</a>
+                                <a id="url_operaciones_interbancarias"
+                                   href="{% url 'economico-operaciones-interbancarias' %}">
+                                    {% trans 'Operaciones Interbancarias' %}
+                                </a>
                             </li>
                             <li>
-                                <a href="{% url 'economico-tasas-interes' %}">{% trans 'Tasa de Intereses' %}</a>
+                                <a id="url_tasas_interes" href="{% url 'economico-tasas-interes' %}">
+                                    {% trans 'Tasa de Intereses' %}
+                                </a>
                             </li>
                             <li>
-                                <a href="{% url 'economico-instrumento-politica' %}">{% trans 'Instrumentos de Políticas' %}</a>
+                                <a id="url_instrumento_politica" href="{% url 'economico-instrumento-politica' %}">
+                                    {% trans 'Instrumentos de Políticas' %}
+                                </a>
                             </li>
                         </ul>
                     </div>
                     <div class="col-md-3">
                         <img src="{% static 'img/area-economica/externo.png' %}" alt="{% trans 'Área económica real' %}"
                              class="img-area img-responsive" data-list="list_externo">
-                        <ul id="list_externo" style="display: none">
+                        <ul id="list_externo" class="menu-list">
                             <li>
-                                <a href="{% url 'economico-balanza-comercial' %}">{% trans 'Balanza Comercial' %}</a>
+                                <a id="url_balanza_comercial" href="{% url 'economico-balanza-comercial' %}">
+                                    {% trans 'Balanza Comercial' %}
+                                </a>
                             </li>
                             <li>
-                                <a href="{% url 'economico-cuenta-capital' %}"">{% trans 'Cuenta Capital' %}</a>
+                                <a id="url_cuenta_capital" href="{% url 'economico-cuenta-capital' %}">
+                                    {% trans 'Cuenta Capital' %}
+                                </a>
                             </li>
                             <li>
-                                <a href="{% url 'economico-reservas-tipo-cambio' %}">{% trans 'Reservas - Tipo de Cambio' %}</a>
+                                <a id="url_reservas_tipo_cambio" href="{% url 'economico-reservas-tipo-cambio' %}">
+                                    {% trans 'Reservas - Tipo de Cambio' %}
+                                </a>
                             </li>
                         </ul>
                     </div>
                     <div class="col-md-3">
                         <img src="{% static 'img/area-economica/fiscal.png' %}" alt="{% trans 'Área económica real' %}"
                              class="img-area img-responsive" data-list="list_fiscal">
-                        <ul id="list_fiscal" style="display: none">
+                        <ul id="list_fiscal" class="menu-list">
                             <li>
-                                <a href="{% url 'economico-tributos' %}">{% trans 'Tributos' %}</a>
+                                <a id="url_tributos" href="{% url 'economico-tributos' %}">{% trans 'Tributos' %}</a>
                             </li>
                             <li>
-                                <a href="{% url 'economico-ingresos' %}">{% trans 'Ingresos' %}</a>
+                                <a id="url_ingresos" href="{% url 'economico-ingresos' %}">{% trans 'Ingresos' %}</a>
                             </li>
                             <li>
-                                <a href="{% url 'economico-gastos' %}">{% trans 'Gasto' %}</a>
+                                <a id="url_gastos" href="{% url 'economico-gastos' %}">{% trans 'Gasto' %}</a>
                             </li>
                             <li>
-                                <a href="{% url 'economico-endeudamiento' %}">{% trans 'Endeudamiento' %}</a>
+                                <a id="url_endeudamiento" href="{% url 'economico-endeudamiento' %}">
+                                    {% trans 'Endeudamiento' %}
+                                </a>
                             </li>
                         </ul>
                     </div>
@@ -83,6 +105,10 @@
 {% block extra_footer %}
     <script type="text/javascript">
         $(document).ready(function() {
+            $('.menu-list').each(function() {
+                /** Oculta todas las opciones del menú */
+                $(this).hide();
+            });
             $('img').on('click', function() {
                 $("ul#list_real").hide();
                 $("ul#list_monetario_financiero").hide();

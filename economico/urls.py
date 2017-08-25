@@ -16,7 +16,7 @@ from . import views as economico_views
 
 
 urlpatterns = [
-    url(r'^cargar-datos/?$', economico_views.cargar_datos, name='economico-cargar-datos'),
+    url(r'^cargar-datos/$', economico_views.cargar_datos, name='economico-cargar-datos'),
     url(r'^cargar-datos/precios/$', economico_views.precios, name='economico-precios'),
     url(r'^cargar-datos/pib/$', economico_views.pib, name='economico-pib'),
     url(r'^cargar-datos/demanda-global/$', economico_views.demanda_global, name='economico-demanda-global'),
@@ -34,7 +34,7 @@ urlpatterns = [
     url(r'^cargar-datos/cuenta-capital/$', economico_views.capital, name='economico-cuenta-capital'),
 
     # URL para las consultas
-    url(r'^consultar-datos/?$', economico_views.consultar_datos, name='economico-consultar-datos'),
+    url(r'^consultar-datos/$', economico_views.consultar_datos, name='economico-consultar-datos'),
     url(r'^consultar-datos/precios/$', economico_views.consultar_precios, name='economico-consultar-precios'),
     url(r'^consultar-datos/pib/$', economico_views.consultar_pib, name='economico-consultar-pib'),
     url(r'^consultar-datos/demanda-global/$', economico_views.consultar_demanda_global, name='economico-consultar-demanda-global'),
