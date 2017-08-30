@@ -3,7 +3,7 @@
 {% load static from staticfiles %}
 {% block content_header_title %}{% trans 'CONSULTAR DATOS' %}{% endblock %}
 {% block content_header_roadmap %}{% endblock %}
-{% block contenido %}
+{% block content %}
     <div class="row">
         <div class="panel panel-primary">
             <div class="panel-heading"></div>
@@ -25,7 +25,7 @@
                         <div class="tab-content nav-tabs-bordered nav-tabs-height">
                             <div class="tab-pane active" id="vars">
                                 <div class="row border-between row-same-height">
-                                    <div class="col-md-6 margen-top-bottom-10 nav-tabs-height">
+                                    <div id="tree_view" class="col-md-6 margen-top-bottom-10 nav-tabs-height">
                                         <h4>{% trans 'Seleccione' %}</h4>
                                         <div id="col-variables" class="col-md-12">
                                             {% block consult_vars %}{% endblock %}
