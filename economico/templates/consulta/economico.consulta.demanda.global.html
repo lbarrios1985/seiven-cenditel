@@ -1,0 +1,128 @@
+{% extends 'base.tabs.html' %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% block content_header_title %}{% trans 'CONSULTAR DATOS' %}{% endblock %}
+{% block content_header_roadmap %}
+    <li><a href="{% url 'economico-consultar-datos' %}">{% trans 'Economía - Consultar Datos' %}</a></li>
+    <li class="active">{% block active_link %}{% trans 'Real - Precios' %}{% endblock %}</li>
+{% endblock %}
+
+{% block consult_params %}
+    {% include 'base/base.demanda.global.template.html' %}
+        <div id='oculto' style='display:none;'>
+            <button type="submit" class="btn btn-info pull-left separador-row">Consultar</button>
+        </div>
+{% endblock %}
+
+{% block extra_footer %}
+    {{ block.super }}
+    <script>
+        /*Manejo cada nodo como arbol independiente*/
+        $("#tree_view").append("<div id='col-variables1' class='col-md-12'></div>");
+        $("#tree_view").append("<div id='col-variables2' class='col-md-12'></div>");
+                
+        /*Especifico cada arbol*/
+        var raiz = [
+            {text: "Demanda Global"}
+            ];
+        var nodo1 = [    
+            {
+                text: "1. Demanda Agregada Interna",
+                nodes: [
+                    {text: 'Gasto de consumo final del gobierno'},
+                    {text: 'Gasto de consumo final privado'},
+                    {text: 'Formación Bruta de capital fijo'},
+                    {text: 'Variación de existencias'}
+                ]
+            }
+            ];
+        var nodo2 = [ 
+            {
+                text: "2. Demanda Agragada Externa",
+                nodes: [
+                    {text: "Exportaciones de bienes y servicios"}
+                ]
+            }
+            ];
+        
+        /*genero cada arbol segun las especificaicones descritas en el item anterior*/
+        $('#col-variables').treeview({data: raiz, showBorder: false, showCheckbox: true, levels: 1});
+        $('#col-variables1').treeview({data: nodo1, showBorder: false, showCheckbox: true, levels: 1});
+        $('#col-variables2').treeview({data: nodo2, showBorder: false, showCheckbox: true, levels: 1});
+        
+        /*variables para manejar la tabla de los parametros a consultar*/
+        var tipo = $('#{{ form.tipo.auto_id }}');
+        var anho_base = $("#{{ form.anho_base.auto_id }}");
+        var periodo_trimestre_ini = $("#{{ form.periodo_trimestre_ini.auto_id }}");
+        var periodo_trimestre_fin = $("#{{ form.periodo_trimestre_fin.auto_id }}");
+        var periodo_anho_ini = $("#{{ form.periodo_anho_ini.auto_id }}");
+        var periodo_anho_fin = $("#{{ form.periodo_anho_fin.auto_id }}");
+
+        /**
+         * Función que configura los filtros de los arboles de acuerdo a la selección del usuario
+         */
+        function set_filters(tree= 0,check=false,nodo) {
+            /*validaciones sobre cada arbol*/
+            if (check==false)
+                for (var i=1; i<3; i++) {
+                    if (i!=tree)
+                        $('#col-variables'+i).treeview('disableAll');
+                }
+            else{
+                if ($('#col-variables'+tree).treeview('getParent',nodo)['nodeId']!=0){
+                    for (var i=1; i<3; i++) {
+                        if (i!=tree){                            
+                            $('#col-variables'+i).treeview('enableAll');                            
+                        }
+                    }
+                }
+            }
+        }
+        /**
+         * Función que configura los filtros sobre los parametros a consultar
+         */
+        function filters() {
+            /*validaciones sobre los parametros de consulta OJO -falta anadir validacion sobre periodicidad y elementos a espera de JULIE*/
+            if (tipo.val()!='' && anho_base.val()!='' && periodo_trimestre_ini.val()!='' && periodo_trimestre_fin.val()!='' && periodo_anho_ini.val()!='' && periodo_anho_fin.val()!=''){
+                if (tipo.val() == 'DG'){
+                    if (parseInt(periodo_anho_fin.val()) == parseInt(periodo_anho_ini.val()) && parseInt(periodo_trimestre_ini.val()) <= parseInt(periodo_trimestre_fin.val())){
+                    
+                        document.getElementById('oculto').style.display = 'block';
+                    }
+                    else if (parseInt(periodo_anho_fin.val()) > parseInt(periodo_anho_ini.val())){
+                    
+                        document.getElementById('oculto').style.display = 'block';  
+                    }
+                    else{
+                        //bootbox.alert('Verificar su selección');
+                        document.getElementById('oculto').style.display = 'none';
+                    }
+                }
+                else{
+                    //bootbox.alert('Verificar su selección');
+                    document.getElementById('oculto').style.display = 'none';
+                }
+            }
+        }
+        $(document).ready(function() {
+            /*cada vez que se genere un cambio en alguno de los item se verifica toda la plantilla y solo cuando cunpla con los filtros apertura el boton de consulta*/
+
+            tipo.on('change', function() {filters()});
+            anho_base.on('change', function() { filters() });
+            periodo_trimestre_ini.on('change', function() { filters() });
+            periodo_trimestre_fin.on('change', function() { filters() });
+            periodo_anho_ini.on('change', function() { filters() });
+            periodo_anho_fin.on('change', function() { filters() });
+
+            /*verifica cuando algun nodo esta activo*/
+            $('#col-variables1').on('nodeChecked', function(event, data) {set_filters(1,false,data)});
+            $('#col-variables2').on('nodeChecked', function(event, data) {set_filters(2,false,data)});
+           
+            /*verifica cuando algun nodo esta inactivo*/
+            $('#col-variables1').on('nodeUnchecked', function(event, data) {set_filters(1,true,data)});
+            $('#col-variables2').on('nodeUnchecked', function(event, data) {set_filters(2,true,data)});
+        });
+    </script>
+
+
+{% endblock %}

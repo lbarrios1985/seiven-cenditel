@@ -9,54 +9,7 @@
 
 {% block consult_params %}
     <div class="panel-body">
-        <div class="row separador-row">
-            <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
-                <div class="row separador-row">
-                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                        <label for="form.dominio.auto_id" class="control-label">{{ form.dominio.label }}</label>
-                    </div>
-                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">{{ form.dominio }}</div>
-                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-2">
-                        <label for="form.anho_base.auto_id" class="control-label">{{ form.anho_base.label }}</label>
-                    </div>
-                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">{{ form.anho_base }}</div>
-                </div>
-            </div>
-        </div>
-        <div class="row separador-row">
-            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                <label class="control-label">{{ form.elementos.label }}</label>
-            </div>
-            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">{{ form.elementos }}</div>
-        </div>
-        <div class="row separador-row">
-            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                <label class="control-label">{{ form.periodicidad.label }}</label>
-            </div>
-            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">{{ form.periodicidad }}</div>
-        </div>
-        <div class="row separador-row">
-            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xs-offset-3 col-sm-offset-3 col-md-offset-3 col-lg-offset-3">
-                <label class="control-label">{% trans 'Mes' %}</label>
-            </div>
-            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
-                <label class="control-label">{% trans 'Año' %}</label>
-            </div>
-        </div>
-        <div class="row separador-row">
-            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                <label class="control-label">{{ form.periodo_mes_ini.label }}</label>
-            </div>
-            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">{{ form.periodo_mes_ini }}</div>
-            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">{{ form.periodo_anho_ini }}</div>
-        </div>
-        <div class="row separador-row">
-            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                <label class="control-label">{{ form.periodo_mes_fin.label }}</label>
-            </div>
-            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">{{ form.periodo_mes_fin }}</div>
-            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">{{ form.periodo_anho_fin }}</div>
-        </div>
+        {% include 'base/base.precios.template.html' %}
         <div id='oculto' style='display:none;'>
             <button type="submit" class="btn btn-info pull-left separador-row">Consultar</button>
         </div>
@@ -72,7 +25,6 @@
         $("#tree_view").append("<div id='col-variables4' class='col-md-12'></div>");
         $("#tree_view").append("<div id='col-variables5' class='col-md-12'></div>");
         $("#tree_view").append("<div id='col-variables6' class='col-md-12'></div>");
-        
         /*Especifico cada arbol*/
         var raiz = [
             {text: "Índice Nacional de Precios al Consumidor"}
@@ -168,7 +120,7 @@
         var periodo_anho_fin = $("#{{ form.periodo_anho_fin.auto_id }}");
 
         /**
-         * Función que configura los filtros de acuerdo a la selección del usuario
+         * Función que configura los filtros de los arboles de acuerdo a la selección del usuario
          */
         function set_filters(tree= 0,check=false,nodo) {
             /*validaciones sobre cada arbol*/
@@ -186,6 +138,11 @@
                     }
                 }
             }
+        }
+        /**
+         * Función que configura los filtros sobre los parametros a consultar
+         */
+        function filters() {
             /*validaciones sobre los parametros de consulta OJO -falta anadir validacion sobre periodicidad y elementos a espera de JULIE*/
             if (dominio.val()!='' && anho_base.val()!='' && periodo_mes_ini.val()!='' && periodo_mes_fin.val()!='' && periodo_anho_ini.val()!='' && periodo_anho_fin.val()!=''){
 
@@ -203,13 +160,13 @@
         }
         $(document).ready(function() {
             /*cada vez que se genere un cambio en alguno de los item se verifica toda la plantilla y solo cuando cunpla con los filtros apertura el boton de consulta*/
-            
-            dominio.on('change', function() { set_filters() });
-            anho_base.on('change', function() { set_filters() });
-            periodo_mes_ini.on('change', function() { set_filters() });
-            periodo_mes_fin.on('change', function() { set_filters() });
-            periodo_anho_ini.on('change', function() { set_filters() });
-            periodo_anho_fin.on('change', function() { set_filters() });
+
+            dominio.on('change', function() { filters() });
+            anho_base.on('change', function() { filters() });
+            periodo_mes_ini.on('change', function() { filters() });
+            periodo_mes_fin.on('change', function() { filters() });
+            periodo_anho_ini.on('change', function() { filters() });
+            periodo_anho_fin.on('change', function() { filters() });
 
             $('#col-variables1').on('nodeChecked', function(event, data) {set_filters(1,false,data)});
             $('#col-variables2').on('nodeChecked', function(event, data) {set_filters(2,false,data)});
@@ -223,12 +180,6 @@
             $('#col-variables4').on('nodeUnchecked', function(event, data) {set_filters(4,true,data)});
             $('#col-variables5').on('nodeUnchecked', function(event, data) {set_filters(5,true,data)});
             $('#col-variables6').on('nodeUnchecked', function(event, data) {set_filters(6,true,data)});
-            
-            
-            
-            
         });
     </script>
-
-
 {% endblock %}

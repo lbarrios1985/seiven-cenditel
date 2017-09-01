@@ -388,7 +388,7 @@ class PIBForm(TipoForm, AnhoBaseForm, DominioForm, AnhoIniForm, AnhoFinForm, Tri
 
 
 @python_2_unicode_compatible
-class RealDemandaGlobalForm(AnhoBaseForm, AnhoIniForm, AnhoFinForm, TrimestreIniForm, TrimestreFinForm, TipoForm):
+class RealDemandaGlobalForm(AnhoBaseForm, AnhoIniForm, AnhoFinForm, TrimestreIniForm, TrimestreFinForm, TipoForm,PeriodicidadForm, ElementosForm):
     """!
     Clase que contiene el formulario para la carga de datos de demanda global
 
@@ -401,6 +401,8 @@ class RealDemandaGlobalForm(AnhoBaseForm, AnhoIniForm, AnhoFinForm, TrimestreIni
     def __init__(self, *args, **kwargs):
         super(RealDemandaGlobalForm, self).__init__(*args, **kwargs)
         self.fields['tipo'].choices = TIPO_DEMANDA_GLOBAL
+        self.fields['periodicidad'].choices = [PERIODICIDAD[0],PERIODICIDAD[4],PERIODICIDAD[5]]
+        self.fields['elementos'].choices = ELEMENTOS
 
 @python_2_unicode_compatible
 class RealOfertaGlobalForm(AnhoBaseForm, AnhoIniForm, AnhoFinForm, TrimestreIniForm, TrimestreFinForm, TipoForm):

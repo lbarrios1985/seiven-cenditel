@@ -22,44 +22,8 @@
                     </p>
                 </div>
             </div>
-            <div class="row separador-row">
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2">
-                    <label for="{{ form.tipo.auto_id }}" class="control-label">{{ form.tipo.label }}</label>
-                </div>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                    {{ form.tipo }}
-                </div>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                    <label for="{{ form.anho_base.auto_id }}" class="control-label">{{ form.anho_base.label }}</label>
-                </div>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                    {{ form.anho_base }}
-                </div>
-            </div>
-            <div class="row separador-row">
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-6 col-sm-offset-6 col-md-offset-6 col-lg-offset-6">
-                    <label class="control-label">{% trans 'Trimestral' %}</label>
-                </div>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                    <label class="control-label">{% trans 'Año' %}</label>
-                </div>
-            </div>
-            <div class="row separador-row">
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2">
-                    <label class="control-label">{% trans 'Período' %}</label>
-                </div>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                    <label class="control-label">{{ form.periodo_trimestre_ini.label }}</label>
-                </div>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.periodo_trimestre_ini }}</div>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.periodo_anho_ini }}</div>
-            </div>
-            <div class="row separador-row">
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-4 col-sm-offset-4 col-md-offset-4 col-lg-offset-4">
-                    <label class="control-label">{{ form.periodo_trimestre_fin.label }}</label>
-                </div>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.periodo_trimestre_fin }}</div>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{ form.periodo_anho_fin }}</div>
+            <div align="center">
+                {% include 'base/base.demanda.global.template.html' %}
             </div>
             <div id='oculto' style='display:none;'>
                 {% include 'base.down.up.files.html' with app='economico' mod='DemandaGlobal'%}
@@ -152,6 +116,7 @@
         * A medida que se realizan las selecciones voy modificando los filtros
         */
         $(document).ready(function() {
+            document.getElementById('consulta').style.display = 'none';
             tipo.on('change', function() {set_filters()});
             anho_base.on('change', function() { set_filters() });
             periodo_trimestre_ini.on('change', function() { set_filters() });

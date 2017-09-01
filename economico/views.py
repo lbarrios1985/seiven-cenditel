@@ -357,8 +357,11 @@ def consultar_demanda_global(request):
     @param request <b>{object}</b> Objeto que obtiene la petición
     @return Devuelve el response con la página del sub-menu de consulta para el área económica
     """
-    return render(request, 'economico.consulta.demanda.global.html', {})
-
+    form = RealDemandaGlobalForm()
+    
+    return render(request, 'economico.consulta.demanda.global.html', {
+        'form':form
+        })
 @login_required
 def consultar_agregados_monetarios(request):
     """!
